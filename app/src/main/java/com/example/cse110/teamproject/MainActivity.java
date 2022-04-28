@@ -23,18 +23,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_main);
+
+        Intent intentSearchResults = new Intent(this, SearchResultsActivity.class);
         setContentView(R.layout.activity_main);
 
         // auto complete text for search & auto completion dropdown
         AutoCompleteTextView dropdown = (AutoCompleteTextView) findViewById(R.id.search_bar);
 
-        arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item, myList);
+        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_item, myList);
         dropdown.setAdapter(arrayAdapter);
 
         // number of letters needed in order for auto-completion to activate
         dropdown.setThreshold(1);
 
-        dropdown.setOnKeyListener(new OnKeyListener() {
+        dropdown.setOnKeyListener(new OnKeyListener()  {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 // if ENTER is pressed on keyboard, show search results page
@@ -42,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
                 if (i == KeyEvent.KEYCODE_ENTER) {
                     // need to replace Log statement with Intent for search results page
                     Log.d("Enter", "Enter working");
+                    startActivity(intentSearchResults);
                     // reset search entry
                     dropdown.setText("");
                 }
