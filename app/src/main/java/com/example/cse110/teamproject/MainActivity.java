@@ -37,20 +37,19 @@ public class MainActivity extends AppCompatActivity {
         // number of letters needed in order for auto-completion to activate
         dropdown.setThreshold(1);
 
-        dropdown.setOnKeyListener(new OnKeyListener()  {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                // if ENTER is pressed on keyboard, show search results page
-                // and reset search entry
-                if (i == KeyEvent.KEYCODE_ENTER) {
-                    // need to replace Log statement with Intent for search results page
-                    Log.d("Enter", "Enter working");
-                    startActivity(intentSearchResults);
-                    // reset search entry
-                    dropdown.setText("");
-                }
-                return false;
+        dropdown.setOnKeyListener((view, i, keyEvent) -> {
+            // if ENTER is pressed on keyboard, show search results page
+            // and reset search entry
+            if (i == KeyEvent.KEYCODE_ENTER) {
+                // need to replace Log statement with Intent for search results page
+                Log.d("Enter", "Enter working");
+                intentSearchResults.putExtra("key", dropdown.getText().toString());
+                Log.d("dropdown", dropdown.getText().toString());
+                startActivity(intentSearchResults);
+                // reset search entry
+                dropdown.setText("");
             }
+            return false;
         });
     }
 }

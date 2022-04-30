@@ -4,9 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -19,6 +21,8 @@ public class SearchResultsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_results);
 
+
+
         ExhibitsListAdapter adapter = new ExhibitsListAdapter();
         adapter.setHasStableIds(true);
 
@@ -30,14 +34,17 @@ public class SearchResultsActivity extends AppCompatActivity {
 
 
 
-//        //NEED USER INPUT FROM SEARCH ACTVITY
-//        String search = "bear";
-//
-//        TextView textView = findViewById(R.id.search_results);
-//        textView.setText("Search results for \"" + search + "\"");
-//
-//        List<ExhibitListItem> exhibits = ExhibitListItem.loadJSON(this, "demo_exhibits.json");
-//        Log.d("SearchResultsActivity", exhibits.toString());
+
+        //NEED USER INPUT FROM SEARCH ACTVITY
+        //String search1 = "bear";
+        Bundle extras = getIntent().getExtras();
+        String search = extras.getString("key");
+
+        TextView textView = findViewById(R.id.search_results);
+        textView.setText("Search results for \"" + search + "\"");
+
+        List<ExhibitListItem> exhibits = ExhibitListItem.loadJSON(this, "demo_exhibits.json");
+        Log.d("SearchResultsActivity", exhibits.toString());
 
     }
 
