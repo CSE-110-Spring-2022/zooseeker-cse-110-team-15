@@ -13,14 +13,23 @@ import android.widget.AutoCompleteTextView;
 import android.util.Log;
 import android.view.View.OnKeyListener;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class MainActivity extends AppCompatActivity {
 
     // Temporary sample list to test Search dropdown
     String[] myList = new String[] {"Polar Bear", "Grizzly Bear", "Apple Pie",
                                     "Godzilla", "Paul", "Michael","Lucy", "Samuel", "Larry", "Prem"};
 
+
+
     // array adapter for dropdown
     ArrayAdapter<String> arrayAdapter;
+
+
+    ExhibitsListAdapter adapter;
+
     public RecyclerView userListRecycler;
 
     @Override
@@ -34,8 +43,24 @@ public class MainActivity extends AppCompatActivity {
         // auto complete text for search & auto completion dropdown
         AutoCompleteTextView dropdown = (AutoCompleteTextView) findViewById(R.id.search_bar);
 
-        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_item, myList);
+//        adapter = new ExhibitsListAdapter();
+//        adapter.setHasStableIds(true);
+//        adapter.setExhibitListItems(ExhibitNodeItem.loadJSON(this, "sample_node_info.json"));
+
+        ExhibitListItemDao exhibitListItemDao = ExhibitDatabase.getSingleton(this)
+                .exhibitListItemDao();
+        List<ExhibitNodeItem> exhibitNodeItems = exhibitListItemDao.getAllExhibits();
+
+        List<String> exhibits = ExhibitNodeItem.loadJSON(this, "sample_node_info.json")
+                .stream().map(item -> item.name).collect(Collectors.toList());
+
+        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_item, exhibits
+                .toArray(new String[exhibits.size()]));
+
+
+
         dropdown.setAdapter(arrayAdapter);
+
 
         // number of letters needed in order for auto-completion to activate
         dropdown.setThreshold(1);
