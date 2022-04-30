@@ -8,14 +8,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 public class ExhibitsListAdapter extends RecyclerView.Adapter<ExhibitsListAdapter.ViewHolder> {
-    private List<ExhibitListItem> exhibitItems = Collections.emptyList();
+    private List<ExhibitNodeItem> exhibitItems = Collections.emptyList();
 
-    public void setExhibitListItems(List<ExhibitListItem> newExhibitItems) {
+    public void setExhibitListItems(List<ExhibitNodeItem> newExhibitItems) {
         this.exhibitItems.clear();
         this.exhibitItems = newExhibitItems;
         notifyDataSetChanged();
@@ -45,20 +44,20 @@ public class ExhibitsListAdapter extends RecyclerView.Adapter<ExhibitsListAdapte
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView textView;
-        private ExhibitListItem exhibitItem;
+        private ExhibitNodeItem exhibitItem;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             this.textView = itemView.findViewById(R.id.exhibit_item_text);
         }
 
-        public ExhibitListItem getExhibitItem() {
+        public ExhibitNodeItem getExhibitItem() {
             return exhibitItem;
         }
 
-        public void setExhibitItem(ExhibitListItem exhibitItem) {
+        public void setExhibitItem(ExhibitNodeItem exhibitItem) {
             this.exhibitItem = exhibitItem;
-            this.textView.setText(exhibitItem.text);
+            this.textView.setText(exhibitItem.name);
         }
 
 

@@ -1,20 +1,28 @@
 package com.example.cse110.teamproject;
 
 import androidx.room.Dao;
-import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import java.util.List;
+
 @Dao
 public interface ExhibitListItemDao {
     @Insert
-    long insert(MockExhibitListItem exhibitListItem);
+    long insert(ExhibitNodeItem exhibitNodeItem);
 
-    @Query("SELECT * FROM `user_exhibits_list` WHERE `id`=:id")
-    MockExhibitListItem get(long id);
+    @Insert
+    List<Long> insertAll(List<ExhibitNodeItem> exhibitListItemNode);
 
-    @Update
-    int update(MockExhibitListItem exhibitListItem);
+    @Query("SELECT * FROM `exhibit_node_items` WHERE `id`=:id")
+    ExhibitNodeItem getExhibit(long id);
+
+    @Query("SELECT * FROM `exhibit_node_items` WHERE `kind`='exhibit'")
+    List<ExhibitNodeItem> getAllExhibits();
+
+
+//    @Update
+//    int update(ExhibitNodeItem exhibitNodeItem);
 
 }

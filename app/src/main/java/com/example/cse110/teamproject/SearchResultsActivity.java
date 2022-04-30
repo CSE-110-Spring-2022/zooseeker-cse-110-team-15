@@ -5,11 +5,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SearchResultsActivity extends AppCompatActivity {
     public RecyclerView recyclerView;
@@ -19,15 +18,22 @@ public class SearchResultsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_results);
 
+        ExhibitListItemDao exhibitListItemDao = ExhibitDatabase.getSingleton(this)
+                .exhibitListItemDao();
+        List<ExhibitNodeItem> exhibitNodeItems = exhibitListItemDao.getAllExhibits();
+
         ExhibitsListAdapter adapter = new ExhibitsListAdapter();
         adapter.setHasStableIds(true);
+        adapter.setExhibitListItems(exhibitNodeItems);
 
         recyclerView = findViewById(R.id.exhibit_items);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+        List<String> exhibits = ExhibitNodeItem.loadJSON(this, "demo_exhibits.json").stream().map(item -> item.name).collect(Collectors.toList());
 
-        adapter.setExhibitListItems(ExhibitListItem.loadJSON(this, "demo_exhibits.json"));
 
+
+        //adapter.setExhibitListItems(exhibits);
 
 
 //        //NEED USER INPUT FROM SEARCH ACTVITY
