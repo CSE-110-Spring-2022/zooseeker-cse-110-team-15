@@ -1,6 +1,8 @@
 package com.example.cse110.teamproject;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
     // array adapter for dropdown
     ArrayAdapter<String> arrayAdapter;
+    public RecyclerView userListRecycler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,5 +55,16 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+        startUserListRecycler();
+    }
+    private void startUserListRecycler() {
+        userListRecycler = findViewById(R.id.user_list);
+        userListRecycler.setLayoutManager(new LinearLayoutManager(this));
+        ExhibitsListAdapter adapter = new ExhibitsListAdapter();
+        adapter.setHasStableIds(true);
+
+        userListRecycler.setAdapter(adapter);
+        //TODO: add actual selected exhibits here
+        adapter.setExhibitListItems(ExhibitListItem.loadJSON(this, "demo_exhibits.json"));
     }
 }
