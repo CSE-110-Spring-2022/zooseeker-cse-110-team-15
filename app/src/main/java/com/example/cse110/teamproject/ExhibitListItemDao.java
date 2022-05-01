@@ -21,6 +21,8 @@ public interface ExhibitListItemDao {
     @Query("SELECT * FROM `exhibit_node_items` WHERE `kind`='exhibit'")
     List<ExhibitNodeItem> getAllExhibits();
 
+    @Query("SELECT * FROM `exhibit_node_items` WHERE `name`=:name")
+    ExhibitNodeItem getExhibitByName(String name);
 
 //    @Update
 //    int update(ExhibitNodeItem exhibitNodeItem);
