@@ -35,13 +35,15 @@ public class MainActivity extends AppCompatActivity {
 
         ExhibitListItemDao exhibitListItemDao = ExhibitDatabase.getSingleton(this)
                 .exhibitListItemDao();
-        List<ExhibitNodeItem> exhibitNodeItems = exhibitListItemDao.getAllExhibits();
+        //List<ExhibitNodeItem> exhibitNodeItems = exhibitListItemDao.getAllExhibits();
 
         List<String> exhibits = ExhibitNodeItem.loadJSON(this, "sample_node_info.json")
                 .stream().map(item -> item.name).collect(Collectors.toList());
 
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_item, exhibits
                 .toArray(new String[exhibits.size()]));
+
+
 
 
         dropdown.setAdapter(arrayAdapter);
