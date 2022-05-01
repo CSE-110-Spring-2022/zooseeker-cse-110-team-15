@@ -24,7 +24,8 @@ public interface UserExhibitListItemDao {
             "ON `user_exhibit_node_items`.location_id = `exhibit_node_items`.node_id")
     LiveData<List<ExhibitNodeItem>> getAllLive();
 
-
+    @Query("SELECT COUNT(*) FROM `user_exhibit_node_items`")
+    LiveData<Integer> getListSize();
 
     @Query("DELETE FROM `user_exhibit_node_items`")
     void deleteUserExhibitItems();
