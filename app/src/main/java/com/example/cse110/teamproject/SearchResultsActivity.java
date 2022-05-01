@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -30,23 +31,18 @@ public class SearchResultsActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.exhibit_items);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
-        List<String> exhibits = ExhibitNodeItem.loadJSON(this, "demo_exhibits.json").stream().map(item -> item.name).collect(Collectors.toList());
 
 
-
-        //adapter.setExhibitListItems(exhibits);
-
-
-//        //NEED USER INPUT FROM SEARCH ACTVITY
-//        String search = "bear";
         Bundle extras = getIntent().getExtras();
         String search = extras.getString("key");
 //
         TextView textView = findViewById(R.id.search_results);
         textView.setText("Search results for \"" + search + "\"");
-//
-//        List<ExhibitListItem> exhibits = ExhibitListItem.loadJSON(this, "demo_exhibits.json");
-//        Log.d("SearchResultsActivity", exhibits.toString());
+
+        //populate recyclerview with queried items
+        //TextView exhibitItem = findViewById(R.id.exhibit_item_text);
+        List<ExhibitNodeItem> exhibitNodeItemList = exhibitListItemDao.getExhibits(search);
+        adapter.setExhibitListItems(exhibitNodeItemList);
 
     }
 

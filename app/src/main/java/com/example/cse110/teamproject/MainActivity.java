@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
         exhibitListItemDao = ExhibitDatabase.getSingleton(this)
                 .exhibitListItemDao();
-        List<ExhibitNodeItem> exhibitNodeItems = exhibitListItemDao.getAllExhibits();
+        //List<ExhibitNodeItem> exhibitNodeItems = exhibitListItemDao.getAllExhibits();
 
         userExhibitListItemDao = ExhibitDatabase.getSingleton(this)
                 .userExhibitListItemDao();
@@ -62,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
 
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_item, exhibits
                 .toArray(new String[exhibits.size()]));
+
+
+
 
         dropdown.setAdapter(arrayAdapter);
         // number of letters needed in order for auto-completion to activate
