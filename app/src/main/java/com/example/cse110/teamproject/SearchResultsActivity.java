@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,9 +39,11 @@ public class SearchResultsActivity extends AppCompatActivity {
 
 //        //NEED USER INPUT FROM SEARCH ACTVITY
 //        String search = "bear";
+        Bundle extras = getIntent().getExtras();
+        String search = extras.getString("key");
 //
-//        TextView textView = findViewById(R.id.search_results);
-//        textView.setText("Search results for \"" + search + "\"");
+        TextView textView = findViewById(R.id.search_results);
+        textView.setText("Search results for \"" + search + "\"");
 //
 //        List<ExhibitListItem> exhibits = ExhibitListItem.loadJSON(this, "demo_exhibits.json");
 //        Log.d("SearchResultsActivity", exhibits.toString());

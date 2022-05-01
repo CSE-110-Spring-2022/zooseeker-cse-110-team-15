@@ -53,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 // if ENTER is pressed on keyboard, show search results page and reset search entry
                 if (keyEvent.getAction() == KeyEvent.ACTION_DOWN && i == KeyEvent.KEYCODE_ENTER) {
+                    String input = dropdown.getText().toString();
+                    intentSearchResults.putExtra("key", input);
                     // need to replace Log statement with Intent for search results page
                     startActivity(intentSearchResults);
                     // reset search entry
