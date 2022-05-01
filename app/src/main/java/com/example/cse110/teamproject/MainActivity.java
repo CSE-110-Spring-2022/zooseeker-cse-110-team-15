@@ -17,13 +17,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
-
-    // Temporary sample list to test Search dropdown
-    String[] myList = new String[] {"Polar Bear", "Grizzly Bear", "Apple Pie",
-                                    "Godzilla", "Paul", "Michael","Lucy", "Samuel", "Larry", "Prem"};
-
-
-
     // array adapter for dropdown
     ArrayAdapter<String> arrayAdapter;
     ExhibitsListAdapter adapter;
@@ -38,11 +31,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // auto complete text for search & auto completion dropdown
-        AutoCompleteTextView dropdown = (AutoCompleteTextView) findViewById(R.id.search_bar);
-
-//        adapter = new ExhibitsListAdapter();
-//        adapter.setHasStableIds(true);
-//        adapter.setExhibitListItems(ExhibitNodeItem.loadJSON(this, "sample_node_info.json"));
+        AutoCompleteTextView dropdown = findViewById(R.id.search_bar);
 
         ExhibitListItemDao exhibitListItemDao = ExhibitDatabase.getSingleton(this)
                 .exhibitListItemDao();
@@ -55,21 +44,16 @@ public class MainActivity extends AppCompatActivity {
                 .toArray(new String[exhibits.size()]));
 
 
-
         dropdown.setAdapter(arrayAdapter);
-
-
         // number of letters needed in order for auto-completion to activate
         dropdown.setThreshold(1);
 
         dropdown.setOnKeyListener(new OnKeyListener()  {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                // if ENTER is pressed on keyboard, show search results page
-                // and reset search entry
+                // if ENTER is pressed on keyboard, show search results page and reset search entry
                 if (keyEvent.getAction() == KeyEvent.ACTION_DOWN && i == KeyEvent.KEYCODE_ENTER) {
                     // need to replace Log statement with Intent for search results page
-                    Log.d("Enter", "Enter working");
                     startActivity(intentSearchResults);
                     // reset search entry
                     dropdown.setText("");
@@ -88,5 +72,12 @@ public class MainActivity extends AppCompatActivity {
         userListRecycler.setAdapter(adapter);
         //TODO: add actual selected exhibits here
         adapter.setExhibitListItems(ExhibitNodeItem.loadJSON(this, "demo_exhibits.json"));
+    }
+
+    public void onSearchIconClicked(View view) {
+        Intent intentSearchResults = new Intent(this, SearchResultsActivity.class);
+        AutoCompleteTextView dropdown = findViewById(R.id.search_bar);
+        startActivity(intentSearchResults);
+        dropdown.setText("");
     }
 }
