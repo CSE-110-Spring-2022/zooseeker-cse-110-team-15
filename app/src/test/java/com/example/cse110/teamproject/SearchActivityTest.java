@@ -57,7 +57,6 @@ import java.util.stream.Collectors;
             scenario.onActivity(activity -> {
                 assertEquals(View.VISIBLE, (activity.findViewById(R.id.search_bar)).getVisibility());
                 assertEquals("Search Animal Exhibits", ((AutoCompleteTextView) activity.findViewById(R.id.search_bar)).getHint());
-                ExhibitDatabase.singleton = null;
             });
             ExhibitDatabase.resetSingleton();
         }
