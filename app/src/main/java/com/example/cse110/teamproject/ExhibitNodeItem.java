@@ -9,6 +9,7 @@ import androidx.room.PrimaryKey;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
@@ -24,6 +25,11 @@ public class ExhibitNodeItem {
 
     @PrimaryKey(autoGenerate = true)
     public long id;
+
+    @Expose
+    @NonNull
+    @SerializedName(value = "node_id", alternate = "id")
+    public String node_id;
 
     @Expose
     @NonNull
@@ -46,6 +52,7 @@ public class ExhibitNodeItem {
                 "id=" + id +
                 ", kind='" + kind + '\'' +
                 ", name='" + name + '\'' +
+                ", node_id='" + node_id + '\'' +
                 // ", tags=" + tags +
                 '}';
     }
