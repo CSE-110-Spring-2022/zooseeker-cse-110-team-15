@@ -1,6 +1,8 @@
 package com.example.cse110.teamproject;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -8,11 +10,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.util.Log;
 import android.view.View.OnKeyListener;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,20 +26,32 @@ public class MainActivity extends AppCompatActivity {
     ExhibitsListAdapter adapter;
     public RecyclerView userListRecycler;
 
+    UserExhibitListItemDao userExhibitListItemDao;
+    ExhibitListItemDao exhibitListItemDao;
+
+    UserExhibitListViewModel userExhibitListViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
 
         Intent intentSearchResults = new Intent(this, SearchResultsActivity.class);
         setContentView(R.layout.activity_main);
 
         // auto complete text for search & auto completion dropdown
-        AutoCompleteTextView dropdown = findViewById(R.id.search_bar);
+        AutoCompleteTextView dropdown = (AutoCompleteTextView) findViewById(R.id.search_bar);
 
-        ExhibitListItemDao exhibitListItemDao = ExhibitDatabase.getSingleton(this)
+        adapter = new ExhibitsListAdapter();
+
+        exhibitListItemDao = ExhibitDatabase.getSingleton(this)
                 .exhibitListItemDao();
         //List<ExhibitNodeItem> exhibitNodeItems = exhibitListItemDao.getAllExhibits();
+
+        userExhibitListItemDao = ExhibitDatabase.getSingleton(this)
+                .userExhibitListItemDao();
+        userExhibitListItemDao.deleteUserExhibitItems();
+        List<String> userExhibitNodeItems = userExhibitListItemDao.getAllUserExhibitNames();
+
 
         List<String> exhibits = ExhibitNodeItem.loadJSON(this, "sample_node_info.json")
                 .stream().map(item -> item.name).collect(Collectors.toList());
@@ -65,17 +81,22 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-        startUserListRecycler();
-    }
-    private void startUserListRecycler() {
-        userListRecycler = findViewById(R.id.user_list);
-        userListRecycler.setLayoutManager(new LinearLayoutManager(this));
-        ExhibitsListAdapter adapter = new ExhibitsListAdapter();
-        adapter.setHasStableIds(true);
 
-        userListRecycler.setAdapter(adapter);
-        //TODO: add actual selected exhibits here
-        adapter.setExhibitListItems(ExhibitNodeItem.loadJSON(this, "demo_exhibits.json"));
+        userExhibitListViewModel = new ViewModelProvider(this)
+                .get(UserExhibitListViewModel.class);
+        userExhibitListViewModel.getExhibitListItems().observe(this, adapter::setExhibitListItems);
+
+        dropdown.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long rowId) {
+                String viewText = (String) adapterView.getItemAtPosition(position);
+                Log.d("value of text: ", viewText);
+
+                addExhibitToUserList(viewText);
+            }
+        });
+
+        startUserListRecycler();
     }
 
     public void onSearchIconClicked(View view) {
@@ -84,4 +105,26 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intentSearchResults);
         dropdown.setText("");
     }
+
+    private void startUserListRecycler() {
+        userListRecycler = findViewById(R.id.user_list);
+        userListRecycler.setLayoutManager(new LinearLayoutManager(this));
+        adapter.setHasStableIds(true);
+
+        userListRecycler.setAdapter(adapter);
+
+        adapter.setExhibitListItems(userExhibitListItemDao.getAllUserExhibits());
+
+    }
+
+    public void addExhibitToUserList(String exhibitName) {
+        UserExhibitListItem newItem = new UserExhibitListItem(exhibitListItemDao.getExhibitByName(exhibitName).node_id);
+
+        userExhibitListItemDao.insert(newItem);
+    }
+
+    public List<String> getUserSelectedExhibits() {
+        return userExhibitListItemDao.getAllUserExhibitNames();
+    }
+
 }

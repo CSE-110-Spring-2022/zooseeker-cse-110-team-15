@@ -21,8 +21,13 @@ public interface ExhibitListItemDao {
     @Query("SELECT * FROM `exhibit_node_items` WHERE `kind`='exhibit'")
     List<ExhibitNodeItem> getAllExhibits();
 
+
     @Query("SELECT * FROM `exhibit_node_items` WHERE `name` LIKE '%' ||:name || '%'")
     List<ExhibitNodeItem> getExhibits(String name);
+
+    @Query("SELECT * FROM `exhibit_node_items` WHERE `name`=:name")
+    ExhibitNodeItem getExhibitByName(String name);
+
 
 //    @Query("SELECT * FROM `exhibit_node_items` WHERE `name` LIKE :name")
 //    List<ExhibitNodeItem> getExhibits(String name);
