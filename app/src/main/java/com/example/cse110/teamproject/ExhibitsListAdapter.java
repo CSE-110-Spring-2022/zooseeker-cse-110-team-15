@@ -39,9 +39,6 @@ public class ExhibitsListAdapter extends RecyclerView.Adapter<ExhibitsListAdapte
         return exhibitItems.size();
     }
 
-//    @Override
-//    public long getItemID
-
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView textView;
         private ExhibitNodeItem exhibitItem;

@@ -1,6 +1,9 @@
 package com.example.cse110.teamproject;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.ThemedSpinnerAdapter;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -15,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.util.Log;
 import android.view.View.OnKeyListener;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_item, exhibits
                 .toArray(new String[exhibits.size()]));
 
-
         dropdown.setAdapter(arrayAdapter);
         // number of letters needed in order for auto-completion to activate
         dropdown.setThreshold(1);
@@ -95,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         startUserListRecycler();
+        setUpUserListHeader();
     }
 
     public void onSearchIconClicked(View view) {
@@ -112,7 +116,15 @@ public class MainActivity extends AppCompatActivity {
         userListRecycler.setAdapter(adapter);
 
         adapter.setExhibitListItems(userExhibitListItemDao.getAllUserExhibits());
+    }
 
+    private void setUpUserListHeader() {
+        UserListHeaderViewModel viewModel = new ViewModelProvider(this)
+                .get(UserListHeaderViewModel.class);
+        TextView userListHeader = findViewById(R.id.user_list_header);
+        viewModel.getListSize().observe(this, (size) -> {
+            userListHeader.setText(String.format("My List (%d)", size));
+        });
     }
 
     public void addExhibitToUserList(String exhibitName) {
@@ -120,9 +132,4 @@ public class MainActivity extends AppCompatActivity {
 
         userExhibitListItemDao.insert(newItem);
     }
-
-    public List<String> getUserSelectedExhibits() {
-        return userExhibitListItemDao.getAllUserExhibitNames();
-    }
-
 }
