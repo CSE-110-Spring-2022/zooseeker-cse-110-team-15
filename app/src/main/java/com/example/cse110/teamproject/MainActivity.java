@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_item, exhibits
                 .toArray(new String[exhibits.size()]));
 
-
         dropdown.setAdapter(arrayAdapter);
         // number of letters needed in order for auto-completion to activate
         dropdown.setThreshold(1);
@@ -120,9 +119,4 @@ public class MainActivity extends AppCompatActivity {
 
         userExhibitListItemDao.insert(newItem);
     }
-
-    public List<String> getUserSelectedExhibits() {
-        return userExhibitListItemDao.getAllUserExhibitNames();
-    }
-
 }
