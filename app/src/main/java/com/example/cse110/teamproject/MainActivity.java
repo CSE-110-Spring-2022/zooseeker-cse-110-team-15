@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
 
         Intent intentSearchResults = new Intent(this, SearchResultsActivity.class);
         setContentView(R.layout.activity_main);
@@ -43,9 +42,6 @@ public class MainActivity extends AppCompatActivity {
         AutoCompleteTextView dropdown = (AutoCompleteTextView) findViewById(R.id.search_bar);
 
         adapter = new ExhibitsListAdapter();
-//        adapter.setHasStableIds(true);
-//        adapter.setExhibitListItems(ExhibitNodeItem.loadJSON(this, "sample_node_info.json"));
-        AutoCompleteTextView dropdown = findViewById(R.id.search_bar);
 
         exhibitListItemDao = ExhibitDatabase.getSingleton(this)
                 .exhibitListItemDao();
@@ -88,17 +84,6 @@ public class MainActivity extends AppCompatActivity {
                 .get(UserExhibitListViewModel.class);
         userExhibitListViewModel.getExhibitListItems().observe(this, adapter::setExhibitListItems);
 
-        startUserListRecycler();
-
-//        dropdown.setOnItemClickListener((AdapterView<?> parent, View view, int position, long id) -> {
-//
-//
-////            @Override
-////            public void onClick(View view) {
-////                adapter.notifyDataSetChanged();
-////            }
-//        });
-
         dropdown.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long rowId) {
@@ -110,16 +95,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         startUserListRecycler();
-    }
-    private void startUserListRecycler() {
-        userListRecycler = findViewById(R.id.user_list);
-        userListRecycler.setLayoutManager(new LinearLayoutManager(this));
-        ExhibitsListAdapter adapter = new ExhibitsListAdapter();
-        adapter.setHasStableIds(true);
-
-        userListRecycler.setAdapter(adapter);
-        //TODO: add actual selected exhibits here
-        adapter.setExhibitListItems(ExhibitNodeItem.loadJSON(this, "demo_exhibits.json"));
     }
 
     public void onSearchIconClicked(View view) {
@@ -135,19 +110,13 @@ public class MainActivity extends AppCompatActivity {
         adapter.setHasStableIds(true);
 
         userListRecycler.setAdapter(adapter);
-        //TODO: add actual selected exhibits here
 
         adapter.setExhibitListItems(userExhibitListItemDao.getAllUserExhibits());
 
-//        adapter.setExhibitListItems(ExhibitNodeItem.loadJSON(this, "demo_exhibits.json"));
-//        adapter.setExhibitListItems(userExhibitListItemDao.getAllUserExhibitNames());
-//        exhibitListItemDao.getAllExhibits().stream().map(item -> item.name).collect(Collectors.toList());
-//        Log.d("lskflkj", getUserSelectedExhibits().toString());
     }
 
     public void addExhibitToUserList(String exhibitName) {
         UserExhibitListItem newItem = new UserExhibitListItem(exhibitListItemDao.getExhibitByName(exhibitName).node_id);
-        //UserExhibitListItem newItem = new UserExhibitListItem("sus_place");
 
         userExhibitListItemDao.insert(newItem);
     }
