@@ -46,5 +46,10 @@ import java.util.concurrent.Executors;
                     })
                     .build();
         }
+
+        public static void resetSingleton() {
+            singleton = null;
+        }
+
     }
 
