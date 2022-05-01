@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 // if ENTER is pressed on keyboard, show search results page
                 // and reset search entry
-                if (i == KeyEvent.KEYCODE_ENTER) {
+                if (keyEvent.getAction() == KeyEvent.ACTION_DOWN && i == KeyEvent.KEYCODE_ENTER) {
                     // need to replace Log statement with Intent for search results page
                     Log.d("Enter", "Enter working");
                     startActivity(intentSearchResults);
@@ -87,6 +87,6 @@ public class MainActivity extends AppCompatActivity {
 
         userListRecycler.setAdapter(adapter);
         //TODO: add actual selected exhibits here
-        adapter.setExhibitListItems(ExhibitListItem.loadJSON(this, "demo_exhibits.json"));
+        adapter.setExhibitListItems(ExhibitNodeItem.loadJSON(this, "demo_exhibits.json"));
     }
 }
