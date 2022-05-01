@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 
     @Database(entities = {ExhibitNodeItem.class, UserExhibitListItem.class}, version = 1)
     public abstract class ExhibitDatabase extends RoomDatabase {
-        static ExhibitDatabase singleton = null;
+        private static ExhibitDatabase singleton = null;
 
         public abstract ExhibitListItemDao exhibitListItemDao();
         public abstract UserExhibitListItemDao userExhibitListItemDao();
