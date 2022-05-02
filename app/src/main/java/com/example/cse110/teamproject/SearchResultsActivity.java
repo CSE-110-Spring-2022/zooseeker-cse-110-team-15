@@ -34,13 +34,17 @@ public class SearchResultsActivity extends AppCompatActivity {
 
 
         Bundle extras = getIntent().getExtras();
+        if(extras == null){
+            Bundle holder = new Bundle();
+            holder.putString("key", "");
+            extras = holder;
+        }
         String search = extras.getString("key");
-//
         TextView textView = findViewById(R.id.search_results);
         textView.setText("Search results for \"" + search + "\"");
 
         //populate recyclerview with queried items
-        //TextView exhibitItem = findViewById(R.id.exhibit_item_text);
+        TextView exhibitItem = findViewById(R.id.exhibit_item_text);
         List<ExhibitNodeItem> exhibitNodeItemList = exhibitListItemDao.getExhibits(search);
         adapter.setExhibitListItems(exhibitNodeItemList);
 
