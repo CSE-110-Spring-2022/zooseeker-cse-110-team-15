@@ -110,91 +110,15 @@ public class SearchActivityInstrumentedTest {
         scenario.moveToState(Lifecycle.State.STARTED);
         scenario.moveToState(Lifecycle.State.RESUMED);
 
-//        scenario.onActivity(activity -> {
-            onView(withId(R.id.search_bar))
-                    .perform(click(), replaceText("Alli"))
-                    .check(matches(withText("Alli")));
-//
-//            AutoCompleteTextView searchBar = activity.findViewById(R.id.search_bar);
-////            searchBar.requestFocus();
-//            searchBar.setText("Alligators");
-//            searchBar.showDropDown();
-            onData(equalTo("Alligators"))
-                    .inRoot(RootMatchers.isPlatformPopup())
-                    .perform(click());
+        onView(withId(R.id.search_bar))
+                .perform(click(), replaceText("Alli"))
+                .check(matches(withText("Alli")));
 
-            onView(withId(R.id.user_list))
+        onData(equalTo("Alligators"))
+                .inRoot(RootMatchers.isPlatformPopup())
+                .perform(click());
+
+        onView(withId(R.id.user_list))
                 .check(matches(atPosition(0, hasDescendant(withText("Alligators")))));
-
-//            searchBar.postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    searchBar.setText("PREM");
-//                    searchBar.showDropDown();
-//
-//                }
-//            }, 10);
-//            searchBar.clearFocus();
-
-//            final String[] result = new String[1];
-//            searchBar.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//                @Override
-//                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-//                    result[0] = adapterView.getItemAtPosition(i).toString();
-//                    assertEquals("Alligators", result[0]);
-//                    view.performClick();
-//
-//
-//                    searchBar.setListSelection(0);
-//                    searchBar.performClick();
-//
-//                    // test adding to list
-//
-////            assertEquals(1,userExhibitListItemDao.getListSize());
-//
-//                    RecyclerView userListRecycler = activity.userListRecycler;
-//                    String text = ((TextView) userListRecycler.findViewHolderForAdapterPosition(0).itemView.findViewById(R.id.user_list)).getText().toString();
-//                    long firstUserListItemID = userListRecycler.getAdapter().getItemId(0);
-//                    TextView firstUserListItem = activity.findViewById((int) firstUserListItemID);
-//                    assertEquals("Alligators", text);
-//                }
-//
-//                @Override
-//                public void onNothingSelected(AdapterView<?> adapterView) {}
-//            });
-
-
-//            ArrayAdapter<String> dropDownAdapter = activity.arrayAdapter;
-//            long firstResultID = dropDownAdapter.getItemId(0);
-//            TextView firstResult = activity.findViewById(firstResultID);
-//
-//            String exhibit = (String) firstResult.getText();
-//            assertEquals("Alligators", exhibit);
-//        });
     }
-
-//    @Test
-//    public void testAddExhibitToList() {
-//        ActivityScenario<MainActivity> scenario
-//                = ActivityScenario.launch(MainActivity.class);
-//        scenario.moveToState(Lifecycle.State.CREATED);
-//        scenario.moveToState(Lifecycle.State.STARTED);
-//        scenario.moveToState(Lifecycle.State.RESUMED);
-//
-//        scenario.onActivity(activity -> {
-//            EditText searchBar = activity.findViewById(R.id.search_bar);
-//            searchBar.requestFocus();
-//            searchBar.setText("Alligators");
-//            searchBar.clearFocus();
-//
-//            searchBar.
-//                    RecyclerView recyclerView = activity.;
-//            RecyclerView.ViewHolder firstVH = recyclerView.findViewHolderForAdapterPosition(0);
-//            assertNotNull(firstVH);
-//            long id = firstVH.getItemId();
-//            TextView firstResult = firstVH.itemView.findViewById(R.id.search_bar);
-//
-//            String exhibit = (String) firstResult.getText();
-//            assertEquals("Alligators", exhibit);
-//    }
 }
