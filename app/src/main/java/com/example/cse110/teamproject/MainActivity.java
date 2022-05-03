@@ -54,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
         userExhibitListItemDao = ExhibitDatabase.getSingleton(this)
                 .userExhibitListItemDao();
         userExhibitListItemDao.deleteUserExhibitItems();
-        List<String> userExhibitNodeItems = userExhibitListItemDao.getAllUserExhibitNames();
 
 
         List<String> exhibits = ExhibitNodeItem.loadJSON(this, "sample_node_info.json")

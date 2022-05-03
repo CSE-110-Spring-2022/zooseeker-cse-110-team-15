@@ -13,9 +13,6 @@ public interface UserExhibitListItemDao {
     @Insert
     long insert(UserExhibitListItem userExhibitListItem);
 
-    @Query("SELECT `exhibit_node_items`.name FROM `exhibit_node_items`")
-    List<String> getAllUserExhibitNames();
-
     @Query("SELECT * FROM `exhibit_node_items` INNER JOIN `user_exhibit_node_items` " +
             "ON `user_exhibit_node_items`.location_id = `exhibit_node_items`.node_id")
     List<ExhibitNodeItem> getAllUserExhibits();
