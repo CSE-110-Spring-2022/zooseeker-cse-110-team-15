@@ -19,6 +19,7 @@ import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Entity(tableName = "exhibit_node_items")
 public class ExhibitNodeItem {
@@ -44,6 +45,19 @@ public class ExhibitNodeItem {
         this.kind = kind;
         this.name = name;
         // this.tags = tags;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ExhibitNodeItem that = (ExhibitNodeItem) o;
+        return id == that.id && node_id.equals(that.node_id) && kind.equals(that.kind) && name.equals(that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, node_id, kind, name);
     }
 
     @Override
