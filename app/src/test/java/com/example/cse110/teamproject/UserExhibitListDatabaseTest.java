@@ -31,7 +31,6 @@ public class UserExhibitListDatabaseTest {
         Context context = ApplicationProvider.getApplicationContext();
         db = Room.inMemoryDatabaseBuilder(context, ExhibitDatabase.class)
                 .allowMainThreadQueries().build();
-        ExhibitDatabase.injectTestDatabase(db);
 
         exhibitListItemDao = db.exhibitListItemDao();
         List<ExhibitNodeItem> nodes = ExhibitNodeItem
