@@ -40,9 +40,10 @@ public class ExhibitNodeItem {
     public String name;
     // public String tags;
 
-    ExhibitNodeItem(@NonNull String kind, @NonNull String name) {
+    ExhibitNodeItem(@NonNull String kind, @NonNull String name, @NonNull String node_id) {
         this.kind = kind;
         this.name = name;
+        this.node_id = node_id;
         // this.tags = tags;
     }
 
