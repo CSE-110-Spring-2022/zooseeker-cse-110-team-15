@@ -3,6 +3,7 @@ package com.example.cse110.teamproject;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
@@ -49,6 +50,16 @@ import java.util.concurrent.Executors;
 
         public static void resetSingleton() {
             singleton = null;
+        }
+
+
+
+        @VisibleForTesting
+        public static void injectTestDatabase(ExhibitDatabase testDatabase) {
+            if (singleton != null) {
+                singleton.close();
+            }
+            singleton = testDatabase;
         }
 
     }

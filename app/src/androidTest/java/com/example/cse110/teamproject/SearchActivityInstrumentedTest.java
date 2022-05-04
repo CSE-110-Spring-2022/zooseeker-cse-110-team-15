@@ -62,8 +62,15 @@ public class SearchActivityInstrumentedTest {
         Context context = ApplicationProvider.getApplicationContext();
         testDb = Room.inMemoryDatabaseBuilder(context, ExhibitDatabase.class)
                 .allowMainThreadQueries().build();
+        ExhibitDatabase.injectTestDatabase(testDb);
+
         exhibitListItemDao = testDb.exhibitListItemDao();
+        List<ExhibitNodeItem> nodes = ExhibitNodeItem
+                .loadJSON(context, "sample_node_info.json");
+        exhibitListItemDao.insertAll(nodes);
+
         userExhibitListItemDao = testDb.userExhibitListItemDao();
+        userExhibitListItemDao.deleteUserExhibitItems();
     }
 
     public static void forceLayout(RecyclerView recyclerView) {
