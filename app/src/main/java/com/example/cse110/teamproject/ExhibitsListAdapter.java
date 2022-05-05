@@ -59,4 +59,7 @@ public class ExhibitsListAdapter extends RecyclerView.Adapter<ExhibitsListAdapte
 
 
     }
+    public ExhibitNodeItem getItem(int position) {
+        return exhibitItems.get(position);
+    }
 }

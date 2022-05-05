@@ -83,29 +83,6 @@ public class SearchActivityInstrumentedTest {
         testDb.close();
     }
 
-    // https://stackoverflow.com/questions/31394569/how-to-assert-inside-a-recyclerview-in-espresso
-    // CC BY-SA 4.0.
-    public static Matcher<View> atPosition(final int position, @NonNull final Matcher<View> itemMatcher) {
-        checkNotNull(itemMatcher);
-        return new BoundedMatcher<View, RecyclerView>(RecyclerView.class) {
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("has item at position " + position + ": ");
-                itemMatcher.describeTo(description);
-            }
-
-            @Override
-            protected boolean matchesSafely(final RecyclerView view) {
-                RecyclerView.ViewHolder viewHolder = view.findViewHolderForAdapterPosition(position);
-                if (viewHolder == null) {
-                    // has no item on such position
-                    return false;
-                }
-                return itemMatcher.matches(viewHolder.itemView);
-            }
-        };
-    }
-
     private static void checkNotNull(Matcher<View> itemMatcher) {
     }
 
@@ -126,6 +103,6 @@ public class SearchActivityInstrumentedTest {
                 .perform(click());
 
         onView(withId(R.id.user_list))
-                .check(matches(atPosition(0, hasDescendant(withText("Alligators")))));
+                .check(matches(TestUtil.atPosition(0, hasDescendant(withText("Alligators")))));
     }
 }

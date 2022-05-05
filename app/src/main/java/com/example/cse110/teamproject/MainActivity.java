@@ -131,7 +131,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void addExhibitToUserList(String exhibitName) {
         UserExhibitListItem newItem = new UserExhibitListItem(exhibitListItemDao.getExhibitByName(exhibitName).node_id);
-
         userExhibitListItemDao.insert(newItem);
     }
 }
