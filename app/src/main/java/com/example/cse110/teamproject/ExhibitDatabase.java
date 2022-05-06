@@ -7,18 +7,22 @@ import androidx.annotation.VisibleForTesting;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverter;
+import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import java.util.List;
 import java.util.concurrent.Executors;
 
 
-    @Database(entities = {ExhibitNodeItem.class, UserExhibitListItem.class}, version = 1)
+    @Database(entities = {ExhibitNodeItem.class, UserExhibitListItem.class, PathItem.class}, version = 1)
+    @TypeConverters({Converters.class})
     public abstract class ExhibitDatabase extends RoomDatabase {
         private static ExhibitDatabase singleton = null;
 
         public abstract ExhibitListItemDao exhibitListItemDao();
         public abstract UserExhibitListItemDao userExhibitListItemDao();
+        public abstract PathItemDao pathItemDao();
 
 
         public synchronized static ExhibitDatabase getSingleton(Context context) {
