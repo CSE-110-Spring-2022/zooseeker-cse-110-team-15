@@ -63,8 +63,6 @@ public class MainActivity extends AppCompatActivity {
                 .toArray(new String[exhibits.size()]));
 
 
-
-
         dropdown.setAdapter(arrayAdapter);
         // number of letters needed in order for auto-completion to activate
         dropdown.setThreshold(1);
@@ -101,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
 
         startUserListRecycler();
         setUpUserListHeader();
+
+
     }
 
     public void onSearchIconClicked(View view) {
