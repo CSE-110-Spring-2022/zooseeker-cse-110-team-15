@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -73,7 +74,6 @@ public class SearchResultsActivity extends AppCompatActivity {
     }
 
     public void backToSearchClicked(View view) {
-        //Log.d("SearchResultsActivity", "yo");
         finish();
     }
 
