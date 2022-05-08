@@ -32,7 +32,6 @@ public class SearchResultsActivity extends AppCompatActivity {
         // Get DAOs (singleton)
         exhibitListItemDao = ExhibitDatabase.getSingleton(this)
                 .exhibitListItemDao();
-        List<ExhibitNodeItem> exhibitNodeItems = exhibitListItemDao.getAllExhibits();
 
         userExhibitListItemDao = ExhibitDatabase.getSingleton(this)
                 .userExhibitListItemDao();
@@ -40,7 +39,6 @@ public class SearchResultsActivity extends AppCompatActivity {
         // Set up adapter for list of exhibits
         ExhibitsListAdapter adapter = new ExhibitsListAdapter();
         adapter.setHasStableIds(true);
-        adapter.setExhibitListItems(exhibitNodeItems);
 
         recyclerView = findViewById(R.id.exhibit_items);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

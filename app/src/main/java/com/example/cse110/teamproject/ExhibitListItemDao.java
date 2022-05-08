@@ -22,7 +22,8 @@ public interface ExhibitListItemDao {
     List<ExhibitNodeItem> getAllExhibits();
 
 
-    @Query("SELECT * FROM `exhibit_node_items` WHERE `name` LIKE '%' ||:name || '%'")
+    @Query("SELECT * FROM `exhibit_node_items` WHERE `name` LIKE '%' ||:name || '%'"
+            + "AND `kind`='exhibit'")
     List<ExhibitNodeItem> getExhibits(String name);
 
 
