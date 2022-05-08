@@ -47,6 +47,9 @@ import java.util.concurrent.Executors;
                             Executors.newSingleThreadScheduledExecutor().execute(() -> {
                                 getSingleton(context).userExhibitListItemDao();
                             });
+                            Executors.newSingleThreadScheduledExecutor().execute(() -> {
+                                getSingleton(context).pathItemDao();
+                            });
                         }
                     })
                     .build();
