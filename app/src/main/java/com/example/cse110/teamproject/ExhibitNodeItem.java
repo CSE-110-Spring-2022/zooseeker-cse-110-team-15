@@ -39,13 +39,11 @@ public class ExhibitNodeItem {
     @Expose
     @NonNull
     public String name;
-    // public String tags;
 
     ExhibitNodeItem(@NonNull String kind, @NonNull String name, @NonNull String node_id) {
         this.kind = kind;
         this.name = name;
         this.node_id = node_id;
-        // this.tags = tags;
     }
 
     @Override
@@ -68,7 +66,6 @@ public class ExhibitNodeItem {
                 ", kind='" + kind + '\'' +
                 ", name='" + name + '\'' +
                 ", node_id='" + node_id + '\'' +
-                // ", tags=" + tags +
                 '}';
     }
 
@@ -76,7 +73,6 @@ public class ExhibitNodeItem {
         try {
             InputStream input = context.getAssets().open(path);
             Reader reader = new InputStreamReader(input);
-            //Gson gson = new Gson();
             Gson gson = new GsonBuilder()
                     .excludeFieldsWithoutExposeAnnotation().create();
             Type type = new TypeToken<List<ExhibitNodeItem>>(){}.getType();
