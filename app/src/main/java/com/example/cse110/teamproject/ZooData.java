@@ -42,7 +42,7 @@ public class ZooData {
         public String street;
     }
 
-    public static Map<String, ZooData.VertexInfo> loadVertexInfoJSON(String path) {
+    public static Map<String, ZooData.VertexInfo> loadVertexInfoJSON(Context context, String path) {
         InputStream inputStream = MainActivity.class.getClassLoader().getResourceAsStream(path);
         Reader reader = new InputStreamReader(inputStream);
 

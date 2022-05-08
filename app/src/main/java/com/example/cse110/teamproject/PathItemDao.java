@@ -13,6 +13,9 @@ public interface PathItemDao {
     @Insert
     long insert(PathItem pathItem);
 
+    @Query("SELECT * FROM `path_items` WHERE `order`=:order")
+    PathItem getByOrder(int order);
+
     @Query("SELECT * FROM `path_items`")
     List<PathItem> getAll();
 
