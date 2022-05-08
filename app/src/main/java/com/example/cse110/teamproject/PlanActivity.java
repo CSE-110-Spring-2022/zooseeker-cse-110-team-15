@@ -1,6 +1,8 @@
 package com.example.cse110.teamproject;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -48,5 +50,10 @@ public class PlanActivity extends AppCompatActivity {
 
         adapter.setPlanItems(planItemList);
 
+    }
+
+    public void onDirectionsClicked(View view) {
+        Intent intent = new Intent(this, ExhibitsDirectionsActivity.class);
+        startActivity(intent);
     }
 }
