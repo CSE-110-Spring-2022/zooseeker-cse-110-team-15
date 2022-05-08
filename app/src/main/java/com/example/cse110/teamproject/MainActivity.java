@@ -52,8 +52,7 @@ public class MainActivity extends AppCompatActivity {
         userExhibitListItemDao.deleteUserExhibitItems();
 
 
-        List<String> exhibits = ExhibitNodeItem.loadJSON(this, "sample_node_info.json")
-                .stream().map(item -> item.name).collect(Collectors.toList());
+        List<String> exhibits = exhibitListItemDao.getAllExhibits().stream().map(e -> e.name).collect(Collectors.toList());
 
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_item, exhibits
                 .toArray(new String[exhibits.size()]));

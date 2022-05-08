@@ -60,7 +60,7 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.ViewHolder>{
             this.planItem = planItem;
             this.street.setText(planItem.street);
             this.exhibit.setText(planItem.exhibit);
-            this.distance.setText(String.valueOf(planItem.distance));
+            this.distance.setText(String.valueOf(planItem.distance) + " ft.");
         }
     }
 }
