@@ -40,10 +40,11 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.ViewHolder>{
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
+        private PlanItem planItem;
         private final TextView street;
         private final TextView exhibit;
         private final TextView distance;
-        private PlanItem planitem;
+
         public ViewHolder(@NonNull View itemView){
             super(itemView);
             this.street = itemView.findViewById(R.id.street_text);
@@ -52,14 +53,14 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.ViewHolder>{
         }
 
         public PlanItem getPlanItem(){
-            return planitem;
+            return planItem;
         }
 
         public void setPlanItem(PlanItem planItem) {
-            this.planitem = planItem;
+            this.planItem = planItem;
             this.street.setText(planItem.street);
-            this.distance.setText(planItem.distance);
-            this.exhibit.setText(String.valueOf(planItem.exhibit));
+            this.exhibit.setText(planItem.exhibit);
+            this.distance.setText(String.valueOf(planItem.distance));
         }
     }
 }

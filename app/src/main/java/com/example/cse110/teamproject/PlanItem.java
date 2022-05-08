@@ -14,11 +14,11 @@ import java.util.Collections;
 import java.util.List;
 
 public class PlanItem {
-    public int distance;
+    public double distance;
     public String exhibit;
     public String street;
 
-    PlanItem(String street, String exhibit, int distance){
+    PlanItem(String street, String exhibit, double distance){
         this.distance = distance;
         this.street = street;
         this.exhibit = exhibit;
@@ -31,7 +31,6 @@ public class PlanItem {
             Gson gson = new Gson();
             Type type = new TypeToken<List<PlanItem>>(){}.getType();
             return gson.fromJson(reader,type);
-
         } catch (IOException e) {
             e.printStackTrace();
             return Collections.emptyList();

@@ -1,26 +1,20 @@
 package com.example.cse110.teamproject;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.ThemedSpinnerAdapter;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProvider;
-
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.util.Log;
-import android.view.View.OnKeyListener;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     ExhibitListItemDao exhibitListItemDao;
 
     UserExhibitListViewModel userExhibitListViewModel;
+    PathItemDao pathItemDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,5 +129,11 @@ public class MainActivity extends AppCompatActivity {
     public void addExhibitToUserList(String exhibitName) {
         UserExhibitListItem newItem = new UserExhibitListItem(exhibitListItemDao.getExhibitByName(exhibitName).node_id);
         userExhibitListItemDao.insert(newItem);
+    }
+
+
+    public void onPlanClicked(View view) {
+        Intent intent = new Intent(this, PlanActivity.class);
+        startActivity(intent);
     }
 }

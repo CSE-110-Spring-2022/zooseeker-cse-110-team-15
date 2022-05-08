@@ -1,21 +1,39 @@
 package com.example.cse110.teamproject;
 
+import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Bundle;
-import android.util.Log;
-
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class PlanActivity extends AppCompatActivity {
     public RecyclerView recyclerView;
+    PathItemDao pathItemDao;
+    ExhibitListItemDao exhibitListItemDao;
+    double totalDistance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_plan);
+
+        exhibitListItemDao = ExhibitDatabase.getSingleton(this)
+                .exhibitListItemDao();
+
+        List<PlanItem> planItemList;
+
+//        List<PlanItem> planItems = new ArrayList<>(
+//
+//        );
+//        planItems.add(new PlanItem("gorilla street", "gorilla", 400));
+//        planItems.add(new PlanItem("lion street", "lion", 500));
+//        planItems.add(new PlanItem("dolphin street", "dolphin", 600));
+
+        //List<PlanItem> planItems = PlanItem.loadJSON(this, "sample_test.json");
 
         PlanAdapter adapter = new PlanAdapter();
         adapter.setHasStableIds(true);
@@ -24,6 +42,27 @@ public class PlanActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        adapter.setPlanItems(PlanItem.loadJSON(this, "sample_test.json"));
+        Map<String, ZooData.EdgeInfo> eInfo = ZooData.loadEdgeInfoJSON(this, "sample_edge_info.json");
+
+        totalDistance = 0;
+        planItemList = PathFinder.findPath(this).stream().map(gp-> {
+            List<IdentifiedWeightedEdge> identifiedWeightedEdges = gp.getEdgeList();
+            double pathWeight = gp.getWeight();
+            totalDistance += pathWeight;
+            String nodeName = exhibitListItemDao.getExhibitByNodeId(gp.getEndVertex()).name;
+            String edgeID = identifiedWeightedEdges.get(identifiedWeightedEdges.size() - 1).getId();
+            String edgeName = eInfo.get(edgeID).street;
+            return new PlanItem(edgeName, nodeName, totalDistance);
+        }).collect(Collectors.toList());
+
+        adapter.setPlanItems(planItemList);
+
+        //this line destroys everything
+//        adapter.setPlanItems(PlanItem.loadJSON(this, "sample_test.json"));
+//        adapter.setPlanItems(planItems);
+        //adapter.setPlanItems(planItems);
+        //PathFinder.findPath(this);
+        //adapter.setPlanItems(pathItemDao.getAll());
+
     }
 }
