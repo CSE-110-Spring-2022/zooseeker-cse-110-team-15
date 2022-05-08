@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
+    AutoCompleteTextView dropdown;
     // array adapter for dropdown
     ArrayAdapter<String> arrayAdapter;
     ExhibitsListAdapter adapter;
@@ -42,8 +43,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intentSearchResults = new Intent(this, SearchResultsActivity.class);
         setContentView(R.layout.activity_main);
 
+
         // auto complete text for search & auto completion dropdown
-        AutoCompleteTextView dropdown = (AutoCompleteTextView) findViewById(R.id.search_bar);
+        dropdown = findViewById(R.id.search_bar);
 
         adapter = new ExhibitsListAdapter();
 
@@ -67,20 +69,17 @@ public class MainActivity extends AppCompatActivity {
         // number of letters needed in order for auto-completion to activate
         dropdown.setThreshold(1);
 
-        dropdown.setOnKeyListener(new OnKeyListener()  {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                // if ENTER is pressed on keyboard, show search results page and reset search entry
-                if (keyEvent.getAction() == KeyEvent.ACTION_DOWN && i == KeyEvent.KEYCODE_ENTER) {
-                    String input = dropdown.getText().toString();
-                    intentSearchResults.putExtra("key", input);
-                    // need to replace Log statement with Intent for search results page
-                    startActivity(intentSearchResults);
-                    // reset search entry
-                    dropdown.setText("");
-                }
-                return false;
+        dropdown.setOnKeyListener((view, i, keyEvent) -> {
+            // if ENTER is pressed on keyboard, show search results page and reset search entry
+            if (keyEvent.getAction() == KeyEvent.ACTION_DOWN && i == KeyEvent.KEYCODE_ENTER) {
+                String input = dropdown.getText().toString();
+                // reset search entry
+                dropdown.setText(null);
+                intentSearchResults.putExtra("key", input);
+                // need to replace Log statement with Intent for search results page
+                startActivity(intentSearchResults);
             }
+            return false;
         });
 
         userExhibitListViewModel = new ViewModelProvider(this)
@@ -94,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("value of text: ", viewText);
 
                 addExhibitToUserList(viewText);
+                dropdown.setText(null);
             }
         });
 
@@ -105,9 +105,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void onSearchIconClicked(View view) {
         Intent intentSearchResults = new Intent(this, SearchResultsActivity.class);
-        AutoCompleteTextView dropdown = findViewById(R.id.search_bar);
+//        AutoCompleteTextView dropdown = findViewById(R.id.search_bar);
+        String input = dropdown.getText().toString();
+        intentSearchResults.putExtra("key", input);
         startActivity(intentSearchResults);
-        dropdown.setText("");
+        dropdown.setText(null);
     }
 
     private void startUserListRecycler() {

@@ -29,6 +29,9 @@ public interface ExhibitListItemDao {
     @Query("SELECT * FROM `exhibit_node_items` WHERE `name`=:name")
     ExhibitNodeItem getExhibitByName(String name);
 
+    @Query("SELECT * FROM `exhibit_node_items` WHERE `node_id`=:node_id")
+    ExhibitNodeItem getExhibitByNodeId(String node_id);
+
 
 
 //    @Query("SELECT * FROM `exhibit_node_items` WHERE `name` LIKE :name")
