@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 
 public class PathFinder extends Application {
 
-    public static void findPath(Context context) {
+    public static List<GraphPath<String, IdentifiedWeightedEdge>> findPath(Context context) {
         String start = "entrance_exit_gate";
 
         // Graph<String, IdentifiedWeightedEdge>;
@@ -71,5 +71,7 @@ public class PathFinder extends Application {
                             .map(e -> e.getId()).collect(Collectors.toList()),
                     i));
         }
+
+        return calculatedPaths;
     }
 }
