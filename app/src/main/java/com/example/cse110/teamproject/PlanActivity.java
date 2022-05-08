@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 public class PlanActivity extends AppCompatActivity {
     public RecyclerView recyclerView;
-    PathItemDao pathItemDao;
     ExhibitListItemDao exhibitListItemDao;
     double totalDistance;
 
@@ -26,14 +25,6 @@ public class PlanActivity extends AppCompatActivity {
 
         List<PlanItem> planItemList;
 
-//        List<PlanItem> planItems = new ArrayList<>(
-//
-//        );
-//        planItems.add(new PlanItem("gorilla street", "gorilla", 400));
-//        planItems.add(new PlanItem("lion street", "lion", 500));
-//        planItems.add(new PlanItem("dolphin street", "dolphin", 600));
-
-        //List<PlanItem> planItems = PlanItem.loadJSON(this, "sample_test.json");
 
         PlanAdapter adapter = new PlanAdapter();
         adapter.setHasStableIds(true);
@@ -56,13 +47,6 @@ public class PlanActivity extends AppCompatActivity {
         }).collect(Collectors.toList());
 
         adapter.setPlanItems(planItemList);
-
-        //this line destroys everything
-//        adapter.setPlanItems(PlanItem.loadJSON(this, "sample_test.json"));
-//        adapter.setPlanItems(planItems);
-        //adapter.setPlanItems(planItems);
-        //PathFinder.findPath(this);
-        //adapter.setPlanItems(pathItemDao.getAll());
 
     }
 }

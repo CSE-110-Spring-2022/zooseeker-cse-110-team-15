@@ -29,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
     ExhibitListItemDao exhibitListItemDao;
 
     UserExhibitListViewModel userExhibitListViewModel;
-    PathItemDao pathItemDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
