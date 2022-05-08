@@ -78,17 +78,5 @@ public class PlanActivityTest {
         });
         ExhibitDatabase.resetSingleton();
     }
-
-
-//    @Test
-//    public void SearchTextIsDisplayed(){
-//        ActivityScenario scenario = rule.getScenario();
-//        scenario.moveToState(Lifecycle.State.CREATED);
-//
-//        scenario.onActivity(activity -> {
-//            assertEquals(View.VISIBLE, activity.findViewById(R.id.search_results).getVisibility());
-//        });
-//        ExhibitDatabase.resetSingleton();
-//    }
 }
 
