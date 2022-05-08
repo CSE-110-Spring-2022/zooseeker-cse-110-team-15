@@ -7,9 +7,10 @@
     tools:context=".PlanActivity">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/plan"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-smallcaps"
         android:text="Plan"
         android:textSize="45dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -20,25 +21,27 @@
         app:layout_constraintVertical_bias="0.037" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/directions_btn"
         android:layout_width="130dp"
         android:layout_height="80dp"
+        android:maxLines="1"
         android:text="Directions"
         android:textSize="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.459"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.99"
-        android:maxLines="1"/>
+        app:layout_constraintVertical_bias="1.0" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/plan_items"
         android:layout_width="409dp"
         android:layout_height="539dp"
-        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintBottom_toTopOf="@+id/directions_btn"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/plan" />
 </androidx.constraintlayout.widget.ConstraintLayout>
