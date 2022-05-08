@@ -19,29 +19,17 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class PathFinder extends Application {
+public class PathFinder {
+    // calculates path given searchlist, graph - no calls to database
+    private static List<GraphPath<String,IdentifiedWeightedEdge>> findPath(
+            Set<String> searchList,
+            Graph<String, IdentifiedWeightedEdge> zooGraph,
+            String firstNode) {
+        String start = firstNode;
 
-    public static List<GraphPath<String, IdentifiedWeightedEdge>> findPath(Context context) {
-        String start = "entrance_exit_gate";
-
-        // Graph<String, IdentifiedWeightedEdge>;
-
-        // initialize some empty List<> calculatedPath                     // TODO: determine return value
-        List<GraphPath<String, IdentifiedWeightedEdge>> calculatedPaths = new ArrayList<>();
-
-        // load user exhibits into some List<> searchList
-        Set<String> searchList = ExhibitDatabase.getSingleton(context)
-                .userExhibitListItemDao().getAllUserExhibits().stream()
-                .map(n -> n.node_id)
-                .collect(Collectors.toSet());
-
-        // note: probably sort before the following
-
-        // construct graph
-        Graph<String, IdentifiedWeightedEdge> zooGraph = ZooData.loadZooGraphJSON(context, "sample_zoo_graph.json");
+        List<GraphPath<String, IdentifiedWeightedEdge>> calculatedPaths = new ArrayList();
 
         DijkstraShortestPath dijkstras = new DijkstraShortestPath(zooGraph);
-
 
         while(!searchList.isEmpty()) {
             ShortestPathAlgorithm.SingleSourcePaths<String, IdentifiedWeightedEdge> paths = dijkstras.getPaths(start);
@@ -61,6 +49,28 @@ public class PathFinder extends Application {
 
             searchList.remove(shortestPair.first);
         }
+
+        return calculatedPaths;
+    }
+
+    // calculates paths with database + context for json
+    public static List<GraphPath<String, IdentifiedWeightedEdge>> findPath(Context context) {
+        final String start = "entrance_exit_gate";
+
+        // initialize some empty List<> calculatedPath
+
+        // load user exhibits into some List<> searchList
+        Set<String> searchList = ExhibitDatabase.getSingleton(context)
+                .userExhibitListItemDao().getAllUserExhibits().stream()
+                .map(n -> n.node_id)
+                .collect(Collectors.toSet());
+
+        // note: probably sort before the following
+
+        // construct graph
+        Graph<String, IdentifiedWeightedEdge> zooGraph = ZooData.loadZooGraphJSON(context, "sample_zoo_graph.json");
+
+        List<GraphPath<String, IdentifiedWeightedEdge>> calculatedPaths = findPath(searchList, zooGraph, start);
 
         PathItemDao pathItemDao = ExhibitDatabase.getSingleton(context).pathItemDao();
         pathItemDao.deletePathItems();
