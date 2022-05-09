@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -17,6 +16,13 @@ import java.util.Map;
 import java.util.Objects;
 
 public class ExhibitsDirectionsActivity extends AppCompatActivity {
+    final String DIR_FORMAT = "%d. Walk %.0f feet along %s from '%s' to '%s'.\n\n";
+    final String DIST_FORMAT = "%.0f ft";
+    final String EMPTY_STRING = "";
+    final String JSON_EDGE = "sample_edge_info.json";
+    final String JSON_ZOO = "sample_zoo_graph.json";
+    final String LABEL_FORMAT = "(%s, %.0f ft)";
+
     Button prevButton;
     Button nextButton;
     TextView destName;
@@ -27,22 +33,22 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
     TextView directionSteps;
 
     int directionOrder;
-    List<GraphPath<String, IdentifiedWeightedEdge>> pathList;
-    GraphPath<String, IdentifiedWeightedEdge> currentPath;
-    ExhibitListItemDao exhibitListItemDao;
-    Graph<String, IdentifiedWeightedEdge> zooGraph;
-    Map<String, ZooData.EdgeInfo> eInfo;
     String directions;
-    final String DIR_FORMAT = "%d. Walk %.0f feet along %s from '%s' to '%s'.\n\n";
-    final String LABEL_FORMAT = "(%s, %.0f ft)";
-    final String DIST_FORMAT = "%.0f ft";
-    double totalDistance = 0;
-    final String EMPTY_STRING = "";
+    double totalDistance;
+
+    GraphPath<String, IdentifiedWeightedEdge> currentPath;
+    Map<String, ZooData.EdgeInfo> eInfo;
+    ExhibitListItemDao exhibitListItemDao;
+    List<GraphPath<String, IdentifiedWeightedEdge>> pathList;
+    Graph<String, IdentifiedWeightedEdge> zooGraph;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exhibits_directions);
+
+        // dao used for querying ExhibitNodeItem
+        exhibitListItemDao = ExhibitDatabase.getSingleton(this).exhibitListItemDao();
 
         prevButton = findViewById(R.id.prev_button);
         nextButton = findViewById(R.id.next_button);
@@ -53,11 +59,14 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
         nextButtonLabel = findViewById(R.id.next_button_label);
         directionSteps = findViewById(R.id.direction_steps);
 
+        totalDistance = 0;
         directionOrder = 0;
-        directions = EMPTY_STRING; // initialize EMPTY_STRING constant
+        directions = EMPTY_STRING;
 
-        // find path
-        zooGraph = ZooData.loadZooGraphJSON(this,"sample_zoo_graph.json");
+        // get zoo data to be used for displaying directions
+        zooGraph = ZooData.loadZooGraphJSON(this,JSON_ZOO);
+
+        // find path and store it as a list
         pathList = PathFinder.findPath(this);
 
         // disable prev button when on first page
@@ -65,14 +74,13 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
         nextButton.setEnabled(pathList.size() - 1 != directionOrder && pathList.size() > 0);
 
         // Load the information about edges
-        eInfo = ZooData.loadEdgeInfoJSON(this,"sample_edge_info.json");
-
-        exhibitListItemDao = ExhibitDatabase.getSingleton(this).exhibitListItemDao();
+        eInfo = ZooData.loadEdgeInfoJSON(this, JSON_EDGE);
 
         if (pathList.size() > 0) {
             // get first path in the list
             currentPath = pathList.get(directionOrder);
 
+            // update the page to display correct path info
             displayDirection();
             displayDestinationInfo();
             updateButtonAndLabel();
@@ -80,19 +88,19 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
     }
 
     public void onPreviousIconClicked(View view) {
-            currentPath = pathList.get(--directionOrder);
-
-            displayDirection();
-            displayDestinationInfo();
-            updateButtonAndLabel();
+        // get the path for previous exhibit
+        currentPath = pathList.get(--directionOrder);
+        displayDirection();
+        displayDestinationInfo();
+        updateButtonAndLabel();
     }
 
     public void onNextIconClicked(View view) {
-            currentPath = pathList.get(++directionOrder);
-
-            displayDirection();
-            displayDestinationInfo();
-            updateButtonAndLabel();
+        // get the path for next exhibit
+        currentPath = pathList.get(++directionOrder);
+        displayDirection();
+        displayDestinationInfo();
+        updateButtonAndLabel();
     }
 
     @SuppressLint("DefaultLocale")
@@ -114,6 +122,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
         directions = EMPTY_STRING;
     }
 
+    @SuppressLint("DefaultLocale")
     public void displayDestinationInfo() {
         List<IdentifiedWeightedEdge> edgeList = currentPath.getEdgeList();
         String destId = currentPath.getEndVertex();

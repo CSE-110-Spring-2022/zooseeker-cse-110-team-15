@@ -1,26 +1,20 @@
 package com.example.cse110.teamproject;
 
-import android.app.Application;
 import android.content.Context;
-import android.util.Log;
 import android.util.Pair;
 
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
-import org.jgrapht.alg.interfaces.ManyToManyShortestPathsAlgorithm;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
-import org.jgrapht.alg.shortestpath.DijkstraManyToManyShortestPaths;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class PathFinder {
-    // calculates path given searchlist, graph - no calls to database
+    // calculates path given search list, graph - no calls to database
     private static List<GraphPath<String,IdentifiedWeightedEdge>> findPath(
             Set<String> searchList,
             Graph<String, IdentifiedWeightedEdge> zooGraph,
