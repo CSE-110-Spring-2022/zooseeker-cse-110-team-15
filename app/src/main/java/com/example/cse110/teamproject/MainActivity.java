@@ -2,7 +2,6 @@ package com.example.cse110.teamproject;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -20,16 +19,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
-    AutoCompleteTextView dropdown;
-    // array adapter for dropdown
-    ArrayAdapter<String> arrayAdapter;
+    final String USER_LIST_TITLE = "My List (%d)";
+
     ExhibitsListAdapter adapter;
-    public RecyclerView userListRecycler;
-
-    UserExhibitListItemDao userExhibitListItemDao;
+    ArrayAdapter<String> arrayAdapter;
+    AutoCompleteTextView dropdown;
     ExhibitListItemDao exhibitListItemDao;
-
+    UserExhibitListItemDao userExhibitListItemDao;
     UserExhibitListViewModel userExhibitListViewModel;
+    public RecyclerView userListRecycler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
 
         exhibitListItemDao = ExhibitDatabase.getSingleton(this)
                 .exhibitListItemDao();
-        //List<ExhibitNodeItem> exhibitNodeItems = exhibitListItemDao.getAllExhibits();
 
         userExhibitListItemDao = ExhibitDatabase.getSingleton(this)
                 .userExhibitListItemDao();
@@ -84,8 +81,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long rowId) {
                 String viewText = (String) adapterView.getItemAtPosition(position);
-                Log.d("value of text: ", viewText);
-
                 addExhibitToUserList(viewText);
                 dropdown.setText(null);
             }
@@ -93,13 +88,10 @@ public class MainActivity extends AppCompatActivity {
 
         startUserListRecycler();
         setUpUserListSizeListener();
-
-
     }
 
     public void onSearchIconClicked(View view) {
         Intent intentSearchResults = new Intent(this, SearchResultsActivity.class);
-//        AutoCompleteTextView dropdown = findViewById(R.id.search_bar);
         String input = dropdown.getText().toString();
         intentSearchResults.putExtra("key", input);
         startActivity(intentSearchResults);
@@ -124,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void onUserListSizeChange(int size) {
         TextView userListHeader = findViewById(R.id.user_list_header);
-        userListHeader.setText(String.format("My List (%d)", size));
+        userListHeader.setText(String.format(USER_LIST_TITLE, size));
 
         Button planButton = findViewById(R.id.plan_btn);
         planButton.setEnabled(size > 0);
@@ -134,7 +126,6 @@ public class MainActivity extends AppCompatActivity {
         UserExhibitListItem newItem = new UserExhibitListItem(exhibitListItemDao.getExhibitByName(exhibitName).node_id);
         userExhibitListItemDao.insert(newItem);
     }
-
 
     public void onPlanClicked(View view) {
         // only open plan if at least one use exhibit

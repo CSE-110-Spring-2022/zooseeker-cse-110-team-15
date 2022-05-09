@@ -3,4 +3,8 @@
     <string name="search_hint">Search Animal Exhibits</string>
     <string name="search_title">Search</string>
     <string name="plan">Plan</string>
+    <string name="directions_title">Directions</string>
+    <string name="next">Next\n</string>
+    <string name="prev">Previous\n</string>
+    <string name="empty"></string>
 </resources>
