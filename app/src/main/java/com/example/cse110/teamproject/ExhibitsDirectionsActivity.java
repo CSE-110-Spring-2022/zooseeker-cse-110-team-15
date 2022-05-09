@@ -60,21 +60,23 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
         zooGraph = ZooData.loadZooGraphJSON(this,"sample_zoo_graph.json");
         pathList = PathFinder.findPath(this);
 
-        // get first path in the list
-        currentPath = pathList.get(directionOrder);
-
         // disable prev button when on first page
         prevButton.setEnabled(directionOrder != 0);
-        nextButton.setEnabled(directionOrder != pathList.size() - 1);
+        nextButton.setEnabled(pathList.size() - 1 != directionOrder && pathList.size() > 0);
 
         // Load the information about edges
         eInfo = ZooData.loadEdgeInfoJSON(this,"sample_edge_info.json");
 
         exhibitListItemDao = ExhibitDatabase.getSingleton(this).exhibitListItemDao();
 
-        displayDirection();
-        displayDestinationInfo();
-        updateButtonAndLabel();
+        if (pathList.size() > 0) {
+            // get first path in the list
+            currentPath = pathList.get(directionOrder);
+
+            displayDirection();
+            displayDestinationInfo();
+            updateButtonAndLabel();
+        }
     }
 
     public void onPreviousIconClicked(View view) {
