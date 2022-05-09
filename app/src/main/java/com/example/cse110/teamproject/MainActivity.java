@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         startUserListRecycler();
-        setUpUserListHeader();
+        setUpUserListSizeListener();
     }
 
     public void onSearchIconClicked(View view) {
@@ -107,12 +108,18 @@ public class MainActivity extends AppCompatActivity {
         adapter.setExhibitListItems(userExhibitListItemDao.getAllUserExhibits());
     }
 
-    private void setUpUserListHeader() {
+    private void setUpUserListSizeListener() {
         UserListHeaderViewModel viewModel = new ViewModelProvider(this)
                 .get(UserListHeaderViewModel.class);
+        viewModel.getListSize().observe(this, this::onUserListSizeChange);
+    }
+
+    private void onUserListSizeChange(int size) {
         TextView userListHeader = findViewById(R.id.user_list_header);
-        viewModel.getListSize().observe(this, (size) ->
-                userListHeader.setText(String.format(USER_LIST_TITLE, size)));
+        userListHeader.setText(String.format(USER_LIST_TITLE, size));
+
+        Button planButton = findViewById(R.id.plan_btn);
+        planButton.setEnabled(size > 0);
     }
 
     public void addExhibitToUserList(String exhibitName) {
@@ -121,7 +128,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onPlanClicked(View view) {
-        Intent intent = new Intent(this, PlanActivity.class);
-        startActivity(intent);
+        // only open plan if at least one use exhibit
+            Intent intent = new Intent(this, PlanActivity.class);
+            startActivity(intent);
+//        }
     }
 }
