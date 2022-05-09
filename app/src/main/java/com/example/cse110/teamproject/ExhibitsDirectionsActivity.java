@@ -69,20 +69,22 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
         // find path and store it as a list
         pathList = PathFinder.findPath(this);
 
-        // get path to first exhibit in the list
-        currentPath = pathList.get(directionOrder);
-
-//        // disable prev button when on first page
-//        prevButton.setEnabled(directionOrder != 0);
-//        nextButton.setEnabled(directionOrder != pathList.size() - 1);
+        // disable prev button when on first page
+        prevButton.setEnabled(directionOrder != 0);
+        nextButton.setEnabled(pathList.size() - 1 != directionOrder && pathList.size() > 0);
 
         // Load the information about edges
-        eInfo = ZooData.loadEdgeInfoJSON(this,JSON_EDGE);
+        eInfo = ZooData.loadEdgeInfoJSON(this, JSON_EDGE);
 
-        // update the page to display correct path info
-        displayDirection();
-        displayDestinationInfo();
-        updateButtonAndLabel();
+        if (pathList.size() > 0) {
+            // get first path in the list
+            currentPath = pathList.get(directionOrder);
+
+            // update the page to display correct path info
+            displayDirection();
+            displayDestinationInfo();
+            updateButtonAndLabel();
+        }
     }
 
     public void onPreviousIconClicked(View view) {
