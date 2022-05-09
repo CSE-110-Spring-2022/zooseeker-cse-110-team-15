@@ -3,7 +3,6 @@ package com.example.cse110.teamproject;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
-import androidx.room.Update;
 
 import java.util.List;
 
@@ -32,12 +31,4 @@ public interface ExhibitListItemDao {
 
     @Query("SELECT * FROM `exhibit_node_items` WHERE `node_id`=:node_id")
     ExhibitNodeItem getExhibitByNodeId(String node_id);
-
-
-
-//    @Query("SELECT * FROM `exhibit_node_items` WHERE `name` LIKE :name")
-//    List<ExhibitNodeItem> getExhibits(String name);
-//    @Update
-//    int update(ExhibitNodeItem exhibitNodeItem);
-
 }

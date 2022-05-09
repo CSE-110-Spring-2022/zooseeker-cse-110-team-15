@@ -7,17 +7,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Source: https://stackoverflow.com/questions/24885223/why-doesnt-recyclerview-have-onitemclicklistener
  */
 public class SearchResultsActivity extends AppCompatActivity {
+    final String SEARCH_FORMAT = "Search results for \"%s\"";
+
     public RecyclerView recyclerView;
 
     UserExhibitListItemDao userExhibitListItemDao;
@@ -61,11 +60,11 @@ public class SearchResultsActivity extends AppCompatActivity {
             extras = holder;
         }
         String search = extras.getString("key");
+        String formatted = String.format(SEARCH_FORMAT, search);
         TextView textView = findViewById(R.id.search_results);
-        textView.setText("Search results for \"" + search + "\"");
+        textView.setText(formatted);
 
         //populate recyclerview with queried items
-        TextView exhibitItem = findViewById(R.id.exhibit_item_text);
         List<ExhibitNodeItem> exhibitNodeItemList = exhibitListItemDao.getExhibits(search);
         adapter.setExhibitListItems(exhibitNodeItemList);
 

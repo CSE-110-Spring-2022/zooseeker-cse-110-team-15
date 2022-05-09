@@ -7,7 +7,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
-import androidx.room.TypeConverter;
 import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
@@ -23,7 +22,6 @@ import java.util.concurrent.Executors;
         public abstract ExhibitListItemDao exhibitListItemDao();
         public abstract UserExhibitListItemDao userExhibitListItemDao();
         public abstract PathItemDao pathItemDao();
-
 
         public synchronized static ExhibitDatabase getSingleton(Context context) {
             if (singleton == null) {
@@ -58,8 +56,6 @@ import java.util.concurrent.Executors;
         public static void resetSingleton() {
             singleton = null;
         }
-
-
 
         @VisibleForTesting
         public static void injectTestDatabase(ExhibitDatabase testDatabase) {
