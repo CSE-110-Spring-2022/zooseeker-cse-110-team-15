@@ -7,4 +7,8 @@
     <string name="next">Next\n</string>
     <string name="prev">Previous\n</string>
     <string name="empty"></string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Directions Preferences -->
+    <string name="direction_mode">Default direction mode</string>
 </resources>
