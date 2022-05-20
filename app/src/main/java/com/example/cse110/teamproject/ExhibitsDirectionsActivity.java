@@ -42,6 +42,8 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
     List<GraphPath<String, IdentifiedWeightedEdge>> pathList;
     Graph<String, IdentifiedWeightedEdge> zooGraph;
 
+    PathManager pathManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +78,9 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
         // Load the information about edges
         eInfo = ZooData.loadEdgeInfoJSON(this, JSON_EDGE);
 
+        // Create user location
+        pathManager = new PathManager(this);
+
         if (pathList.size() > 0) {
             // get first path in the list
             currentPath = pathList.get(directionOrder);
@@ -93,6 +98,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
         displayDirection();
         displayDestinationInfo();
         updateButtonAndLabel();
+        notifyDirectionOrderChange();
     }
 
     public void onNextIconClicked(View view) {
@@ -101,6 +107,11 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
         displayDirection();
         displayDestinationInfo();
         updateButtonAndLabel();
+        notifyDirectionOrderChange();
+    }
+
+    public void notifyDirectionOrderChange() {
+        pathManager.updateCurrentDirectionIndex(directionOrder);
     }
 
     @SuppressLint("DefaultLocale")
@@ -166,6 +177,4 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
             nextButtonLabel.setText(EMPTY_STRING);
         }
     }
-
-
 }
