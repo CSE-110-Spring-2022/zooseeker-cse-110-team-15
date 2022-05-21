@@ -2,7 +2,6 @@ package com.example.cse110.teamproject;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -21,7 +20,6 @@ import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
     final String USER_LIST_TITLE = "My List (%d)";
-    private static final String BUNDLE_RECYCLER_LAYOUT = "classname.recycler.layout";
 
     ExhibitsListAdapter adapter;
     ArrayAdapter<String> arrayAdapter;
@@ -30,17 +28,13 @@ public class MainActivity extends AppCompatActivity {
     UserExhibitListItemDao userExhibitListItemDao;
     UserExhibitListViewModel userExhibitListViewModel;
     public RecyclerView userListRecycler;
-    Parcelable state;
-    private int lastPosition;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState != null) {
-            Parcelable savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
-            userListRecycler.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
-        }
+
 
         Intent intentSearchResults = new Intent(this, SearchResultsActivity.class);
         setContentView(R.layout.activity_main);
@@ -103,10 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void onSaveInstanceState(Bundle outstate) {
-        super.onSaveInstanceState(outstate);
-        outstate.putParcelable(BUNDLE_RECYCLER_LAYOUT, userListRecycler.getLayoutManager().onSaveInstanceState());
-    }
+
 
 //    protected void onResume() {
 //        super.onResume();
