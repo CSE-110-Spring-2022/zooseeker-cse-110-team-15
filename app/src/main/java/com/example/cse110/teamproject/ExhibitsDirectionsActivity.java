@@ -3,6 +3,7 @@ package com.example.cse110.teamproject;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -176,5 +177,10 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
         if (directionOrder == pathList.size() - 1) {
             nextButtonLabel.setText(EMPTY_STRING);
         }
+    }
+
+    public void onSettingsButtonClicked(View view) {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 }
