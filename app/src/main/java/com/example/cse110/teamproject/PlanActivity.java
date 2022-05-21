@@ -56,4 +56,9 @@ public class PlanActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ExhibitsDirectionsActivity.class);
         startActivity(intent);
     }
+
+    public void onSettingsButtonClicked(View view) {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
 }

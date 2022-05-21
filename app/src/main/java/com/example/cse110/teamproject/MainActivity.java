@@ -2,6 +2,7 @@ package com.example.cse110.teamproject;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
     final String USER_LIST_TITLE = "My List (%d)";
+    private static final String BUNDLE_RECYCLER_LAYOUT = "classname.recycler.layout";
 
     ExhibitsListAdapter adapter;
     ArrayAdapter<String> arrayAdapter;
@@ -28,19 +30,29 @@ public class MainActivity extends AppCompatActivity {
     UserExhibitListItemDao userExhibitListItemDao;
     UserExhibitListViewModel userExhibitListViewModel;
     public RecyclerView userListRecycler;
+    Parcelable state;
+    private int lastPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (savedInstanceState != null) {
+            Parcelable savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
+            userListRecycler.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
+        }
+
         Intent intentSearchResults = new Intent(this, SearchResultsActivity.class);
         setContentView(R.layout.activity_main);
+
 
 
         // auto complete text for search & auto completion dropdown
         dropdown = findViewById(R.id.search_bar);
 
         adapter = new ExhibitsListAdapter();
+
+
 
         exhibitListItemDao = ExhibitDatabase.getSingleton(this)
                 .exhibitListItemDao();
@@ -88,7 +100,28 @@ public class MainActivity extends AppCompatActivity {
 
         startUserListRecycler();
         setUpUserListSizeListener();
+
     }
+
+    public void onSaveInstanceState(Bundle outstate) {
+        super.onSaveInstanceState(outstate);
+        outstate.putParcelable(BUNDLE_RECYCLER_LAYOUT, userListRecycler.getLayoutManager().onSaveInstanceState());
+    }
+
+//    protected void onResume() {
+//        super.onResume();
+//        userListRecycler.getLayoutManager().onRestoreInstanceState(state);
+//    }
+
+    @Override
+    public void onDestroy() {
+        //state = userListRecycler.getLayoutManager().onSaveInstanceState();
+        super.onDestroy();
+
+
+    }
+
+
 
     public void onSearchIconClicked(View view) {
         Intent intentSearchResults = new Intent(this, SearchResultsActivity.class);
@@ -133,4 +166,31 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
 //        }
     }
+
+    public void onSettingsButtonClicked(View view) {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
+//    public void loadResults() {
+//        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+//
+//
+//
+//    }
+
+    //public void saveResults() {
+
+        //want to iterate through
+
+//        for (int i = 0; i < userListRecycler.getAdapter().getItemCount(); i++) {
+//            RecyclerView.ViewHolder viewHolder = userListRecycler.getChildViewHolder(userListRecycler.getChildAt(i));
+//            editor.putString(Integer.toString(i), viewHolder.toString());
+//        }
+//        for (int i = 0; i < adapter.getItemCount(); i++) {
+//            adapter.onCreateViewHolder(userExhibitListViewModel, i);
+//        }
+
+        //editor.apply();
+    //}
 }
