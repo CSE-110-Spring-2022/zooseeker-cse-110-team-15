@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class PathFinder {
+
     // calculates path given search list, graph - no calls to database
     private static List<GraphPath<String,IdentifiedWeightedEdge>> findPath(
             Set<String> searchList,
@@ -78,4 +79,16 @@ public class PathFinder {
 
         return calculatedPaths;
     }
+
+    public static GraphPath<String, IdentifiedWeightedEdge> findPathToFixedNext(Context context, String currLoc, String fixedNext) {
+        Set<String> searchList = ExhibitDatabase.getSingleton(context)
+                .userExhibitListItemDao().getAllUserExhibits().stream()
+                .map(n -> n.node_id)
+                .collect(Collectors.toSet());
+
+        Graph<String, IdentifiedWeightedEdge> zooGraph = ZooData.loadZooGraphJSON(context, "sample_zoo_graph.json");
+
+        return DijkstraShortestPath.findPathBetween(zooGraph, currLoc, fixedNext);
+    }
+
 }
