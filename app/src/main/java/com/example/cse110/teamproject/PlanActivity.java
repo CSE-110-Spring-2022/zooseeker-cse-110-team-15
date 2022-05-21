@@ -35,7 +35,7 @@ public class PlanActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        Map<String, ZooData.EdgeInfo> eInfo = ZooData.loadEdgeInfoJSON(this, "sample_edge_info.json");
+        Map<String, ZooData.EdgeInfo> eInfo = ZooData.loadEdgeInfoJSON(this, this.getResources().getString(R.string.curr_edge_info));
 
         totalDistance = 0;
         planItemList = PathFinder.findPath(this).stream().map(gp-> {

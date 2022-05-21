@@ -63,7 +63,7 @@ public class PathFinder {
         // note: probably sort before the following
 
         // construct graph
-        Graph<String, IdentifiedWeightedEdge> zooGraph = ZooData.loadZooGraphJSON(context, "sample_zoo_graph.json");
+        Graph<String, IdentifiedWeightedEdge> zooGraph = ZooData.loadZooGraphJSON(context, context.getResources().getString(R.string.curr_graph_info));
 
         List<GraphPath<String, IdentifiedWeightedEdge>> calculatedPaths = findPath(searchList, zooGraph, start);
 
@@ -86,7 +86,7 @@ public class PathFinder {
                 .map(n -> n.node_id)
                 .collect(Collectors.toSet());
 
-        Graph<String, IdentifiedWeightedEdge> zooGraph = ZooData.loadZooGraphJSON(context, "sample_zoo_graph.json");
+        Graph<String, IdentifiedWeightedEdge> zooGraph = ZooData.loadZooGraphJSON(context, context.getResources().getString(R.string.curr_node_info));
 
         return DijkstraShortestPath.findPathBetween(zooGraph, currLoc, fixedNext);
     }

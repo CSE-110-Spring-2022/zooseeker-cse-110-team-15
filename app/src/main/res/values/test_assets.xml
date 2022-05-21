@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="curr_edge_info">zoo_edge_info.json</string>
+    <string name="curr_node_info">zoo_node_info.json</string>
+    <string name="curr_graph_info">zoo_graph.json</string>
+    <string name="test_edge_info">zoo_edge_info.json</string>
+    <string name="test_node_info">zoo_node_info.json</string>
+    <string name="test_graph_info">zoo_graph.json</string>
+</resources>

@@ -34,7 +34,7 @@ public class UserExhibitListDatabaseTest {
 
         exhibitListItemDao = db.exhibitListItemDao();
         List<ExhibitNodeItem> nodes = ExhibitNodeItem
-                .loadJSON(context, "sample_node_info.json");
+                .loadJSON(context, "old data/sample_node_info.json");
         exhibitListItemDao.insertAll(nodes);
 
         userExhibitListItemDao = db.userExhibitListItemDao();

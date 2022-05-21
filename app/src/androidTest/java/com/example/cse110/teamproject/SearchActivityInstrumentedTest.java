@@ -1,6 +1,5 @@
 package com.example.cse110.teamproject;
 
-import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -18,7 +17,6 @@ import androidx.room.Room;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.NoMatchingViewException;
-import androidx.test.espresso.PerformException;
 import androidx.test.espresso.matcher.RootMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -57,7 +55,7 @@ public class SearchActivityInstrumentedTest {
 
         exhibitListItemDao = testDb.exhibitListItemDao();
         List<ExhibitNodeItem> nodes = ExhibitNodeItem
-                .loadJSON(context, "sample_node_info.json");
+                .loadJSON(context, context.getResources().getString(R.string.test_node_info));
         exhibitListItemDao.insertAll(nodes);
 
         userExhibitListItemDao = testDb.userExhibitListItemDao();

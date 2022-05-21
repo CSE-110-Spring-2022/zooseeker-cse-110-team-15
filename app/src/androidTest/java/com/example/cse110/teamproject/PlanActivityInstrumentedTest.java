@@ -53,7 +53,7 @@ public class PlanActivityInstrumentedTest {
 
         exhibitListItemDao = testDb.exhibitListItemDao();
         List<ExhibitNodeItem> nodes = ExhibitNodeItem
-                .loadJSON(context, "sample_node_info.json");
+                .loadJSON(context, context.getResources().getString(R.string.test_node_info));
         exhibitListItemDao.insertAll(nodes);
 
         userExhibitListItemDao = testDb.userExhibitListItemDao();

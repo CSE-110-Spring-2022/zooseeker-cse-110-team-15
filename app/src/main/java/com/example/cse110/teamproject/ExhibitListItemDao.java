@@ -31,4 +31,8 @@ public interface ExhibitListItemDao {
 
     @Query("SELECT * FROM `exhibit_node_items` WHERE `node_id`=:node_id")
     ExhibitNodeItem getExhibitByNodeId(String node_id);
+
+    @Query("DELETE FROM `exhibit_node_items`")
+    void deleteExhibitItems();
+
 }

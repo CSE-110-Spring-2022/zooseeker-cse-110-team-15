@@ -1,11 +1,9 @@
 package com.example.cse110.teamproject;
 
-import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.replaceText;
-import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -13,35 +11,22 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.content.Context;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 
-import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
-import android.widget.TextView;
-
-import androidx.annotation.NonNull;
 import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.contrib.RecyclerViewActions;
-import androidx.test.espresso.matcher.BoundedMatcher;
-import androidx.test.espresso.matcher.RootMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -68,7 +53,7 @@ public class SearchResultsActivityInstrumentedTest {
 
         exhibitListItemDao = testDb.exhibitListItemDao();
         List<ExhibitNodeItem> nodes = ExhibitNodeItem
-                .loadJSON(context, "sample_node_info.json");
+                .loadJSON(context, context.getResources().getString(R.string.test_node_info));
         exhibitListItemDao.insertAll(nodes);
 
         userExhibitListItemDao = testDb.userExhibitListItemDao();

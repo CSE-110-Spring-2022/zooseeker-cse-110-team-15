@@ -1,6 +1,7 @@
 package com.example.cse110.teamproject;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -39,7 +40,8 @@ import java.util.concurrent.Executors;
                             super.onCreate(db);
                             Executors.newSingleThreadScheduledExecutor().execute(() -> {
                                 List<ExhibitNodeItem> nodes = ExhibitNodeItem
-                                        .loadJSON(context, "sample_node_info.json");
+                                        .loadJSON(context, "zoo_node_info.json");
+                                Log.d("<nodes>", nodes.toString());
                                 getSingleton(context).exhibitListItemDao().insertAll(nodes);
                             });
                             Executors.newSingleThreadScheduledExecutor().execute(() -> {

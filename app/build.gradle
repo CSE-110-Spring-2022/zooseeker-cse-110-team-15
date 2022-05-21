@@ -8,6 +8,13 @@ android {
     testOptions {
         unitTests {
             includeAndroidResources = true
+
+//            all {
+//                oldDataTests = ['testSearchExhibit', 'noUserExhibitsPlanButtonDisabled', '', '']
+//                if (oldDataTests.contains(it.name)) {
+//                    assets.srcDirs = ["src/main/assets/old data"]
+//                }
+//            }
         }
     }
 
@@ -19,7 +26,15 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+
     }
+
+//    sourceSets {
+//        main {
+//            assets.srcDirs = ["src/main/assets/old data"]
+//        }
+//    }
 
     buildTypes {
         release {
