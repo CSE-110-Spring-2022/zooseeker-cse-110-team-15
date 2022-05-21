@@ -2,18 +2,12 @@ package com.example.cse110.teamproject;
 
 import static org.junit.Assert.assertEquals;
 
-import android.content.Context;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.room.Room;
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
-import org.junit.After;
-import org.junit.Before;
 import org.junit.runner.RunWith;
 
 import androidx.lifecycle.Lifecycle;
@@ -23,34 +17,14 @@ import androidx.test.core.app.ActivityScenario;
 import org.junit.Test;
 import org.junit.Rule;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @RunWith(AndroidJUnit4.class)
     public class SearchActivityTest {
-        ExhibitDatabase testDb;
-        ExhibitListItemDao exhibitListItemDao;
-        UserExhibitListItemDao userExhibitListItemDao;
 
         @Rule
         public ActivityScenarioRule<MainActivity> rule = new ActivityScenarioRule<>(MainActivity.class);
 
-        @Before
-        public void setUp() {
-            Context context = ApplicationProvider.getApplicationContext();
-            testDb = Room.inMemoryDatabaseBuilder(context, ExhibitDatabase.class)
-                    .allowMainThreadQueries().build();
-            exhibitListItemDao = testDb.exhibitListItemDao();
-            userExhibitListItemDao = testDb.userExhibitListItemDao();
-        }
-
-        @After
-        public void tearDown() {
-            testDb.close();
-        }
-
         @Test
-        public void SearchBarIsDisplayed() {
+        public void SearchBarDisplayed() {
             ActivityScenario scenario = rule.getScenario();
             scenario.moveToState(Lifecycle.State.CREATED);
 
@@ -62,7 +36,7 @@ import java.util.stream.Collectors;
         }
 
         @Test
-        public void SearchTitleIsDisplayed() {
+        public void SearchTitleDisplayed() {
             ActivityScenario scenario = rule.getScenario();
             scenario.moveToState(Lifecycle.State.CREATED);
 
@@ -73,7 +47,7 @@ import java.util.stream.Collectors;
         }
 
         @Test
-        public void SearchIconIsDisplayed() {
+        public void SearchIconDisplayed() {
             ActivityScenario scenario = rule.getScenario();
             scenario.moveToState(Lifecycle.State.CREATED);
 
