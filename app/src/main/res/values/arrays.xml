@@ -1,0 +1,12 @@
+<resources>
+    <!-- Directions Preference -->
+    <string-array name="dir_entries">
+        <item>Brief Direction</item>
+        <item>Detailed Direction</item>
+    </string-array>
+
+    <string-array name="dir_values">
+        <item>brief_dir</item>
+        <item>detailed_dir</item>
+    </string-array>
+</resources>

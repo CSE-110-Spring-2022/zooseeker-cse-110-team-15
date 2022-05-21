@@ -83,4 +83,17 @@ public class ExhibitsDirectionsActivityTest {
         });
         ExhibitDatabase.resetSingleton();
     }
+
+    @Test
+    public void settingButtonDisplayed() {
+        ActivityScenario scenario = rule.getScenario();
+        scenario.moveToState(Lifecycle.State.CREATED);
+
+        scenario.onActivity(activity -> {
+            assertEquals(true, activity.findViewById(R.id.settings_btn).isEnabled());
+            assertEquals(View.VISIBLE, activity.findViewById(R.id.settings_btn).getVisibility());
+
+        });
+        ExhibitDatabase.resetSingleton();
+    }
 }
