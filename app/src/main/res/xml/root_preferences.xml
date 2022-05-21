@@ -6,7 +6,7 @@
             app:defaultValue="brief_dir"
             app:entries="@array/dir_entries"
             app:entryValues="@array/dir_values"
-            app:key="brief_dir"
+            app:key="dir_mode"
             app:title="@string/direction_mode"
             app:useSimpleSummaryProvider="true" />
 
