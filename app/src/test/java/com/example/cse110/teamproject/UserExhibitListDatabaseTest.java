@@ -15,7 +15,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,27 +22,27 @@ import java.util.List;
 public class UserExhibitListDatabaseTest {
     private UserExhibitListItemDao userExhibitListItemDao;
     private ExhibitListItemDao exhibitListItemDao;
-    private ExhibitDatabase db;
-
+    private ExhibitDatabase testDb;
 
     @Before
-    public void resetDatabase() {
+    public void setUp()  {
         Context context = ApplicationProvider.getApplicationContext();
-        db = Room.inMemoryDatabaseBuilder(context, ExhibitDatabase.class)
+        testDb = Room.inMemoryDatabaseBuilder(context, ExhibitDatabase.class)
                 .allowMainThreadQueries().build();
 
-        exhibitListItemDao = db.exhibitListItemDao();
         List<ExhibitNodeItem> nodes = ExhibitNodeItem
-                .loadJSON(context, "old data/sample_node_info.json");
+                .loadJSON(context, "zoo_node_info.json");
+        System.out.println("nodes from json: " + nodes.toString());
+        exhibitListItemDao = testDb.exhibitListItemDao();
         exhibitListItemDao.insertAll(nodes);
+        userExhibitListItemDao = testDb.userExhibitListItemDao();
 
-        userExhibitListItemDao = db.userExhibitListItemDao();
-        userExhibitListItemDao.deleteUserExhibitItems();
+        ExhibitDatabase.injectTestDatabase(testDb);
     }
 
     @After
-    public void closeDb() throws IOException {
-        db.close();
+    public void tearDown() {
+        testDb.close();
     }
 
     @Test

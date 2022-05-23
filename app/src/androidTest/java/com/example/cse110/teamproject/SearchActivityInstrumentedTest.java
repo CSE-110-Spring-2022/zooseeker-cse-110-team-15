@@ -33,7 +33,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import java.util.List;
 
 /**
- * Instrumented test, which will execute on an Android device.
+ * Instrumented oldDataTest, which will execute on an Android device.
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
@@ -47,19 +47,23 @@ public class SearchActivityInstrumentedTest {
     public ActivityScenarioRule<MainActivity> rule = new ActivityScenarioRule<>(MainActivity.class);
 
     @Before
-    public void setUp() {
+    public void setUp()  {
         Context context = ApplicationProvider.getApplicationContext();
         testDb = Room.inMemoryDatabaseBuilder(context, ExhibitDatabase.class)
                 .allowMainThreadQueries().build();
-        ExhibitDatabase.injectTestDatabase(testDb);
 
-        exhibitListItemDao = testDb.exhibitListItemDao();
         List<ExhibitNodeItem> nodes = ExhibitNodeItem
-                .loadJSON(context, context.getResources().getString(R.string.test_node_info));
+                .loadJSON(context, "zoo_node_info.json");
+        exhibitListItemDao = testDb.exhibitListItemDao();
         exhibitListItemDao.insertAll(nodes);
-
         userExhibitListItemDao = testDb.userExhibitListItemDao();
-        userExhibitListItemDao.deleteUserExhibitItems();
+
+        ExhibitDatabase.injectTestDatabase(testDb);
+    }
+
+    @After
+    public void tearDown() {
+//        testDb.close();
     }
 
     public static void forceLayout(RecyclerView recyclerView) {
@@ -67,10 +71,6 @@ public class SearchActivityInstrumentedTest {
         recyclerView.layout(0, 0, 1080, 2280);
     }
 
-    @After
-    public void tearDown() {
-        testDb.close();
-    }
 
     private static void checkNotNull(Matcher<View> itemMatcher) {
     }

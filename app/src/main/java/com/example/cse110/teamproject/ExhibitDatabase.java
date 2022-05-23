@@ -41,7 +41,6 @@ import java.util.concurrent.Executors;
                             Executors.newSingleThreadScheduledExecutor().execute(() -> {
                                 List<ExhibitNodeItem> nodes = ExhibitNodeItem
                                         .loadJSON(context, "zoo_node_info.json");
-                                Log.d("<nodes>", nodes.toString());
                                 getSingleton(context).exhibitListItemDao().insertAll(nodes);
                             });
                             Executors.newSingleThreadScheduledExecutor().execute(() -> {

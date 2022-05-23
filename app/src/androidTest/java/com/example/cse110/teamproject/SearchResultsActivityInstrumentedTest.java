@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
 import java.util.List;
 
 /**
- * Instrumented test, which will execute on an Android device.
+ * Instrumented oldDataTest, which will execute on an Android device.
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
@@ -65,13 +65,10 @@ public class SearchResultsActivityInstrumentedTest {
         recyclerView.layout(0, 0, 1080, 2280);
     }
 
-    @After
-    public void tearDown() {
-        testDb.close();
-    }
-
-    private static void checkNotNull(Matcher<View> itemMatcher) {
-    }
+//    @After
+//    public void tearDown() {
+//        testDb.close();
+//    }
 
     @Test
     public void testSearchExhibit() {

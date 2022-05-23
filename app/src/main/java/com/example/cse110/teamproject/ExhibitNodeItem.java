@@ -1,6 +1,7 @@
 package com.example.cse110.teamproject;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
@@ -83,6 +84,7 @@ public class ExhibitNodeItem {
 
     public static List<ExhibitNodeItem> loadJSON(Context context, String path) {
         try {
+            Log.d("path", path);
             InputStream input = context.getAssets().open(path);
             Reader reader = new InputStreamReader(input);
             Gson gson = new GsonBuilder()

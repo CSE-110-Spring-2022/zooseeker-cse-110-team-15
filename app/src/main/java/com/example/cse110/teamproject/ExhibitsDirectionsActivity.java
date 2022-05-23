@@ -20,9 +20,11 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
     final String DIR_FORMAT = "%d. Walk %.0f feet along %s from '%s' to '%s'.\n\n";
     final String DIST_FORMAT = "%.0f ft";
     final String EMPTY_STRING = "";
-    final String JSON_EDGE = this.getResources().getString(R.string.curr_edge_info);
-    final String JSON_ZOO = this.getResources().getString(R.string.curr_graph_info);
     final String LABEL_FORMAT = "(%s, %.0f ft)";
+
+    // have to be non final since we get filenames in on create
+    String JSON_EDGE = "";
+    String JSON_ZOO = "";
 
     Button prevButton;
     Button nextButton;
@@ -47,6 +49,8 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        JSON_EDGE = this.getResources().getString(R.string.curr_edge_info);
+        JSON_ZOO = this.getResources().getString(R.string.curr_graph_info);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exhibits_directions);
 
