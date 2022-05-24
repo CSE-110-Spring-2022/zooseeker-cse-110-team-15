@@ -105,7 +105,7 @@ public class PathFinder {
                 .map(n -> n.node_id)
                 .collect(Collectors.toSet());
 
-        Graph<String, IdentifiedWeightedEdge> zooGraph = ZooData.loadZooGraphJSON(context, context.getResources().getString(R.string.curr_node_info));
+        Graph<String, IdentifiedWeightedEdge> zooGraph = ZooData.loadZooGraphJSON(context, context.getResources().getString(R.string.curr_graph_info));
 
         return DijkstraShortestPath.findPathBetween(zooGraph, currLoc, fixedNext);
     }
