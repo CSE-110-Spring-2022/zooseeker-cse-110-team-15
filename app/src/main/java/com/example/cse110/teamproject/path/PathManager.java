@@ -1,26 +1,35 @@
-package com.example.cse110.teamproject;
+package com.example.cse110.teamproject.path;
 
 import android.content.Context;
 import android.location.Location;
 import android.util.Pair;
 
+import com.example.cse110.teamproject.ExhibitDatabase;
+import com.example.cse110.teamproject.ExhibitListItemDao;
+import com.example.cse110.teamproject.ExhibitNodeItem;
+import com.example.cse110.teamproject.IdentifiedWeightedEdge;
+import com.example.cse110.teamproject.LocationObserver;
+
 import org.jgrapht.GraphPath;
 
+import java.nio.file.Path;
 import java.util.List;
 
 // stores path and changes it
-public class PathManager implements LocationObserver{
+public class PathManager implements LocationObserver {
 
     List<GraphPath<String, IdentifiedWeightedEdge>> paths;
     Location currentLocation;
     private int currentDirectionIndex;
+    Context context;
 
     ExhibitListItemDao exhibitListItemDao;
 
-    PathManager(Context context) {
+    public PathManager(Context context) {
         exhibitListItemDao = ExhibitDatabase.getSingleton(context)
                 .exhibitListItemDao();
         paths = PathFinder.findPath(context);
+        this.context = context;
     }
 
     public String currentVertexLocation(Location location) {
@@ -56,38 +65,45 @@ public class PathManager implements LocationObserver{
     }
 
     // off track is determined in relation to the current directions page the user is on.
-    public boolean userOffTrack(Location currentLocation) {
+    public void userOffTrack(Location currentLocation) {
         GraphPath<String,IdentifiedWeightedEdge> currentPath = paths.get(currentDirectionIndex);
         List<String> currentPathVertices = currentPath.getVertexList();
-        if (currentPathVertices.indexOf(currentVertexLocation(currentLocation)) == -1) {
-            notifyUserOffTrack(currentPath);
-            return true;
+        String currVertexLocation = currentVertexLocation(currentLocation);
+        // if user is not at vertex on current path
+        if (currentPathVertices.indexOf(currVertexLocation) == -1) {
+            recalculateToExhibit(currVertexLocation, currentPath.getEndVertex());
         }
-        return false;
         // logic for determining if user is on or off track; calls userOnTrack if necessary
         // if currentLocation corres. to some vertex in GraphPath do nothing
         // if currentLocation corres. to no vertices in GraphPath call notifyOffTrack()
     }
 
-    public void notifyOffTrackWithDiffNext() {
+    private void recalculateToExhibit(String currVertexLocation, String nextExhibitID) {
+        paths.set(currentDirectionIndex, PathFinder.findPathToFixedNext(context, currVertexLocation, nextExhibitID));
+    }
 
+    public void notifyPathChanged() {
+        for (PathChangeObserver o : pathChangeObservers) {
+            o.update(paths);
+        }
     }
 
     List<PathChangeObserver> pathChangeObservers;
 
     //
-    public void notifyUserOffTrack(GraphPath<String, IdentifiedWeightedEdge> currentPath) {
-        // TODO
-        // notifyOnTrackObservers() (for US3 Notify and Replan)
-        for (PathChangeObserver o : pathChangeObservers) {
-            o.update(currentPath);
-        }
+//    public void notifyUserOffTrack(GraphPath<String, IdentifiedWeightedEdge> currentPath) {
+//        // TODO
+//        // notifyOnTrackObservers() (for US3 Notify and Replan)
+//        for (PathChangeObserver o : pathChangeObservers) {
+//            o.update(currentPath);
+//        }
+//
+//    }
 
-    }
-
-    public void update(Location currentLocation) {
+    public void updateLocation(Location currentLocation) {
         this.currentLocation = currentLocation;
-        /* ... */
+        userOffTrack(currentLocation);
+        notifyPathChanged();
     }
 
 

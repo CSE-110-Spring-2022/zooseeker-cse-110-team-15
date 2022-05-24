@@ -1,8 +1,15 @@
-package com.example.cse110.teamproject;
+package com.example.cse110.teamproject.path;
 
 import android.content.Context;
 import android.util.Log;
 import android.util.Pair;
+
+import com.example.cse110.teamproject.ExhibitDatabase;
+import com.example.cse110.teamproject.IdentifiedWeightedEdge;
+import com.example.cse110.teamproject.PathItem;
+import com.example.cse110.teamproject.PathItemDao;
+import com.example.cse110.teamproject.R;
+import com.example.cse110.teamproject.ZooData;
 
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
@@ -17,7 +24,7 @@ import java.util.stream.Collectors;
 public class PathFinder {
 
     // calculates path given search list, graph - no calls to database
-    private static List<GraphPath<String,IdentifiedWeightedEdge>> findPath(
+    private static List<GraphPath<String, IdentifiedWeightedEdge>> findPath(
             Set<String> searchList,
             Graph<String, IdentifiedWeightedEdge> zooGraph,
             String firstNode) {

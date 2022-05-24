@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.cse110.teamproject.path.PathFinder;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

@@ -10,6 +10,8 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.example.cse110.teamproject.path.PathFinder;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;

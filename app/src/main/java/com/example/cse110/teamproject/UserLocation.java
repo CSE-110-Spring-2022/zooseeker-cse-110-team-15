@@ -78,7 +78,7 @@ public class UserLocation {
 
     public void notifyLocationChange() {
         for (LocationObserver o: observers) {
-            o.update(currentLocation);
+            o.updateLocation(currentLocation);
         }
     }
 }

@@ -9,6 +9,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.cse110.teamproject.path.PathFinder;
+import com.example.cse110.teamproject.path.PathManager;
+
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
 
