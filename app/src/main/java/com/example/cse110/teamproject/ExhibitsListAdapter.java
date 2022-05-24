@@ -46,6 +46,7 @@ public class ExhibitsListAdapter extends RecyclerView.Adapter<ExhibitsListAdapte
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             this.textView = itemView.findViewById(R.id.exhibit_item_text);
+
         }
 
         public ExhibitNodeItem getExhibitItem() {

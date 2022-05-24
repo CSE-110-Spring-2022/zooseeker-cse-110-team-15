@@ -1,6 +1,7 @@
 package com.example.cse110.teamproject;
 
 import android.content.Context;
+import android.util.Log;
 import android.util.Pair;
 
 import org.jgrapht.Graph;
@@ -45,6 +46,16 @@ public class PathFinder {
             searchList.remove(shortestPair.first);
         }
 
+        // calculate path from last exhibit back to entrance/exit gate
+        if (calculatedPaths.size() > 0) {
+            String lastExhibitId = calculatedPaths.get(calculatedPaths.size()-1).getEndVertex();
+            GraphPath<String, IdentifiedWeightedEdge> lastPath =
+                    DijkstraShortestPath.findPathBetween(zooGraph, lastExhibitId, firstNode);
+
+            // add the last path to path list
+            calculatedPaths.add(lastPath);
+        }
+
         return calculatedPaths;
     }
 
@@ -76,6 +87,7 @@ public class PathFinder {
                             .map(e -> e.getId()).collect(Collectors.toList()),
                     i));
         }
+
 
         return calculatedPaths;
     }

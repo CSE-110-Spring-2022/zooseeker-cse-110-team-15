@@ -30,18 +30,24 @@ public class MainActivity extends AppCompatActivity {
     UserExhibitListViewModel userExhibitListViewModel;
     public RecyclerView userListRecycler;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+
         Intent intentSearchResults = new Intent(this, SearchResultsActivity.class);
         setContentView(R.layout.activity_main);
+
 
 
         // auto complete text for search & auto completion dropdown
         dropdown = findViewById(R.id.search_bar);
 
         adapter = new ExhibitsListAdapter();
+
+
 
         exhibitListItemDao = ExhibitDatabase.getSingleton(this)
                 .exhibitListItemDao();
@@ -92,7 +98,25 @@ public class MainActivity extends AppCompatActivity {
 
         startUserListRecycler();
         setUpUserListSizeListener();
+
     }
+
+
+
+//    protected void onResume() {
+//        super.onResume();
+//        userListRecycler.getLayoutManager().onRestoreInstanceState(state);
+//    }
+
+    @Override
+    public void onDestroy() {
+        //state = userListRecycler.getLayoutManager().onSaveInstanceState();
+        super.onDestroy();
+
+
+    }
+
+
 
     public void onSearchIconClicked(View view) {
         Intent intentSearchResults = new Intent(this, SearchResultsActivity.class);
@@ -137,4 +161,31 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
 //        }
     }
+
+    public void onSettingsButtonClicked(View view) {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
+//    public void loadResults() {
+//        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+//
+//
+//
+//    }
+
+    //public void saveResults() {
+
+        //want to iterate through
+
+//        for (int i = 0; i < userListRecycler.getAdapter().getItemCount(); i++) {
+//            RecyclerView.ViewHolder viewHolder = userListRecycler.getChildViewHolder(userListRecycler.getChildAt(i));
+//            editor.putString(Integer.toString(i), viewHolder.toString());
+//        }
+//        for (int i = 0; i < adapter.getItemCount(); i++) {
+//            adapter.onCreateViewHolder(userExhibitListViewModel, i);
+//        }
+
+        //editor.apply();
+    //}
 }
