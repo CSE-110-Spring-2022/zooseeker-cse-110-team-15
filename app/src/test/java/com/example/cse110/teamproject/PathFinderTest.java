@@ -49,6 +49,7 @@ public class PathFinderTest {
 
     @After
     public void tearDown() {
+        ExhibitDatabase.resetSingleton();
         testDb.close();
     }
 

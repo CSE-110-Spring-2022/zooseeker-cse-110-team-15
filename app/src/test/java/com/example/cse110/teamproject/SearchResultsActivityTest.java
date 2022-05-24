@@ -57,6 +57,7 @@ public class SearchResultsActivityTest {
 
     @After
     public void tearDown() {
+        ExhibitDatabase.resetSingleton();
         testDb.close();
     }
 

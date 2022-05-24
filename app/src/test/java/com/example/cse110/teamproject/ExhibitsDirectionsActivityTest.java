@@ -51,6 +51,7 @@ public class ExhibitsDirectionsActivityTest {
 
     @After
     public void tearDown() {
+        ExhibitDatabase.resetSingleton();
         testDb.close();
     }
 
