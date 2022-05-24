@@ -5,60 +5,9 @@ plugins {
 android {
     compileSdk 32
 
-    buildTypes {
-        release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-
-//        debug {
-//            applicationIdSuffix ".debug"
-//            debuggable true
-//        }
-
-//        /**
-//         * The `initWith` property allows you to copy configurations from other build types,
-//         * then configure only the settings you want to change. This one copies the debug build
-//         * type, and then changes the manifest placeholder and application ID.
-//         */
-//        staging {
-//            initWith debug
-//            manifestPlaceholders = [hostName:"internal.example.com"]
-//            applicationIdSuffix ".debugStaging"
-//        }
-
-//        OldData {
-//            initWith debug
-//            applicationIdSuffix ".oldData"
-////            // Specifies the fully-qualified class name of the test instrumentation
-////            // runner.
-////            testInstrumentationRunner = "android.test.InstrumentationTestRunner"
-//        }
-    }
-
-            testOptions {
+    testOptions {
         unitTests {
             includeAndroidResources = true
-
-            all {
-                var oldDataTests = [
-                                    'testInsert', 'testInsertAll', 'testGetExhibit', 'testGetAllExhibits', 'testGetExhibits', 'testGetExhibitByName',
-                                    'buttonsDisplayed', 'labelsDisplayed', 'titleDisplayed', 'directionComponentsDisplayed', 'buttonsDisabled', 'settingButtonDisplayed',
-    //                                'testFindPath',
-    //                                'DirectionsButtonIsDisplayed,', 'recyclerViewIsVisible',
-    //                                'SearchBarDisplayed', 'SearchTitleDisplayed', 'SearchIconDisplayed',
-    //                                'BackButtonIsDisplayed', 'SearchTextIsDisplayed',
-    //                                'test1',
-    //                                'testInsert', 'testGetAllUserExhibits', 'testGetLive', 'testDeleteUserExhibitItems', 'getListSize'
-                                    ]
-                if (oldDataTests.contains(it.name)) {
-                    testBuildType "debug"
-//                    systemProperty 'debug', 'true'
-                } else {
-                    systemProperty 'main', 'true'
-                    testBuildType "main"
-                }
-            }
         }
     }
 
@@ -69,55 +18,9 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "androidx.oldDataTest.runner.AndroidJUnitRunner"
-
-        // Specifies the application ID for the test APK.
-        testApplicationId = "com.test.foo"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
 
-        // If set to true, enables the instrumentation class to start and stop profiling.
-        // If set to false (default), profiling occurs the entire time the instrumentation
-        // class is running.
-        testHandleProfiling = true
-
-        // If set to true, indicates that the Android system should run the instrumentation
-        // class as a functional test. The default value is false.
-        testFunctionalTest = true
-
-    }
-
-    sourceSets {
-        main {
-            assets.srcDirs = ["src/main/assets/current data"]
-        }
-
-        androidTest {
-            assets.srcDirs = ["src/main/assets/old data"]
-        }
-
-        // build variant for testing is debug (why???)
-        // https://stackoverflow.com/questions/32484985/android-studio-instrumentation-testing-build-varian
-        debug {
-//            var oldDataTests = [
-//                                'testInsert', 'testInsertAll', 'testGetExhibit', 'testGetAllExhibits', 'testGetExhibits', 'testGetExhibitByName',
-//                                'buttonsDisplayed', 'labelsDisplayed', 'titleDisplayed', 'directionComponentsDisplayed', 'buttonsDisabled', 'settingButtonDisplayed',
-//                                'testFindPath',
-//                                'DirectionsButtonIsDisplayed,', 'recyclerViewIsVisible',
-//                                'SearchBarDisplayed', 'SearchTitleDisplayed', 'SearchIconDisplayed',
-//                                'BackButtonIsDisplayed', 'SearchTextIsDisplayed',
-//                                'test1',
-//                                'testInsert', 'testGetAllUserExhibits', 'testGetLive', 'testDeleteUserExhibitItems', 'getListSize'
-//                                ]
-//
-//            project.logger.lifecycle " $it.name"
-//            println "hello can you hear me"
-//            if (oldDataTests.contains(it.name)) {
-                assets.srcDirs = ["src/main/assets/old data"]
-//            } else {
-//                assets.srcDirs = ["src/main/assets/current data"]
-//
-//            }
-        }
     }
 
     buildTypes {
@@ -133,6 +36,7 @@ android {
 }
 
 dependencies {
+
     implementation 'androidx.test:core:1.4.0'
     implementation 'androidx.test:runner:1.4.0'
     implementation 'androidx.test.espresso:espresso-contrib:3.4.0'
