@@ -40,8 +40,8 @@ public class ExhibitListItemDatabaseTest {
 
     @Test
     public void testInsert() {
-        ExhibitNodeItem item1 = new ExhibitNodeItem("mammal", "Elephant", "0");
-        ExhibitNodeItem item2 = new ExhibitNodeItem("reptile", "Alligator", "1");
+        ExhibitNodeItem item1 = new ExhibitNodeItem("exhibit", "Elephant", "0", 0f, 0f);
+        ExhibitNodeItem item2 = new ExhibitNodeItem("exhibit", "Alligator", "1", 1f, 1f);
 
         long id1 = dao.insert(item1);
         long id2 = dao.insert(item2);
@@ -51,9 +51,8 @@ public class ExhibitListItemDatabaseTest {
 
     @Test
     public void testInsertAll() {
-        ExhibitNodeItem item1 = new ExhibitNodeItem("mammal", "Elephant", "0");
-        ExhibitNodeItem item2 = new ExhibitNodeItem("reptile", "Alligator", "1");
-
+        ExhibitNodeItem item1 = new ExhibitNodeItem("exhibit", "Elephant", "0", 0f, 0f);
+        ExhibitNodeItem item2 = new ExhibitNodeItem("exhibit", "Alligator", "1", 1f, 1f);
 
         List<ExhibitNodeItem> list = new ArrayList<>();
 
@@ -67,7 +66,7 @@ public class ExhibitListItemDatabaseTest {
 
     @Test
     public void testGetExhibit() {
-        ExhibitNodeItem insertedItem =  new ExhibitNodeItem("mammal", "Elephant", "0");
+        ExhibitNodeItem insertedItem =  new ExhibitNodeItem("exhibit", "Elephant", "0", 0f, 0f);
         long id = dao.insert(insertedItem);
 
         ExhibitNodeItem item = dao.getExhibit(id);
@@ -79,8 +78,8 @@ public class ExhibitListItemDatabaseTest {
 
     @Test
     public void testGetAllExhibits() {
-        ExhibitNodeItem item1 = new ExhibitNodeItem("exhibit", "Elephant", "0");
-        ExhibitNodeItem item2 = new ExhibitNodeItem("exhibit", "Alligator", "1");
+        ExhibitNodeItem item1 = new ExhibitNodeItem("exhibit", "Elephant", "0", 0f, 0f);
+        ExhibitNodeItem item2 = new ExhibitNodeItem("exhibit", "Alligator", "1", 1f, 1f);
 
         long id1 = dao.insert(item1);
         long id2 = dao.insert(item2);
@@ -100,9 +99,9 @@ public class ExhibitListItemDatabaseTest {
 
     @Test
     public void testGetExhibits() {
-        ExhibitNodeItem item1 = new ExhibitNodeItem("exhibit", "Elephant", "0");
-        ExhibitNodeItem item2 = new ExhibitNodeItem("exhibit", "Alligator", "1");
-        ExhibitNodeItem item3 = new ExhibitNodeItem("exhibit", "Monkey", "2");
+        ExhibitNodeItem item1 = new ExhibitNodeItem("exhibit", "Elephant", "0", 0f, 0f);
+        ExhibitNodeItem item2 = new ExhibitNodeItem("exhibit", "Alligator", "1", 1f, 1f);
+        ExhibitNodeItem item3 = new ExhibitNodeItem("exhibit", "Monkey", "2", 2f, 2f);
 
         long id1 = dao.insert(item1);
         long id2 = dao.insert(item2);
@@ -120,9 +119,9 @@ public class ExhibitListItemDatabaseTest {
 
     @Test
     public void testGetExhibitByName() {
-        ExhibitNodeItem item1 = new ExhibitNodeItem("exhibit", "Elephant", "0");
-        ExhibitNodeItem item2 = new ExhibitNodeItem("exhibit", "Alligator", "1");
-        ExhibitNodeItem item3 = new ExhibitNodeItem("exhibit", "Monkey", "2");
+        ExhibitNodeItem item1 = new ExhibitNodeItem("exhibit", "Elephant", "0", 0f, 0f);
+        ExhibitNodeItem item2 = new ExhibitNodeItem("reptile", "Alligator", "1", 1f, 1f);
+        ExhibitNodeItem item3 = new ExhibitNodeItem("exhibit", "Monkey", "2", 2f, 2f);
 
         long id1 = dao.insert(item1);
         long id2 = dao.insert(item2);

@@ -2,6 +2,7 @@ package com.example.cse110.teamproject;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -50,11 +51,14 @@ public class MainActivity extends AppCompatActivity {
 
         exhibitListItemDao = ExhibitDatabase.getSingleton(this)
                 .exhibitListItemDao();
+//        exhibitListItemDao.deleteExhibitItems();
+
 
         userExhibitListItemDao = ExhibitDatabase.getSingleton(this)
                 .userExhibitListItemDao();
         userExhibitListItemDao.deleteUserExhibitItems();
 
+        Log.d("<database>", exhibitListItemDao.getAllExhibits().toString());
 
         List<String> exhibits = exhibitListItemDao.getAllExhibits().stream().map(e -> e.name).collect(Collectors.toList());
 

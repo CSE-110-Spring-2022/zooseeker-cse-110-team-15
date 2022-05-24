@@ -9,6 +9,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.cse110.teamproject.path.PathFinder;
+import com.example.cse110.teamproject.path.PathManager;
+
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
 
@@ -20,9 +23,11 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
     final String DIR_FORMAT = "%d. Walk %.0f feet along %s from '%s' to '%s'.\n\n";
     final String DIST_FORMAT = "%.0f ft";
     final String EMPTY_STRING = "";
-    final String JSON_EDGE = "sample_edge_info.json";
-    final String JSON_ZOO = "sample_zoo_graph.json";
     final String LABEL_FORMAT = "(%s, %.0f ft)";
+
+    // have to be non final since we get filenames in on create
+    String JSON_EDGE = "";
+    String JSON_ZOO = "";
 
     Button prevButton;
     Button nextButton;
@@ -47,6 +52,8 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        JSON_EDGE = this.getResources().getString(R.string.curr_edge_info);
+        JSON_ZOO = this.getResources().getString(R.string.curr_graph_info);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exhibits_directions);
 
