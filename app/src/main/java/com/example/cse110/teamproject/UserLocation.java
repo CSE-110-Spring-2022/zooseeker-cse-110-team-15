@@ -81,4 +81,8 @@ public class UserLocation {
             o.updateLocation(currentLocation);
         }
     }
+
+    public void addLocationChangedObservers(LocationObserver o) {
+        observers.add(o);
+    }
 }
