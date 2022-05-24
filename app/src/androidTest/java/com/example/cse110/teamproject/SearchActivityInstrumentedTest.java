@@ -84,15 +84,15 @@ public class SearchActivityInstrumentedTest {
         scenario.moveToState(Lifecycle.State.RESUMED);
 
         onView(withId(R.id.search_bar))
-                .perform(click(), replaceText("Alli"))
-                .check(matches(withText("Alli")));
+                .perform(click(), replaceText("Flami"))
+                .check(matches(withText("Flami")));
 
-        onData(equalTo("Alligators"))
+        onData(equalTo("Flamingos"))
                 .inRoot(RootMatchers.isPlatformPopup())
                 .perform(click());
 
         onView(withId(R.id.user_list))
-                .check(matches(TestUtil.atPosition(0, hasDescendant(withText("Alligators")))));
+                .check(matches(TestUtil.atPosition(0, hasDescendant(withText("Flamingos")))));
     }
 
     @Test

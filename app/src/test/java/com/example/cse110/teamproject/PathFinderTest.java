@@ -16,6 +16,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
@@ -64,9 +66,9 @@ public class PathFinderTest {
 
             userExhibitListItemDao.deleteUserExhibitItems();
 
-            userExhibitListItemDao.insert(new UserExhibitListItem("lions"));
-            userExhibitListItemDao.insert(new UserExhibitListItem("elephant_odyssey"));
-            userExhibitListItemDao.insert(new UserExhibitListItem("arctic_foxes"));
+            userExhibitListItemDao.insert(new UserExhibitListItem("flamingo"));
+            userExhibitListItemDao.insert(new UserExhibitListItem("koi"));
+            userExhibitListItemDao.insert(new UserExhibitListItem("gorilla"));
 
             PathFinder.findPath(activity);
 
@@ -82,24 +84,23 @@ public class PathFinderTest {
             System.out.println("exhibits: " + directions);
 
             PathItem firstPathItem = directions.get(0);
-            assertEquals("lions", firstPathItem.node_id);
+            assertEquals("koi", firstPathItem.node_id);
             List<String> firstExhibitDirections = firstPathItem.curr_directions;
-            assertEquals("edge-0", firstExhibitDirections.get(0));
-            assertEquals("edge-5", firstExhibitDirections.get(1));
-            assertEquals("edge-6", firstExhibitDirections.get(2));
+            assertEquals("gate_to_front", firstExhibitDirections.get(0));
+            assertEquals("front_to_lagoon1", firstExhibitDirections.get(1));
+            assertEquals("lagoon1_to_koi", firstExhibitDirections.get(2));
 
             PathItem secondPathItem = directions.get(1);
-            assertEquals("elephant_odyssey", secondPathItem.node_id);
+            assertEquals("flamingo", secondPathItem.node_id);
             List<String> secondExhibitDirections = secondPathItem.curr_directions;
-            assertEquals("edge-3", secondExhibitDirections.get(0));
+            String[] expectedDirections2 = new String[]{"lagoon1_to_koi", "front_to_lagoon1", "front_to_monkey", "monkey_to_flamingo"};
+            assertEquals(new ArrayList<>(Arrays.asList(expectedDirections2)), secondExhibitDirections);
 
             PathItem thirdPathItem = directions.get(2);
-            assertEquals("arctic_foxes", thirdPathItem.node_id);
+            assertEquals("gorilla", thirdPathItem.node_id);
             List<String> thirdExhibitDirections = thirdPathItem.curr_directions;
-            assertEquals("edge-3", thirdExhibitDirections.get(0));
-            assertEquals("edge-6", thirdExhibitDirections.get(1));
-            assertEquals("edge-5", thirdExhibitDirections.get(2));
-            assertEquals("edge-4", thirdExhibitDirections.get(3));
+            String[] expectedDirections3 = new String[]{"flamingo_to_capuchin", "capuchin_to_hippo_monkey", "hippo_monkey_to_scripps", "scripps_to_gorilla"};
+            assertEquals(new ArrayList<>(Arrays.asList(expectedDirections3)), thirdExhibitDirections);
         });
     }
 

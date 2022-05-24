@@ -79,16 +79,16 @@ public class PlanActivityInstrumentedTest {
         scenario.moveToState(Lifecycle.State.RESUMED);
 
         onView(withId(R.id.search_bar))
-                .perform(click(), replaceText("Alli"));
+                .perform(click(), replaceText("Flami"));
 
-        onData(equalTo("Alligators"))
+        onData(equalTo("Flamingos"))
                 .inRoot(RootMatchers.isPlatformPopup())
                 .perform(click());
 
         onView(withId(R.id.search_bar))
-                .perform(click(), replaceText("Gorill"));
+                .perform(click(), replaceText("Capuch"));
 
-        onData(equalTo("Gorillas"))
+        onData(equalTo("Capuchin Monkeys"))
                 .inRoot(RootMatchers.isPlatformPopup())
                 .perform(click());
 
@@ -96,12 +96,12 @@ public class PlanActivityInstrumentedTest {
                 .perform(click());
 
         onView(withId(R.id.plan_items))
-                .check(matches(TestUtil.atPosition(0, hasDescendant(withText("Alligators")))))
-                .check(matches(TestUtil.atPosition(0, hasDescendant(withText("Reptile Road")))))
-                .check(matches(TestUtil.atPosition(0, hasDescendant(withText("110.0 ft.")))))
-                .check(matches(TestUtil.atPosition(1, hasDescendant(withText("Gorillas")))))
-                .check(matches(TestUtil.atPosition(1, hasDescendant(withText("Africa Rocks Street")))))
-                .check(matches(TestUtil.atPosition(1, hasDescendant(withText("410.0 ft.")))));
+                .check(matches(TestUtil.atPosition(0, hasDescendant(withText("Flamingos")))))
+                .check(matches(TestUtil.atPosition(0, hasDescendant(withText("Monkey Trail")))))
+                .check(matches(TestUtil.atPosition(0, hasDescendant(withText("90.0 ft.")))))
+                .check(matches(TestUtil.atPosition(1, hasDescendant(withText("Capuchin Monkeys")))))
+                .check(matches(TestUtil.atPosition(1, hasDescendant(withText("Monkey Trail")))))
+                .check(matches(TestUtil.atPosition(1, hasDescendant(withText("240.0 ft.")))));
 
     }
 }

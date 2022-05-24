@@ -79,19 +79,19 @@ public class SearchResultsActivityInstrumentedTest {
         scenario.moveToState(Lifecycle.State.RESUMED);
 
         onView(withId(R.id.search_bar))
-                .perform(click(), replaceText("Alli"))
-                .check(matches(withText("Alli")));
+                .perform(click(), replaceText("Flami"))
+                .check(matches(withText("Flami")));
 
         onView(withId(R.id.search_bar))
                 .perform(pressImeActionButton());
 
         onView(withId(R.id.exhibit_items))
-                .perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("Alligators")), click()));
+                .perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("Flamingos")), click()));
 
         onView(withId(R.id.back_to_search_btn))
                 .perform(click());
 
         onView(withId(R.id.user_list))
-                .check(matches(TestUtil.atPosition(0, hasDescendant(withText("Alligators")))));
+                .check(matches(TestUtil.atPosition(0, hasDescendant(withText("Flamingos")))));
     }
 }

@@ -63,15 +63,15 @@ public class UserExhibitListDatabaseTest {
 
         assertEquals(expectedItems, actualItems);
 
-        ExhibitNodeItem alligatorsNode = exhibitListItemDao.getExhibitByName("Alligators");
-        ExhibitNodeItem lionsNode = exhibitListItemDao.getExhibitByName("Lions");
+        ExhibitNodeItem flamingosNode = exhibitListItemDao.getExhibitByName("Flamingos");
+        ExhibitNodeItem monkeysMode = exhibitListItemDao.getExhibitByName("Capuchin Monkeys");
 
-        UserExhibitListItem item1 = new UserExhibitListItem(alligatorsNode.node_id);
-        UserExhibitListItem item2 = new UserExhibitListItem(lionsNode.node_id);
+        UserExhibitListItem item1 = new UserExhibitListItem(flamingosNode.node_id);
+        UserExhibitListItem item2 = new UserExhibitListItem(monkeysMode.node_id);
 
         // test first item
         userExhibitListItemDao.insert(item1);
-        expectedItems.add(alligatorsNode);
+        expectedItems.add(flamingosNode);
         actualItems = userExhibitListItemDao.getAllUserExhibits();
 
         assertEquals(expectedItems, actualItems);
@@ -79,7 +79,7 @@ public class UserExhibitListDatabaseTest {
         // test second item
         userExhibitListItemDao.insert(item2);
         actualItems = userExhibitListItemDao.getAllUserExhibits();
-        expectedItems.add(lionsNode);
+        expectedItems.add(monkeysMode);
 
         // relying on alligators always being first in returned list and lion second which seems to be
         // the case but idk why. would be good to add an ordering in the db for a guarantee
@@ -94,15 +94,15 @@ public class UserExhibitListDatabaseTest {
 
             assertEquals(expectedItems, TestUtil.getOrAwaitValue(actualItems));
 
-            ExhibitNodeItem alligatorsNode = exhibitListItemDao.getExhibitByName("Alligators");
-            ExhibitNodeItem lionsNode = exhibitListItemDao.getExhibitByName("Lions");
+            ExhibitNodeItem flamingosNode = exhibitListItemDao.getExhibitByName("Flamingos");
+            ExhibitNodeItem monkeysMode = exhibitListItemDao.getExhibitByName("Capuchin Monkeys");
 
-            UserExhibitListItem item1 = new UserExhibitListItem(alligatorsNode.node_id);
-            UserExhibitListItem item2 = new UserExhibitListItem(lionsNode.node_id);
+            UserExhibitListItem item1 = new UserExhibitListItem(flamingosNode.node_id);
+            UserExhibitListItem item2 = new UserExhibitListItem(monkeysMode.node_id);
 
             // test first item
             userExhibitListItemDao.insert(item1);
-            expectedItems.add(alligatorsNode);
+            expectedItems.add(flamingosNode);
             actualItems = userExhibitListItemDao.getAllLive();
 
             assertEquals(expectedItems, TestUtil.getOrAwaitValue(actualItems));
@@ -110,7 +110,7 @@ public class UserExhibitListDatabaseTest {
             // test second item
             userExhibitListItemDao.insert(item2);
             actualItems = userExhibitListItemDao.getAllLive();
-            expectedItems.add(lionsNode);
+            expectedItems.add(monkeysMode);
 
             // relying on alligators always being first in returned list and lion second which seems to be
             // the case but idk why. would be good to add an ordering in the db for a guarantee
@@ -125,11 +125,11 @@ public class UserExhibitListDatabaseTest {
 
         assertEquals(expectedItems, actualItems);
 
-        ExhibitNodeItem alligatorsNode = exhibitListItemDao.getExhibitByName("Alligators");
-        ExhibitNodeItem lionsNode = exhibitListItemDao.getExhibitByName("Lions");
+        ExhibitNodeItem flamingosNode = exhibitListItemDao.getExhibitByName("Flamingos");
+        ExhibitNodeItem monkeysMode = exhibitListItemDao.getExhibitByName("Capuchin Monkeys");
 
-        UserExhibitListItem item1 = new UserExhibitListItem(alligatorsNode.node_id);
-        UserExhibitListItem item2 = new UserExhibitListItem(lionsNode.node_id);
+        UserExhibitListItem item1 = new UserExhibitListItem(flamingosNode.node_id);
+        UserExhibitListItem item2 = new UserExhibitListItem(monkeysMode.node_id);
 
         userExhibitListItemDao.insert(item1);
         userExhibitListItemDao.insert(item2);
@@ -150,11 +150,11 @@ public class UserExhibitListDatabaseTest {
 
             assertEquals(new Integer(0), TestUtil.getOrAwaitValue(actualListSize));
 
-            ExhibitNodeItem alligatorsNode = exhibitListItemDao.getExhibitByName("Alligators");
-            ExhibitNodeItem lionsNode = exhibitListItemDao.getExhibitByName("Lions");
+            ExhibitNodeItem flamingosNode = exhibitListItemDao.getExhibitByName("Flamingos");
+            ExhibitNodeItem monkeysMode = exhibitListItemDao.getExhibitByName("Capuchin Monkeys");
 
-            UserExhibitListItem item1 = new UserExhibitListItem(alligatorsNode.node_id);
-            UserExhibitListItem item2 = new UserExhibitListItem(lionsNode.node_id);
+            UserExhibitListItem item1 = new UserExhibitListItem(flamingosNode.node_id);
+            UserExhibitListItem item2 = new UserExhibitListItem(monkeysMode.node_id);
 
             // test first item
             userExhibitListItemDao.insert(item1);

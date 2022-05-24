@@ -19,8 +19,15 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
 
-
+   sourceSets {
+        main {
+           assets.srcDirs = ["src/main/assets/current data"]
+        }
+       debug {
+           assets.srcDirs = ["src/main/assets/current data"]
+       }
     }
 
     buildTypes {
