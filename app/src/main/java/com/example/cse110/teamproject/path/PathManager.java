@@ -88,6 +88,11 @@ public class PathManager implements LocationObserver {
         }
     }
 
+    public List<GraphPath<String, IdentifiedWeightedEdge>> getPath() {
+        return this.paths;
+    }
+
+
     List<PathChangeObserver> pathChangeObservers;
 
     //
