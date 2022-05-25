@@ -1,6 +1,7 @@
 package com.example.cse110.teamproject;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
@@ -40,10 +41,20 @@ public class ExhibitNodeItem {
     @NonNull
     public String name;
 
-    ExhibitNodeItem(@NonNull String kind, @NonNull String name, @NonNull String node_id) {
+    @Expose
+    @NonNull
+    public float lat;
+
+    @Expose
+    @NonNull
+    public float lng;
+
+    ExhibitNodeItem(@NonNull String kind, @NonNull String name, @NonNull String node_id, @NonNull float lat, @NonNull float lng) {
         this.kind = kind;
         this.name = name;
         this.node_id = node_id;
+        this.lat = lat;
+        this.lng = lng;
     }
 
     @Override
@@ -51,7 +62,7 @@ public class ExhibitNodeItem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ExhibitNodeItem that = (ExhibitNodeItem) o;
-        return id == that.id && node_id.equals(that.node_id) && kind.equals(that.kind) && name.equals(that.name);
+        return id == that.id && lat == that.lat && lng == that.lng && node_id.equals(that.node_id) && kind.equals(that.kind) && name.equals(that.name);
     }
 
     @Override
@@ -61,16 +72,19 @@ public class ExhibitNodeItem {
 
     @Override
     public String toString() {
-        return "ExhibitListItem{" +
+        return "ExhibitNodeItem{" +
                 "id=" + id +
+                ", node_id='" + node_id + '\'' +
                 ", kind='" + kind + '\'' +
                 ", name='" + name + '\'' +
-                ", node_id='" + node_id + '\'' +
+                ", lat=" + lat +
+                ", lng=" + lng +
                 '}';
     }
 
     public static List<ExhibitNodeItem> loadJSON(Context context, String path) {
         try {
+            Log.d("path", path);
             InputStream input = context.getAssets().open(path);
             Reader reader = new InputStreamReader(input);
             Gson gson = new GsonBuilder()

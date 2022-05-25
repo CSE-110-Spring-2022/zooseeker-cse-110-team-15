@@ -2,6 +2,7 @@ package com.example.cse110.teamproject;
 // import androidx.room.jarjarred.org.antlr.v4.misc.Graph;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -87,7 +88,7 @@ public class ZooData {
             Type type = new TypeToken<List<ZooData.EdgeInfo>>() {
             }.getType();
             List<ZooData.EdgeInfo> zooData = gson.fromJson(reader, type);
-
+            Log.d("edge info", zooData.toString());
             Map<String, ZooData.EdgeInfo> indexedZooData = zooData
                     .stream()
                     .collect(Collectors.toMap(v -> v.id, datum -> datum));

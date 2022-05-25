@@ -44,6 +44,7 @@ public class UserLocation {
                     Log.d("LAB7", String.format("Location changed: %s", location));
                     lastVisitedLocation = currentLocation;
                     currentLocation = location;
+                    notifyLocationChange();
                 }
             };
 
@@ -77,7 +78,11 @@ public class UserLocation {
 
     public void notifyLocationChange() {
         for (LocationObserver o: observers) {
-            o.update(currentLocation);
+            o.updateLocation(currentLocation);
         }
+    }
+
+    public void addLocationChangedObservers(LocationObserver o) {
+        observers.add(o);
     }
 }

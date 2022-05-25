@@ -1,6 +1,5 @@
 package com.example.cse110.teamproject;
 
-import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -18,7 +17,6 @@ import androidx.room.Room;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.NoMatchingViewException;
-import androidx.test.espresso.PerformException;
 import androidx.test.espresso.matcher.RootMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -35,7 +33,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import java.util.List;
 
 /**
- * Instrumented test, which will execute on an Android device.
+ * Instrumented oldDataTest, which will execute on an Android device.
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
@@ -49,19 +47,23 @@ public class SearchActivityInstrumentedTest {
     public ActivityScenarioRule<MainActivity> rule = new ActivityScenarioRule<>(MainActivity.class);
 
     @Before
-    public void setUp() {
+    public void setUp()  {
         Context context = ApplicationProvider.getApplicationContext();
         testDb = Room.inMemoryDatabaseBuilder(context, ExhibitDatabase.class)
                 .allowMainThreadQueries().build();
-        ExhibitDatabase.injectTestDatabase(testDb);
 
-        exhibitListItemDao = testDb.exhibitListItemDao();
         List<ExhibitNodeItem> nodes = ExhibitNodeItem
-                .loadJSON(context, "sample_node_info.json");
+                .loadJSON(context, "zoo_node_info.json");
+        exhibitListItemDao = testDb.exhibitListItemDao();
         exhibitListItemDao.insertAll(nodes);
-
         userExhibitListItemDao = testDb.userExhibitListItemDao();
-        userExhibitListItemDao.deleteUserExhibitItems();
+
+        ExhibitDatabase.injectTestDatabase(testDb);
+    }
+
+    @After
+    public void tearDown() {
+//        testDb.close();
     }
 
     public static void forceLayout(RecyclerView recyclerView) {
@@ -69,10 +71,6 @@ public class SearchActivityInstrumentedTest {
         recyclerView.layout(0, 0, 1080, 2280);
     }
 
-    @After
-    public void tearDown() {
-        testDb.close();
-    }
 
     private static void checkNotNull(Matcher<View> itemMatcher) {
     }
@@ -86,15 +84,15 @@ public class SearchActivityInstrumentedTest {
         scenario.moveToState(Lifecycle.State.RESUMED);
 
         onView(withId(R.id.search_bar))
-                .perform(click(), replaceText("Alli"))
-                .check(matches(withText("Alli")));
+                .perform(click(), replaceText("Flami"))
+                .check(matches(withText("Flami")));
 
-        onData(equalTo("Alligators"))
+        onData(equalTo("Flamingos"))
                 .inRoot(RootMatchers.isPlatformPopup())
                 .perform(click());
 
         onView(withId(R.id.user_list))
-                .check(matches(TestUtil.atPosition(0, hasDescendant(withText("Alligators")))));
+                .check(matches(TestUtil.atPosition(0, hasDescendant(withText("Flamingos")))));
     }
 
     @Test
