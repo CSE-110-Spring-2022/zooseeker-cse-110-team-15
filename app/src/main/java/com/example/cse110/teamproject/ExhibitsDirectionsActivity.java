@@ -101,7 +101,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
 
         preferences = getSharedPreferences(SHARED_PREF_KEY, Context.MODE_PRIVATE);
 
-        if (preferences.getString(SHARED_PREF_KEY, null).equals(BRIEF_DIR_VAL)) {
+        if (preferences.getString(SHARED_PREF_KEY, EMPTY_STRING).equals(BRIEF_DIR_VAL)) {
             briefMode = true;
         }
         else {
