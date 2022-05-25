@@ -3,7 +3,9 @@ package com.example.cse110.teamproject;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -26,6 +28,11 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
     final String DIST_FORMAT = "%.0f ft";
     final String EMPTY_STRING = "";
     final String LABEL_FORMAT = "(%s, %.0f ft)";
+    final String SHARED_PREF_KEY = "shared_dir_mode";
+    final String BRIEF_DIR_VAL = "brief_dir";
+    final String DETAILED_DIR_VAL = "detailed_dir";
+
+    private SharedPreferences preferences;
 
     // have to be non final since we get filenames in on create
     String JSON_EDGE = "";
@@ -40,6 +47,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
     TextView nextButtonLabel;
     TextView directionSteps;
 
+    boolean briefMode;
     int directionOrder;
     String directions;
     double totalDistance;
@@ -80,15 +88,26 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
         // get zoo data to be used for displaying directions
         zooGraph = ZooData.loadZooGraphJSON(this,JSON_ZOO);
 
+        preferences = getSharedPreferences(SHARED_PREF_KEY, Context.MODE_PRIVATE);
+
+        // check if the direction mode is set to brief or detailed
+        if (preferences.getString(SHARED_PREF_KEY, EMPTY_STRING).equals(BRIEF_DIR_VAL)) {
+            briefMode = true;
+        }
+        else {
+            briefMode = false;
+        }
+
         // find path and store it as a list
         location = new UserLocation(this);
         pathManager = new PathManager(this);
         pathChangeObserver = path -> {
             pathList = path;
-            displayDirection();
+            switchDirectionMode(briefMode);
             displayDestinationInfo();
             updateButtonAndLabel();
         };
+
         pathManager.addPathChangeObserver(pathChangeObserver);
         location.addLocationChangedObservers(pathManager);
         pathList = pathManager.getPath();
@@ -108,17 +127,34 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
             currentPath = pathList.get(directionOrder);
 
             // update the page to display correct path info
-            displayDirection();
+            switchDirectionMode(briefMode);
             displayDestinationInfo();
             updateButtonAndLabel();
         }
 
+        sharedPreferenceChangeListener(preferences);
+    }
+
+    private void sharedPreferenceChangeListener(SharedPreferences sp) {
+        sp.registerOnSharedPreferenceChangeListener((sharedPreferences, s) -> {
+            if (sharedPreferences.getString(SHARED_PREF_KEY, null).equals(BRIEF_DIR_VAL)) {
+                //currently a brief direction mode is selected -> so call displayBriefDirection();
+                briefMode = true;
+                switchDirectionMode(true);
+
+            }
+            else if (sharedPreferences.getString(SHARED_PREF_KEY, null).equals(DETAILED_DIR_VAL)) {
+                //currently a detailed direction mode is selected -> so call displayDetailedDirection();
+                briefMode = false;
+                switchDirectionMode(false);
+            }
+        });
     }
 
     public void onPreviousIconClicked(View view) {
         // get the path for previous exhibit
         currentPath = pathList.get(--directionOrder);
-        displayDirection();
+        switchDirectionMode(briefMode);
         displayDestinationInfo();
         updateButtonAndLabel();
         notifyDirectionOrderChange();
@@ -127,7 +163,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
     public void onNextIconClicked(View view) {
         // get the path for next exhibit
         currentPath = pathList.get(++directionOrder);
-        displayDirection();
+        switchDirectionMode(briefMode);
         displayDestinationInfo();
         updateButtonAndLabel();
         notifyDirectionOrderChange();
@@ -138,7 +174,54 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
     }
 
     @SuppressLint("DefaultLocale")
-    public void displayDirection() {
+    public void displayBriefDirection() {
+        // total distance within the nodes that share the same street
+        double distanceSum;
+
+        List<String> vertexList = currentPath.getVertexList();
+        List<IdentifiedWeightedEdge> currentEdgeList = currentPath.getEdgeList();
+
+        // index used to notify which index to skip inside the currentEdgeList
+        int skippingIndex = 0;
+
+        for (int i = 0; i < currentEdgeList.size(); i++) {
+            if (i != skippingIndex) {
+               continue;
+            }
+
+            int j = i;
+            distanceSum = zooGraph.getEdgeWeight(currentEdgeList.get(i));
+            int nodeIndex = i + 1;
+
+            while (j < currentEdgeList.size() - 1 &&
+                Objects.requireNonNull(eInfo.get(currentEdgeList.get(j).getId())).street.equals(
+                Objects.requireNonNull(eInfo.get(currentEdgeList.get(j + 1).getId())).street)) {
+            distanceSum += zooGraph.getEdgeWeight(currentEdgeList.get(j + 1));
+
+            nodeIndex++;
+            j++;
+            skippingIndex = j + 1;
+            }
+
+            if (j == i) {
+                skippingIndex = i + 1;
+            }
+
+            ExhibitNodeItem source = exhibitListItemDao.getExhibitByNodeId(vertexList.get(i));
+            ExhibitNodeItem target = exhibitListItemDao.getExhibitByNodeId(vertexList.get(nodeIndex));
+            directions += String.format(DIR_FORMAT,
+                    i + 1,
+                    distanceSum,
+                    Objects.requireNonNull(eInfo.get(currentEdgeList.get(j).getId())).street,
+                    source.name,
+                    target.name);
+        }
+        directionSteps.setText(directions);
+        directions = EMPTY_STRING;
+    }
+
+    @SuppressLint("DefaultLocale")
+    public void displayDetailedDirection() {
         int i = 1;
         List<String> vertexList = currentPath.getVertexList();
         for (IdentifiedWeightedEdge e : currentPath.getEdgeList()) {
@@ -204,5 +287,16 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
     public void onSettingsButtonClicked(View view) {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
+    }
+
+    public void switchDirectionMode(boolean mode) {
+        if (mode) {
+            //currently a brief direction mode is selected -> so call displayBriefDirection();
+            displayBriefDirection();
+        }
+        else {
+            //currently a detailed direction mode is selected -> so call displayDetailedDirection();
+            displayDetailedDirection();
+        }
     }
 }
