@@ -15,6 +15,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -22,14 +23,16 @@ public class UserLocation {
 
     ComponentActivity context;
 
-    private final PermissionChecker permissionChecker = new PermissionChecker(context);
+    private final PermissionChecker permissionChecker;
 
     private Location lastVisitedLocation;
     private Location currentLocation;
-
+    List<LocationObserver> observers;
     UserLocation(ComponentActivity context) {
 
         this.context = context;
+        permissionChecker = new PermissionChecker(this.context);
+        observers = new ArrayList<>();
 
         /* Permissions Setup */
         if (permissionChecker.ensurePermissions()) return;
@@ -70,11 +73,10 @@ public class UserLocation {
         return currentLocation;
     }
 
-    private boolean ensurePermissions() {
+    public boolean ensurePermissions() {
         return permissionChecker.ensurePermissions();
     }
 
-    List<LocationObserver> observers;
 
     public void notifyLocationChange() {
         for (LocationObserver o: observers) {

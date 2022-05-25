@@ -5,10 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.cse110.teamproject.path.PathChangeObserver;
 import com.example.cse110.teamproject.path.PathFinder;
 import com.example.cse110.teamproject.path.PathManager;
 
@@ -47,8 +49,10 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
     ExhibitListItemDao exhibitListItemDao;
     List<GraphPath<String, IdentifiedWeightedEdge>> pathList;
     Graph<String, IdentifiedWeightedEdge> zooGraph;
+    UserLocation location;
 
     PathManager pathManager;
+    PathChangeObserver pathChangeObserver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +81,17 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
         zooGraph = ZooData.loadZooGraphJSON(this,JSON_ZOO);
 
         // find path and store it as a list
-        pathList = PathFinder.findPath(this);
+        location = new UserLocation(this);
+        pathManager = new PathManager(this);
+        pathChangeObserver = path -> {
+            pathList = path;
+            displayDirection();
+            displayDestinationInfo();
+            updateButtonAndLabel();
+        };
+        pathManager.addPathChangeObserver(pathChangeObserver);
+        location.addLocationChangedObservers(pathManager);
+        pathList = pathManager.getPath();
 
         // disable prev button when on first page
         prevButton.setEnabled(directionOrder != 0);
@@ -87,7 +101,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
         eInfo = ZooData.loadEdgeInfoJSON(this, JSON_EDGE);
 
         // Create user location
-        pathManager = new PathManager(this);
+        //pathManager = new PathManager(this);
 
         if (pathList.size() > 0) {
             // get first path in the list
@@ -98,6 +112,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
             displayDestinationInfo();
             updateButtonAndLabel();
         }
+
     }
 
     public void onPreviousIconClicked(View view) {
