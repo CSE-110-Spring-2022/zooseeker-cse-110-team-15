@@ -30,8 +30,6 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
     final String BRIEF_DIR_VAL = "brief_dir";
     final String DETAILED_DIR_VAL = "detailed_dir";
 
-    final String BRIEF_DIR_FORMAT = "%d. Walk %.0f feet towards %s.\n\n";
-
     private SharedPreferences preferences;
 
     // have to be non final since we get filenames in on create
