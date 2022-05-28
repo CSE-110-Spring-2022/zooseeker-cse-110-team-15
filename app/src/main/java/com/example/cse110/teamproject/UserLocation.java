@@ -39,7 +39,7 @@ public class UserLocation {
 
         /* Listen for Location Updates */
         {
-            var provider = LocationManager.GPS_PROVIDER;
+            var provider = LocationManager.FUSED_PROVIDER;
             var locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
             var locationListener = new LocationListener() {
                 @Override

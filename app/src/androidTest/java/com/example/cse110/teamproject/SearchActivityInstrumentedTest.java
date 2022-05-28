@@ -30,6 +30,8 @@ import org.junit.runner.RunWith;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 
+import com.example.cse110.teamproject.util.TestUtil;
+
 import java.util.List;
 
 /**
@@ -63,7 +65,8 @@ public class SearchActivityInstrumentedTest {
 
     @After
     public void tearDown() {
-//        testDb.close();
+        ExhibitDatabase.resetSingleton();
+        testDb.close();
     }
 
     public static void forceLayout(RecyclerView recyclerView) {

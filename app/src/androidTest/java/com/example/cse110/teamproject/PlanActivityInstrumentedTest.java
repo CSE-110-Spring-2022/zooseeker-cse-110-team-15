@@ -22,6 +22,8 @@ import androidx.test.espresso.matcher.RootMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.example.cse110.teamproject.util.TestUtil;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -62,7 +64,8 @@ public class PlanActivityInstrumentedTest {
 
     @After
     public void tearDown() {
-//        testDb.close();
+        ExhibitDatabase.resetSingleton();
+        testDb.close();
     }
 
     public static void forceLayout(RecyclerView recyclerView) {
