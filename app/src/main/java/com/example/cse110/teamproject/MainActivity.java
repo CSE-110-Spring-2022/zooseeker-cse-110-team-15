@@ -51,12 +51,10 @@ public class MainActivity extends AppCompatActivity {
 
         exhibitListItemDao = ExhibitDatabase.getSingleton(this)
                 .exhibitListItemDao();
-//        exhibitListItemDao.deleteExhibitItems();
 
 
         userExhibitListItemDao = ExhibitDatabase.getSingleton(this)
                 .userExhibitListItemDao();
-        userExhibitListItemDao.deleteUserExhibitItems();
 
         Log.d("<database>", exhibitListItemDao.getAllExhibits().toString());
 
