@@ -8,9 +8,14 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.example.cse110.teamproject.util.WaitForTextActionKt.waitForText;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.containsString;
+
+import static java.util.concurrent.TimeUnit.*;
 
 import android.content.Context;
+import android.os.SystemClock;
 import android.view.View;
 
 import androidx.lifecycle.Lifecycle;
@@ -22,7 +27,9 @@ import androidx.test.espresso.matcher.RootMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.example.cse110.teamproject.util.MockLocation;
 import com.example.cse110.teamproject.util.TestUtil;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.junit.After;
 import org.junit.Before;
@@ -30,7 +37,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 
 /**
@@ -39,10 +50,12 @@ import java.util.List;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 @RunWith(AndroidJUnit4.class)
-public class PlanActivityInstrumentedTest {
+public class DirectionsActivityInstrumentedTest {
     ExhibitDatabase testDb;
     ExhibitListItemDao exhibitListItemDao;
     UserExhibitListItemDao userExhibitListItemDao;
+    MockLocation mockLocation;
+    ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
 
     @Rule
     public ActivityScenarioRule<MainActivity> rule = new ActivityScenarioRule<>(MainActivity.class);
@@ -60,6 +73,8 @@ public class PlanActivityInstrumentedTest {
         userExhibitListItemDao = testDb.userExhibitListItemDao();
 
         ExhibitDatabase.injectTestDatabase(testDb);
+
+        mockLocation = new MockLocation(context);
     }
 
     @After
@@ -74,7 +89,14 @@ public class PlanActivityInstrumentedTest {
     }
 
     @Test
-    public void testPlannedExhibits() {
+    public void testOffTrackDirections() {
+//    https://stackoverflow.com/questions/8605611/get-context-of-test-project-in-android-junit-test-case
+        Context context = ApplicationProvider.getApplicationContext();
+
+        List<String> exhibitIDs = new ArrayList<>(List.of("koi", "intxn_front_treetops"));
+        List<LatLng> latLngs = TestUtil.convertNodeIDToLatLng(exhibitListItemDao, exhibitIDs);
+        Map<String, LatLng> nodeIDsToLatLngsMap = TestUtil.zipToMap(exhibitIDs, latLngs);
+
         ActivityScenario<MainActivity> scenario
                 = ActivityScenario.launch(MainActivity.class);
         scenario.moveToState(Lifecycle.State.CREATED);
@@ -98,13 +120,20 @@ public class PlanActivityInstrumentedTest {
         onView(withId(R.id.plan_btn))
                 .perform(click());
 
-        onView(withId(R.id.plan_items))
-                .check(matches(TestUtil.atPosition(0, hasDescendant(withText("Flamingos")))))
-                .check(matches(TestUtil.atPosition(0, hasDescendant(withText("Monkey Trail")))))
-                .check(matches(TestUtil.atPosition(0, hasDescendant(withText("90.0 ft.")))))
-                .check(matches(TestUtil.atPosition(1, hasDescendant(withText("Capuchin Monkeys")))))
-                .check(matches(TestUtil.atPosition(1, hasDescendant(withText("Monkey Trail")))))
-                .check(matches(TestUtil.atPosition(1, hasDescendant(withText("240.0 ft.")))));
+        onView(withId(R.id.directions_btn))
+                .perform(click());
 
+        // check gate path is in list
+        onView(withId(R.id.direction_steps)) .perform(waitForText("Gate Path", 5000));
+
+        // check gate path is still in list when still on path
+        mockLocation.setCurrLocation(nodeIDsToLatLngsMap.get("intxn_front_treetops"));
+
+        onView(withId(R.id.direction_steps)) .perform(waitForText("Gate Path", 5000));
+
+        // move to koi and check koi is in path
+        mockLocation.setCurrLocation(nodeIDsToLatLngsMap.get("koi"));
+
+        onView(withId(R.id.direction_steps)) .perform(waitForText("Koi Fish", 5000));
     }
 }

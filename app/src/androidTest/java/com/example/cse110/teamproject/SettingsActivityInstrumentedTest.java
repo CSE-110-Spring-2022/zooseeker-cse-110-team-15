@@ -13,11 +13,15 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
 
+import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.LinearLayout;
 
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -28,13 +32,47 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.hamcrest.core.IsInstanceOf;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.List;
+
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class SettingsActivityInstrumentedTest {
+    ExhibitDatabase testDb;
+    ExhibitListItemDao exhibitListItemDao;
+    UserExhibitListItemDao userExhibitListItemDao;
+
+    @Before
+    public void setUp() {
+        Context context = ApplicationProvider.getApplicationContext();
+        testDb = Room.inMemoryDatabaseBuilder(context, ExhibitDatabase.class)
+                .allowMainThreadQueries().build();
+        ExhibitDatabase.injectTestDatabase(testDb);
+
+        exhibitListItemDao = testDb.exhibitListItemDao();
+        List<ExhibitNodeItem> nodes = ExhibitNodeItem
+                .loadJSON(context, context.getResources().getString(R.string.test_node_info));
+        exhibitListItemDao.insertAll(nodes);
+
+        userExhibitListItemDao = testDb.userExhibitListItemDao();
+        userExhibitListItemDao.deleteUserExhibitItems();
+    }
+
+    public static void forceLayout(RecyclerView recyclerView) {
+        recyclerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        recyclerView.layout(0, 0, 1080, 2280);
+    }
+
+    @After
+    public void tearDown() {
+        ExhibitDatabase.resetSingleton();
+        testDb.close();
+    }
 
     @Rule
     public ActivityScenarioRule<MainActivity> mActivityScenarioRule =

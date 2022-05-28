@@ -89,6 +89,7 @@ public class PathManager implements LocationObserver {
     }
 
     public void notifyPathChanged() {
+        Log.d("path_update", "updated" + paths.toString());
         for (PathChangeObserver o : pathChangeObservers) {
             o.update(paths);
         }
