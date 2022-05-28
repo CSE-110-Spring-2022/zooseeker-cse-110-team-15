@@ -1,10 +1,12 @@
 package com.example.cse110.teamproject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -28,6 +30,15 @@ public class SettingsActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+    }
+
+    public void erasePlanButtonClicked(View view) {
+        Log.d("a", "a");
+        UserExhibitListItemDao userExhibitListItemDao = ExhibitDatabase.getSingleton(this)
+                .userExhibitListItemDao();
+        userExhibitListItemDao.deleteUserExhibitItems();
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
