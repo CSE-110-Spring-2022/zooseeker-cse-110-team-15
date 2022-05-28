@@ -24,63 +24,72 @@ import org.junit.Test;
 import org.junit.Rule;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RunWith(AndroidJUnit4.class)
     public class SearchActivityTest {
-        ExhibitDatabase testDb;
-        ExhibitListItemDao exhibitListItemDao;
-        UserExhibitListItemDao userExhibitListItemDao;
+    ExhibitDatabase testDb;
+    ExhibitListItemDao exhibitListItemDao;
+    UserExhibitListItemDao userExhibitListItemDao;
+    PathItemDao pathItemDao;
 
-        @Rule
-        public ActivityScenarioRule<MainActivity> rule = new ActivityScenarioRule<>(MainActivity.class);
+    @Before
+    public void setUp()  {
+        Context context = ApplicationProvider.getApplicationContext();
+        testDb = Room.inMemoryDatabaseBuilder(context, ExhibitDatabase.class)
+                .allowMainThreadQueries().build();
 
-        @Before
-        public void setUp() {
-            Context context = ApplicationProvider.getApplicationContext();
-            testDb = Room.inMemoryDatabaseBuilder(context, ExhibitDatabase.class)
-                    .allowMainThreadQueries().build();
-            exhibitListItemDao = testDb.exhibitListItemDao();
-            userExhibitListItemDao = testDb.userExhibitListItemDao();
-        }
+        List<ExhibitNodeItem> nodes = ExhibitNodeItem
+                .loadJSON(context, "zoo_node_info.json");
+        System.out.println("nodes from json: " + nodes.toString());
+        exhibitListItemDao = testDb.exhibitListItemDao();
+        exhibitListItemDao.insertAll(nodes);
+        userExhibitListItemDao = testDb.userExhibitListItemDao();
+        pathItemDao = testDb.pathItemDao();
 
-        @After
-        public void tearDown() {
-            testDb.close();
-        }
+        ExhibitDatabase.injectTestDatabase(testDb);
+    }
 
-        @Test
-        public void SearchBarIsDisplayed() {
-            ActivityScenario scenario = rule.getScenario();
-            scenario.moveToState(Lifecycle.State.CREATED);
+    @After
+    public void tearDown() {
+        ExhibitDatabase.resetSingleton();
+        testDb.close();
+    }
 
-            scenario.onActivity(activity -> {
-                assertEquals(View.VISIBLE, (activity.findViewById(R.id.search_bar)).getVisibility());
-                assertEquals("Search Animal Exhibits", ((AutoCompleteTextView) activity.findViewById(R.id.search_bar)).getHint());
-            });
-            ExhibitDatabase.resetSingleton();
-        }
+    @Rule
+    public ActivityScenarioRule<MainActivity> rule = new ActivityScenarioRule<>(MainActivity.class);
 
-        @Test
-        public void SearchTitleIsDisplayed() {
-            ActivityScenario scenario = rule.getScenario();
-            scenario.moveToState(Lifecycle.State.CREATED);
+    @Test
+    public void SearchBarDisplayed() {
+        ActivityScenario scenario = rule.getScenario();
+        scenario.moveToState(Lifecycle.State.CREATED);
 
-            scenario.onActivity(activity -> {
-                assertEquals("Search", ((TextView) activity.findViewById(R.id.search_page)).getText());
-            });
-            ExhibitDatabase.resetSingleton();
-        }
+        scenario.onActivity(activity -> {
+            assertEquals(View.VISIBLE, (activity.findViewById(R.id.search_bar)).getVisibility());
+            assertEquals("Search Animal Exhibits", ((AutoCompleteTextView) activity.findViewById(R.id.search_bar)).getHint());
+        });
+        ExhibitDatabase.resetSingleton();
+    }
 
-        @Test
-        public void SearchIconIsDisplayed() {
-            ActivityScenario scenario = rule.getScenario();
-            scenario.moveToState(Lifecycle.State.CREATED);
+    @Test
+    public void SearchTitleDisplayed() {
+        ActivityScenario scenario = rule.getScenario();
+        scenario.moveToState(Lifecycle.State.CREATED);
 
-            scenario.onActivity(activity -> {
-                assertEquals(View.VISIBLE, ((ImageView) activity.findViewById(R.id.search_icon)).getVisibility());
-            });
-            ExhibitDatabase.resetSingleton();
-        }
+        scenario.onActivity(activity -> {
+            assertEquals("Search", ((TextView) activity.findViewById(R.id.search_page)).getText());
+        });
+        ExhibitDatabase.resetSingleton();
+    }
+
+    @Test
+    public void SearchIconDisplayed() {
+        ActivityScenario scenario = rule.getScenario();
+        scenario.moveToState(Lifecycle.State.CREATED);
+
+        scenario.onActivity(activity -> {
+            assertEquals(View.VISIBLE, ((ImageView) activity.findViewById(R.id.search_icon)).getVisibility());
+        });
+        ExhibitDatabase.resetSingleton();
+    }
 
 }

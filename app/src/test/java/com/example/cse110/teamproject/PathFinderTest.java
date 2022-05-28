@@ -3,9 +3,6 @@ package com.example.cse110.teamproject;
 import static org.junit.Assert.assertEquals;
 
 import android.content.Context;
-import android.view.View;
-import android.widget.AutoCompleteTextView;
-
 import androidx.lifecycle.Lifecycle;
 import androidx.room.Room;
 import androidx.test.core.app.ActivityScenario;
@@ -13,15 +10,16 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.example.cse110.teamproject.path.PathFinder;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.nio.file.Path;
-import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
@@ -35,19 +33,26 @@ public class PathFinderTest {
     public ActivityScenarioRule<MainActivity> rule = new ActivityScenarioRule<>(MainActivity.class);
 
     @Before
-    public void setUp() {
-//        Context context = ApplicationProvider.getApplicationContext();
-//        testDb = Room.inMemoryDatabaseBuilder(context, ExhibitDatabase.class)
-//                .allowMainThreadQueries().build();
-//        exhibitListItemDao = testDb.exhibitListItemDao();
-//        userExhibitListItemDao = testDb.userExhibitListItemDao();
-//        pathItemDao = testDb.pathItemDao();
+    public void setUp()  {
+        Context context = ApplicationProvider.getApplicationContext();
+        testDb = Room.inMemoryDatabaseBuilder(context, ExhibitDatabase.class)
+                .allowMainThreadQueries().build();
 
+        List<ExhibitNodeItem> nodes = ExhibitNodeItem
+                .loadJSON(context, "zoo_node_info.json");
+        System.out.println("nodes from json: " + nodes.toString());
+        exhibitListItemDao = testDb.exhibitListItemDao();
+        exhibitListItemDao.insertAll(nodes);
+        userExhibitListItemDao = testDb.userExhibitListItemDao();
+        pathItemDao = testDb.pathItemDao();
+
+        ExhibitDatabase.injectTestDatabase(testDb);
     }
 
     @After
     public void tearDown() {
-//        testDb.close();
+        ExhibitDatabase.resetSingleton();
+        testDb.close();
     }
 
     @Test
@@ -62,22 +67,11 @@ public class PathFinderTest {
 
         scenario.onActivity(activity -> {
 
-            exhibitListItemDao = ExhibitDatabase.getSingleton(activity)
-                    .exhibitListItemDao();
-
-            userExhibitListItemDao = ExhibitDatabase.getSingleton(activity)
-                    .userExhibitListItemDao();
-
-            pathItemDao = ExhibitDatabase.getSingleton(activity)
-                    .pathItemDao();
-
             userExhibitListItemDao.deleteUserExhibitItems();
 
-            userExhibitListItemDao.insert(new UserExhibitListItem("lions"));
-            userExhibitListItemDao.insert(new UserExhibitListItem("elephant_odyssey"));
-            userExhibitListItemDao.insert(new UserExhibitListItem("arctic_foxes"));
-
-            // pathItemDao.insert(new PathItem("lions", new ArrayList(), 3));
+            userExhibitListItemDao.insert(new UserExhibitListItem("flamingo"));
+            userExhibitListItemDao.insert(new UserExhibitListItem("koi"));
+            userExhibitListItemDao.insert(new UserExhibitListItem("gorilla"));
 
             PathFinder.findPath(activity);
 
@@ -90,27 +84,27 @@ public class PathFinderTest {
 
             List<PathItem> directions = pathItemDao.getAll();
 
+            System.out.println("exhibits: " + directions);
+
             PathItem firstPathItem = directions.get(0);
-            assertEquals("lions", firstPathItem.node_id);
+            assertEquals("koi", firstPathItem.node_id);
             List<String> firstExhibitDirections = firstPathItem.curr_directions;
-            assertEquals("edge-0", firstExhibitDirections.get(0));
-            assertEquals("edge-5", firstExhibitDirections.get(1));
-            assertEquals("edge-6", firstExhibitDirections.get(2));
+            assertEquals("gate_to_front", firstExhibitDirections.get(0));
+            assertEquals("front_to_lagoon1", firstExhibitDirections.get(1));
+            assertEquals("lagoon1_to_koi", firstExhibitDirections.get(2));
 
             PathItem secondPathItem = directions.get(1);
-            assertEquals("elephant_odyssey", secondPathItem.node_id);
+            assertEquals("flamingo", secondPathItem.node_id);
             List<String> secondExhibitDirections = secondPathItem.curr_directions;
-            assertEquals("edge-3", secondExhibitDirections.get(0));
+            String[] expectedDirections2 = new String[]{"lagoon1_to_koi", "front_to_lagoon1", "front_to_monkey", "monkey_to_flamingo"};
+            assertEquals(new ArrayList<>(Arrays.asList(expectedDirections2)), secondExhibitDirections);
 
             PathItem thirdPathItem = directions.get(2);
-            assertEquals("arctic_foxes", thirdPathItem.node_id);
+            assertEquals("gorilla", thirdPathItem.node_id);
             List<String> thirdExhibitDirections = thirdPathItem.curr_directions;
-            assertEquals("edge-3", thirdExhibitDirections.get(0));
-            assertEquals("edge-6", thirdExhibitDirections.get(1));
-            assertEquals("edge-5", thirdExhibitDirections.get(2));
-            assertEquals("edge-4", thirdExhibitDirections.get(3));
+            String[] expectedDirections3 = new String[]{"flamingo_to_capuchin", "capuchin_to_hippo_monkey", "hippo_monkey_to_scripps", "scripps_to_gorilla"};
+            assertEquals(new ArrayList<>(Arrays.asList(expectedDirections3)), thirdExhibitDirections);
         });
-        ExhibitDatabase.resetSingleton();
     }
 
 

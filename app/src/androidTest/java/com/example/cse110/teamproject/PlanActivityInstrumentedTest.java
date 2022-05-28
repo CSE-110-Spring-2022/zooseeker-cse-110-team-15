@@ -30,8 +30,9 @@ import org.junit.runner.RunWith;
 
 import java.util.List;
 
+
 /**
- * Instrumented test, which will execute on an Android device.
+ * Instrumented oldDataTest, which will execute on an Android device.
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
@@ -45,29 +46,28 @@ public class PlanActivityInstrumentedTest {
     public ActivityScenarioRule<MainActivity> rule = new ActivityScenarioRule<>(MainActivity.class);
 
     @Before
-    public void setUp() {
+    public void setUp()  {
         Context context = ApplicationProvider.getApplicationContext();
         testDb = Room.inMemoryDatabaseBuilder(context, ExhibitDatabase.class)
                 .allowMainThreadQueries().build();
-        ExhibitDatabase.injectTestDatabase(testDb);
 
-        exhibitListItemDao = testDb.exhibitListItemDao();
         List<ExhibitNodeItem> nodes = ExhibitNodeItem
-                .loadJSON(context, "sample_node_info.json");
+                .loadJSON(context, "zoo_node_info.json");
+        exhibitListItemDao = testDb.exhibitListItemDao();
         exhibitListItemDao.insertAll(nodes);
-
         userExhibitListItemDao = testDb.userExhibitListItemDao();
-        userExhibitListItemDao.deleteUserExhibitItems();
+
+        ExhibitDatabase.injectTestDatabase(testDb);
+    }
+
+    @After
+    public void tearDown() {
+//        testDb.close();
     }
 
     public static void forceLayout(RecyclerView recyclerView) {
         recyclerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         recyclerView.layout(0, 0, 1080, 2280);
-    }
-
-    @After
-    public void tearDown() {
-        testDb.close();
     }
 
     @Test
@@ -79,16 +79,16 @@ public class PlanActivityInstrumentedTest {
         scenario.moveToState(Lifecycle.State.RESUMED);
 
         onView(withId(R.id.search_bar))
-                .perform(click(), replaceText("Alli"));
+                .perform(click(), replaceText("Flami"));
 
-        onData(equalTo("Alligators"))
+        onData(equalTo("Flamingos"))
                 .inRoot(RootMatchers.isPlatformPopup())
                 .perform(click());
 
         onView(withId(R.id.search_bar))
-                .perform(click(), replaceText("Gorill"));
+                .perform(click(), replaceText("Capuch"));
 
-        onData(equalTo("Gorillas"))
+        onData(equalTo("Capuchin Monkeys"))
                 .inRoot(RootMatchers.isPlatformPopup())
                 .perform(click());
 
@@ -96,12 +96,12 @@ public class PlanActivityInstrumentedTest {
                 .perform(click());
 
         onView(withId(R.id.plan_items))
-                .check(matches(TestUtil.atPosition(0, hasDescendant(withText("Alligators")))))
-                .check(matches(TestUtil.atPosition(0, hasDescendant(withText("Reptile Road")))))
-                .check(matches(TestUtil.atPosition(0, hasDescendant(withText("110.0 ft.")))))
-                .check(matches(TestUtil.atPosition(1, hasDescendant(withText("Gorillas")))))
-                .check(matches(TestUtil.atPosition(1, hasDescendant(withText("Africa Rocks Street")))))
-                .check(matches(TestUtil.atPosition(1, hasDescendant(withText("410.0 ft.")))));
+                .check(matches(TestUtil.atPosition(0, hasDescendant(withText("Flamingos")))))
+                .check(matches(TestUtil.atPosition(0, hasDescendant(withText("Monkey Trail")))))
+                .check(matches(TestUtil.atPosition(0, hasDescendant(withText("90.0 ft.")))))
+                .check(matches(TestUtil.atPosition(1, hasDescendant(withText("Capuchin Monkeys")))))
+                .check(matches(TestUtil.atPosition(1, hasDescendant(withText("Monkey Trail")))))
+                .check(matches(TestUtil.atPosition(1, hasDescendant(withText("240.0 ft.")))));
 
     }
 }

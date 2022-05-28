@@ -20,6 +20,8 @@ public interface ExhibitListItemDao {
     @Query("SELECT * FROM `exhibit_node_items` WHERE `kind`='exhibit'")
     List<ExhibitNodeItem> getAllExhibits();
 
+    @Query("SELECT * FROM `exhibit_node_items`")
+    List<ExhibitNodeItem> getAllNodes();
 
     @Query("SELECT * FROM `exhibit_node_items` WHERE `name` LIKE '%' ||:name || '%'"
             + "AND `kind`='exhibit'")
@@ -31,4 +33,8 @@ public interface ExhibitListItemDao {
 
     @Query("SELECT * FROM `exhibit_node_items` WHERE `node_id`=:node_id")
     ExhibitNodeItem getExhibitByNodeId(String node_id);
+
+    @Query("DELETE FROM `exhibit_node_items`")
+    void deleteExhibitItems();
+
 }

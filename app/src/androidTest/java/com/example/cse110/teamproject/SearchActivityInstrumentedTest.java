@@ -4,33 +4,23 @@ import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.replaceText;
-import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
 import android.content.Context;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 
-import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
-import android.widget.TextView;
-
-import androidx.annotation.NonNull;
 import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.matcher.BoundedMatcher;
+import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.matcher.RootMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
@@ -39,12 +29,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.*;
 
 import java.util.List;
 
 /**
- * Instrumented test, which will execute on an Android device.
+ * Instrumented oldDataTest, which will execute on an Android device.
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
@@ -58,19 +47,23 @@ public class SearchActivityInstrumentedTest {
     public ActivityScenarioRule<MainActivity> rule = new ActivityScenarioRule<>(MainActivity.class);
 
     @Before
-    public void setUp() {
+    public void setUp()  {
         Context context = ApplicationProvider.getApplicationContext();
         testDb = Room.inMemoryDatabaseBuilder(context, ExhibitDatabase.class)
                 .allowMainThreadQueries().build();
-        ExhibitDatabase.injectTestDatabase(testDb);
 
-        exhibitListItemDao = testDb.exhibitListItemDao();
         List<ExhibitNodeItem> nodes = ExhibitNodeItem
-                .loadJSON(context, "sample_node_info.json");
+                .loadJSON(context, "zoo_node_info.json");
+        exhibitListItemDao = testDb.exhibitListItemDao();
         exhibitListItemDao.insertAll(nodes);
-
         userExhibitListItemDao = testDb.userExhibitListItemDao();
-        userExhibitListItemDao.deleteUserExhibitItems();
+
+        ExhibitDatabase.injectTestDatabase(testDb);
+    }
+
+    @After
+    public void tearDown() {
+//        testDb.close();
     }
 
     public static void forceLayout(RecyclerView recyclerView) {
@@ -78,10 +71,6 @@ public class SearchActivityInstrumentedTest {
         recyclerView.layout(0, 0, 1080, 2280);
     }
 
-    @After
-    public void tearDown() {
-        testDb.close();
-    }
 
     private static void checkNotNull(Matcher<View> itemMatcher) {
     }
@@ -95,14 +84,34 @@ public class SearchActivityInstrumentedTest {
         scenario.moveToState(Lifecycle.State.RESUMED);
 
         onView(withId(R.id.search_bar))
-                .perform(click(), replaceText("Alli"))
-                .check(matches(withText("Alli")));
+                .perform(click(), replaceText("Flami"))
+                .check(matches(withText("Flami")));
 
-        onData(equalTo("Alligators"))
+        onData(equalTo("Flamingos"))
                 .inRoot(RootMatchers.isPlatformPopup())
                 .perform(click());
 
         onView(withId(R.id.user_list))
-                .check(matches(TestUtil.atPosition(0, hasDescendant(withText("Alligators")))));
+                .check(matches(TestUtil.atPosition(0, hasDescendant(withText("Flamingos")))));
+    }
+
+    @Test
+    public void noUserExhibitsPlanButtonDisabled() {
+        ActivityScenario<MainActivity> scenario
+                = ActivityScenario.launch(MainActivity.class);
+        scenario.moveToState(Lifecycle.State.CREATED);
+        scenario.moveToState(Lifecycle.State.STARTED);
+        scenario.moveToState(Lifecycle.State.RESUMED);
+
+        onView(withId(R.id.plan_btn))
+                .perform(click());
+
+        // check if plan button is on current view -> activity is still main activity
+        try {
+            onView(withId(R.id.plan_btn))
+                    .perform(click());
+        } catch (NoMatchingViewException e) {
+            throw e;
+        }
     }
 }

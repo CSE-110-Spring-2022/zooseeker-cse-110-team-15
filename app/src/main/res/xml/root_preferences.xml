@@ -1,0 +1,15 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="@string/directions_title">
+
+        <ListPreference
+            app:defaultValue="brief_dir"
+            app:entries="@array/dir_entries"
+            app:entryValues="@array/dir_values"
+            app:key="dir_mode"
+            app:title="@string/direction_mode"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
