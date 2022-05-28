@@ -103,7 +103,6 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
         pathManager = new PathManager(this);
         pathChangeObserver = path -> {
             pathList = path;
-            currentPath = pathList.get(directionOrder);
             switchDirectionMode(briefMode);
             displayDestinationInfo();
             updateButtonAndLabel();
