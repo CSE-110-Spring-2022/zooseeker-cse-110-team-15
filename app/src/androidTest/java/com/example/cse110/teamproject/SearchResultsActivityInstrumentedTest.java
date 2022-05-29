@@ -21,7 +21,8 @@ import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import org.hamcrest.Matcher;
+import com.example.cse110.teamproject.util.TestUtil;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -65,10 +66,11 @@ public class SearchResultsActivityInstrumentedTest {
         recyclerView.layout(0, 0, 1080, 2280);
     }
 
-//    @After
-//    public void tearDown() {
-//        testDb.close();
-//    }
+    @After
+    public void tearDown() {
+        ExhibitDatabase.resetSingleton();
+        testDb.close();
+    }
 
     @Test
     public void testSearchExhibit() {
