@@ -110,4 +110,36 @@ public class PathFinder {
         return DijkstraShortestPath.findPathBetween(zooGraph, currLoc, fixedNext);
     }
 
+    public static List<GraphPath<String, IdentifiedWeightedEdge>> findPathGivenExcludedNodes
+            (Context context, String currLoc, List<String> nodesToOmit) {
+        final String start = currLoc;
+
+        // load user exhibits into searchList
+        Set<String> searchList = ExhibitDatabase.getSingleton(context)
+                .userExhibitListItemDao().getAllUserExhibits().stream()
+                .map(n -> n.node_id)
+                .collect(Collectors.toSet());
+
+        // remove selected nodes from searchList
+        for (String s : nodesToOmit) {
+            searchList.remove(s);
+        }
+
+        Graph<String, IdentifiedWeightedEdge> zooGraph = ZooData.loadZooGraphJSON(context, context.getResources().getString(R.string.curr_graph_info));
+
+        List<GraphPath<String, IdentifiedWeightedEdge>> calculatedPaths = findPath(searchList, zooGraph, start);
+
+        PathItemDao pathItemDao = ExhibitDatabase.getSingleton(context).pathItemDao();
+        pathItemDao.deletePathItems();
+
+        for (int i = 0; i < calculatedPaths.size(); i++) {
+            pathItemDao.insert(new PathItem(calculatedPaths.get(i).getEndVertex(),
+                    calculatedPaths.get(i).getEdgeList().stream()
+                            .map(e -> e.getId()).collect(Collectors.toList()),
+                    i));
+        }
+
+        return calculatedPaths;
+    }
+
 }
