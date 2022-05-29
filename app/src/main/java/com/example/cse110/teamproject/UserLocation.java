@@ -2,6 +2,7 @@ package com.example.cse110.teamproject;
 
 import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
@@ -12,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -28,6 +30,7 @@ public class UserLocation {
     private Location lastVisitedLocation;
     private Location currentLocation;
     List<LocationObserver> observers;
+    @RequiresApi(api = Build.VERSION_CODES.S)
     UserLocation(ComponentActivity context) {
 
         this.context = context;

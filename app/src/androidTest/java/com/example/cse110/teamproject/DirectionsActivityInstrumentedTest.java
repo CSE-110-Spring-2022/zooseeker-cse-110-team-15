@@ -93,7 +93,7 @@ public class DirectionsActivityInstrumentedTest {
 //    https://stackoverflow.com/questions/8605611/get-context-of-test-project-in-android-junit-test-case
         Context context = ApplicationProvider.getApplicationContext();
 
-        List<String> exhibitIDs = new ArrayList<>(List.of("koi", "intxn_front_treetops"));
+        List<String> exhibitIDs = new ArrayList<>(List.of("entrance_exit_gate", "koi", "intxn_front_treetops"));
         List<LatLng> latLngs = TestUtil.convertNodeIDToLatLng(exhibitListItemDao, exhibitIDs);
         Map<String, LatLng> nodeIDsToLatLngsMap = TestUtil.zipToMap(exhibitIDs, latLngs);
 
@@ -124,16 +124,18 @@ public class DirectionsActivityInstrumentedTest {
                 .perform(click());
 
         // check gate path is in list
-        onView(withId(R.id.direction_steps)) .perform(waitForText("Gate Path", 5000));
+        mockLocation.setCurrLocation(nodeIDsToLatLngsMap.get("entrance_exit_gate"));
+
+        onView(withId(R.id.direction_steps)).perform(waitForText("Gate Path", 5000));
 
         // check gate path is still in list when still on path
         mockLocation.setCurrLocation(nodeIDsToLatLngsMap.get("intxn_front_treetops"));
 
-        onView(withId(R.id.direction_steps)) .perform(waitForText("Gate Path", 5000));
+        onView(withId(R.id.direction_steps)).perform(waitForText("Gate Path", 5000));
 
         // move to koi and check koi is in path
         mockLocation.setCurrLocation(nodeIDsToLatLngsMap.get("koi"));
 
-        onView(withId(R.id.direction_steps)) .perform(waitForText("Koi Fish", 5000));
+        onView(withId(R.id.direction_steps)).perform(waitForText("Koi Fish", 5000));
     }
 }
