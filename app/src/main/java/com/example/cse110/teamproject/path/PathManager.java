@@ -94,7 +94,12 @@ public class PathManager implements LocationObserver {
      * @param nextExhibitID The ID of the fixed next exhibit in the directions
      */
     private void recalculateToExhibit(String currVertexLocation, String nextExhibitID) {
-        paths.set(currentDirectionIndex, PathFinder.findPathToFixedNext(context, currVertexLocation, nextExhibitID));
+        recalculateToExhibit(currVertexLocation, nextExhibitID, currentDirectionIndex);
+    }
+
+    private void recalculateToExhibit(String currVertexLocation, String nextExhibitID, int locationIndex) {
+        PathInfo path = paths.get(locationIndex);
+        path.setPath(PathFinder.findPathToFixedNext(context, currVertexLocation, nextExhibitID));
         notifyPathChanged();
     }
 

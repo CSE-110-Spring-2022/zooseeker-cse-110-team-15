@@ -101,15 +101,10 @@ public class PathFinder {
         return paths;
     }
 
-    public static PathInfo findPathToFixedNext(Context context, String currLoc, String fixedNext) {
-        Set<String> searchList = ExhibitDatabase.getSingleton(context)
-                .userExhibitListItemDao().getAllUserExhibits().stream()
-                .map(n -> n.node_id)
-                .collect(Collectors.toSet());
-
+    public static GraphPath<String, IdentifiedWeightedEdge> findPathToFixedNext(Context context, String currLoc, String fixedNext) {
         Graph<String, IdentifiedWeightedEdge> zooGraph = ZooData.loadZooGraphJSON(context, context.getResources().getString(R.string.curr_graph_info));
 
-        return new PathInfo(DijkstraShortestPath.findPathBetween(zooGraph, currLoc, fixedNext));
+        return DijkstraShortestPath.findPathBetween(zooGraph, currLoc, fixedNext);
     }
 
     public static List<GraphPath<String, IdentifiedWeightedEdge>> findPathGivenExcludedNodes
