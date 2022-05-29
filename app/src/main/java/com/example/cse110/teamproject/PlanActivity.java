@@ -2,6 +2,7 @@ package com.example.cse110.teamproject;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -42,12 +43,13 @@ public class PlanActivity extends AppCompatActivity {
         Map<String, ZooData.EdgeInfo> eInfo = ZooData.loadEdgeInfoJSON(this, this.getResources().getString(R.string.curr_edge_info));
 
         totalDistance = 0;
+
         planItemList = PathFinder.findPath(this).stream().map(pathInfo-> {
             GraphPath<String, IdentifiedWeightedEdge> gp = pathInfo.getPath();
             List<IdentifiedWeightedEdge> identifiedWeightedEdges = gp.getEdgeList();
             double pathWeight = gp.getWeight();
             totalDistance += pathWeight;
-            String nodeName = exhibitListItemDao.getExhibitByNodeId(gp.getEndVertex()).name;
+            String nodeName = exhibitListItemDao.getExhibitByNodeId(pathInfo.nodeId).name;
             String edgeID = identifiedWeightedEdges.get(identifiedWeightedEdges.size() - 1).getId();
             String edgeName = eInfo.get(edgeID).street;
             return new PlanItem(edgeName, nodeName, totalDistance);

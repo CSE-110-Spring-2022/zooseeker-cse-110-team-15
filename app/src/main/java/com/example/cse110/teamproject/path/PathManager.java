@@ -103,7 +103,12 @@ public class PathManager implements LocationObserver {
      * @param nextExhibitID The ID of the fixed next exhibit in the directions
      */
     private void recalculateToExhibit(String currVertexLocation, String nextExhibitID) {
-        paths.set(currentDirectionIndex, PathFinder.findPathToFixedNext(context, currVertexLocation, nextExhibitID));
+        recalculateToExhibit(currVertexLocation, nextExhibitID, currentDirectionIndex);
+    }
+
+    private void recalculateToExhibit(String currVertexLocation, String nextExhibitID, int locationIndex) {
+        PathInfo path = paths.get(locationIndex);
+        path.setPath(PathFinder.findPathToFixedNext(context, currVertexLocation, nextExhibitID));
         notifyPathChanged();
     }
 
@@ -132,7 +137,7 @@ public class PathManager implements LocationObserver {
 
         // concatenate latter part of the path [curr, curr + recalc_len] to the former (indices [0, curr-1]), and return resulting path
         for (int i = currentDirectionIndex; i < currentDirectionIndex + latterPathSegment.size(); i++) {
-            paths.set(i, new PathInfo(latterPathSegment.get(i - currentDirectionIndex)));
+            paths.set(i, new PathInfo("BLEH", latterPathSegment.get(i - currentDirectionIndex)));
         }
         notifyPathChanged();
     }
@@ -199,8 +204,8 @@ public class PathManager implements LocationObserver {
         boolean isUserCloserToLaterExhibits = false;
 
         // check if the user is closer to the later exhibits in the path
-        for(int i = currentDirectionIndex + 1; i < vertexList.size(); i++) {
-            if(Objects.equals(closestExhibit, vertexList.get(i))) {
+        for (int i = currentDirectionIndex + 1; i < vertexList.size(); i++) {
+            if (Objects.equals(closestExhibit, vertexList.get(i))) {
                 isUserCloserToLaterExhibits = true;
                 break;
             }
@@ -212,9 +217,28 @@ public class PathManager implements LocationObserver {
             notifyUserOffTrack();
 
             // if yes, replan their path so that their closest exhibit is now their next exhibit
-            if(userReaction) {
+            if (userReaction) {
                 recalculateOverall(closestExhibit);
             }
+        }
+    }
+
+    public void reverseRoute(int currPathIndex) {
+        PathInfo pathInfo = paths.get(currPathIndex);
+        PathInfo.Direction newDirection = (pathInfo.getDirection() == PathInfo.Direction.FORWARDS) ? PathInfo.Direction.REVERSE : PathInfo.Direction.FORWARDS;
+        pathInfo.setDirection(newDirection);
+
+        GraphPath<String, IdentifiedWeightedEdge> graphPath = pathInfo.getPath();
+        String startVertexID = graphPath.getStartVertex();
+        String endVertexID = graphPath.getEndVertex();
+        recalculateToExhibit(endVertexID, startVertexID, currPathIndex);
+    }
+
+    // will make route match direction specified by reversing if necessary
+    public void updateRouteDirection(int currPathIndex, PathInfo.Direction direction) {
+        PathInfo pathInfo = paths.get(currPathIndex);
+        if (!(pathInfo.getDirection() == direction)) {
+            reverseRoute(currPathIndex);
         }
     }
 }
