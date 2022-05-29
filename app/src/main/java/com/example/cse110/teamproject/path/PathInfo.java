@@ -5,12 +5,15 @@ import com.example.cse110.teamproject.IdentifiedWeightedEdge;
 import org.jgrapht.GraphPath;
 
 public class PathInfo {
+    public String nodeId;
+    private Direction direction = Direction.FORWARDS;
+
     public enum Direction {
         FORWARDS, REVERSE
     }
     protected GraphPath<String, IdentifiedWeightedEdge> path;
-    protected Direction direction = Direction.FORWARDS;
-    PathInfo(GraphPath<String, IdentifiedWeightedEdge> path) {
+    PathInfo(String nodeId, GraphPath<String, IdentifiedWeightedEdge> path) {
+        this.nodeId = nodeId;
         this.path = path;
     }
 

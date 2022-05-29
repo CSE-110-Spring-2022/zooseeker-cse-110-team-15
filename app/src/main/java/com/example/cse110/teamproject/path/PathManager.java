@@ -128,7 +128,7 @@ public class PathManager implements LocationObserver {
 
         // concatenate latter part of the path [curr, curr + recalc_len] to the former (indices [0, curr-1]), and return resulting path
         for (int i = currentDirectionIndex; i < currentDirectionIndex + latterPathSegment.size(); i++) {
-            paths.set(i, new PathInfo(latterPathSegment.get(i - currentDirectionIndex)));
+            paths.set(i, new PathInfo("BLEH", latterPathSegment.get(i - currentDirectionIndex)));
         }
         notifyPathChanged();
     }
@@ -188,7 +188,7 @@ public class PathManager implements LocationObserver {
 
     public void reverseRoute(int currPathIndex) {
         PathInfo pathInfo = paths.get(currPathIndex);
-        PathInfo.Direction newDirection = (pathInfo.direction == PathInfo.Direction.FORWARDS) ? PathInfo.Direction.REVERSE : PathInfo.Direction.FORWARDS;
+        PathInfo.Direction newDirection = (pathInfo.getDirection() == PathInfo.Direction.FORWARDS) ? PathInfo.Direction.REVERSE : PathInfo.Direction.FORWARDS;
         pathInfo.setDirection(newDirection);
 
         GraphPath<String, IdentifiedWeightedEdge> graphPath = pathInfo.getPath();
@@ -200,7 +200,7 @@ public class PathManager implements LocationObserver {
     // will make route match direction specified by reversing if necessary
     public void updateRouteDirection(int currPathIndex, PathInfo.Direction direction) {
         PathInfo pathInfo = paths.get(currPathIndex);
-        if (!(pathInfo.direction == direction)) {
+        if (!(pathInfo.getDirection() == direction)) {
             reverseRoute(currPathIndex);
         }
     }
