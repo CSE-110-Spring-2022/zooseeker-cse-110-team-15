@@ -11,6 +11,7 @@ import com.example.cse110.teamproject.ExhibitNodeItem;
 import com.example.cse110.teamproject.IdentifiedWeightedEdge;
 import com.example.cse110.teamproject.LocationObserver;
 
+import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
 
 import java.nio.file.Path;
@@ -84,14 +85,59 @@ public class PathManager implements LocationObserver {
         return false;
     }
 
+    /**
+     * Updates path with modified path to the current exhibit (observes currentDirectionIndex).
+     * Called automatically with observation of userOffTrack changes.
+     *
+     * @param currVertexLocation Current location of the user (as a vertex)
+     * @param nextExhibitID The ID of the fixed next exhibit in the directions
+     */
     private void recalculateToExhibit(String currVertexLocation, String nextExhibitID) {
         paths.set(currentDirectionIndex, PathFinder.findPathToFixedNext(context, currVertexLocation, nextExhibitID));
+        notifyPathChanged();
     }
+
+    /**
+     * Updates path with modified path given that there is a different closest exhibit that was
+     * added to the plan. Any previous exhibits in the directions are unchanged. However the
+     * current exhibit referred to in directions is changed, and the following exhibits in the
+     * directions may also have changed indices. In other words, the findPath method is
+     * effectively run with the restriction of operating on the current vertex and on strictly
+     * following vertices, i.e., the omission of previous nodes.
+     *
+     * Note that the ReplanNotification class should handle the determination of whether or not
+     * to call this method
+     *
+     * @param currVertexLocation Current location of the user (as a vertex)
+     */
+    public void recalculateOverall(String currVertexLocation) {
+        List<String> nodesToOmit = new ArrayList<>();
+        for (int i = 0; i < currentDirectionIndex; i++) {
+            // objective vertex of the current directions page represented by end vertex of current path
+            nodesToOmit.add(paths.get(i).getEndVertex());
+        }
+        // recalculate latter path of the path
+        List<GraphPath<String, IdentifiedWeightedEdge>> latterPathSegment =
+                PathFinder.findPathGivenExcludedNodes(context, currVertexLocation, nodesToOmit);
+
+        // concatenate latter part of the path [curr, curr + recalc_len] to the former (indices [0, curr-1]), and return resulting path
+        for (int i = currentDirectionIndex; i < currentDirectionIndex + latterPathSegment.size(); i++) {
+            paths.set(i, latterPathSegment.get(i - currentDirectionIndex));
+        }
+
+    }
+
+    List<PathChangeObserver> pathChangeObservers;
 
     public void notifyPathChanged() {
         for (PathChangeObserver o : pathChangeObservers) {
             o.update(paths);
         }
+    }
+
+    // ReplanNotification class handles this observation/logic
+    public void notifyPathChangedWithDiffFirst() {
+
     }
 
     public void addPathChangeObserver(PathChangeObserver o) {
@@ -103,7 +149,7 @@ public class PathManager implements LocationObserver {
     }
 
 
-    List<PathChangeObserver> pathChangeObservers;
+
 
     //
 //    public void notifyUserOffTrack(GraphPath<String, IdentifiedWeightedEdge> currentPath) {
@@ -115,10 +161,18 @@ public class PathManager implements LocationObserver {
 //
 //    }
 
+
+    /**
+     * Implementation of the observer interface method for user location changes.
+     * Automatically class userOffTrack, which continuously updates the directions to the
+     * fixed next exhibit as the user location changes.
+     *
+     * @param currentLocation Current user location (as Location)
+     */
     public void updateLocation(Location currentLocation) {
         this.currentLocation = currentLocation;
         userOffTrack(currentLocation);
-        notifyPathChanged();
+        // notifyPathChanged();
     }
 
 
