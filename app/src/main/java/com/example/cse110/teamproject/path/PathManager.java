@@ -185,4 +185,23 @@ public class PathManager implements LocationObserver {
     public void updateCurrentDirectionIndex(int directionOrder) {
         this.currentDirectionIndex = directionOrder;
     }
+
+    public void reverseRoute(int currPathIndex) {
+        PathInfo pathInfo = paths.get(currPathIndex);
+        PathInfo.Direction newDirection = (pathInfo.direction == PathInfo.Direction.FORWARDS) ? PathInfo.Direction.REVERSE : PathInfo.Direction.FORWARDS;
+        pathInfo.setDirection(newDirection);
+
+        GraphPath<String, IdentifiedWeightedEdge> graphPath = pathInfo.getPath();
+        String startVertexID = graphPath.getStartVertex();
+        String endVertexID = graphPath.getEndVertex();
+        recalculateToExhibit(endVertexID, startVertexID, currPathIndex);
+    }
+
+    // will make route match direction specified by reversing if necessary
+    public void updateRouteDirection(int currPathIndex, PathInfo.Direction direction) {
+        PathInfo pathInfo = paths.get(currPathIndex);
+        if (!(pathInfo.direction == direction)) {
+            reverseRoute(currPathIndex);
+        }
+    }
 }
