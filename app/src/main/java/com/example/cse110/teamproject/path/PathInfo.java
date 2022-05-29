@@ -6,7 +6,10 @@ import org.jgrapht.GraphPath;
 
 public class PathInfo {
     protected GraphPath<String, IdentifiedWeightedEdge> path;
-    PathInfo(GraphPath<String, IdentifiedWeightedEdge> path) {
+    public String nodeId;
+
+    PathInfo(String nodeId, GraphPath<String, IdentifiedWeightedEdge> path) {
+        this.nodeId = nodeId;
         this.path = path;
     }
 

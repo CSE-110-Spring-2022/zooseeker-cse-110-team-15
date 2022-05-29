@@ -250,8 +250,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
     @SuppressLint("DefaultLocale")
     public void displayDestinationInfo() {
         List<IdentifiedWeightedEdge> edgeList = currentPath.getEdgeList();
-        String destId = currentPath.getEndVertex();
-        ExhibitNodeItem destinationNode = exhibitListItemDao.getExhibitByNodeId(destId);
+        ExhibitNodeItem destinationNode = exhibitListItemDao.getExhibitByNodeId(currentPathInfo.nodeId);
 
 
         destName.setText(destinationNode.name);
