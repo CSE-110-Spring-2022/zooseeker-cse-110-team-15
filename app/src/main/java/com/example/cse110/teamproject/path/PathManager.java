@@ -10,6 +10,8 @@ import com.example.cse110.teamproject.ExhibitListItemDao;
 import com.example.cse110.teamproject.ExhibitNodeItem;
 import com.example.cse110.teamproject.IdentifiedWeightedEdge;
 import com.example.cse110.teamproject.LocationObserver;
+import com.example.cse110.teamproject.ReplanNotification;
+import com.example.cse110.teamproject.UserOffTrackObserver;
 
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
@@ -17,6 +19,7 @@ import org.jgrapht.GraphPath;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 // stores path and changes it
@@ -29,11 +32,17 @@ public class PathManager implements LocationObserver {
 
     ExhibitListItemDao exhibitListItemDao;
 
+    List<PathChangeObserver> pathChangeObservers;
+    List<UserOffTrackObserver> userOffTrackObservers;
+
+    //ReplanNotification replanNotification;
+
     public PathManager(Context context) {
         exhibitListItemDao = ExhibitDatabase.getSingleton(context)
                 .exhibitListItemDao();
         paths = PathFinder.findPath(context);
         pathChangeObservers = new ArrayList<>();
+        userOffTrackObservers = new ArrayList<>();
         this.context = context;
     }
 
@@ -128,8 +137,6 @@ public class PathManager implements LocationObserver {
         notifyPathChanged();
     }
 
-    List<PathChangeObserver> pathChangeObservers;
-
     public void notifyPathChanged() {
         Log.d("path_update", "updated" + paths.toString());
         for (PathChangeObserver o : pathChangeObservers) {
@@ -150,18 +157,18 @@ public class PathManager implements LocationObserver {
         return this.paths;
     }
 
+    public void addUserOffTrackObserver(UserOffTrackObserver o) {
+        userOffTrackObservers.add(o);
+    }
 
+    public void notifyUserOffTrack() {
+        // TODO
+        // notifyOnTrackObservers() (for US3 Notify and Replan)
+        for (UserOffTrackObserver o : userOffTrackObservers) {
+            o.update();
+        }
 
-
-    //
-//    public void notifyUserOffTrack(GraphPath<String, IdentifiedWeightedEdge> currentPath) {
-//        // TODO
-//        // notifyOnTrackObservers() (for US3 Notify and Replan)
-//        for (PathChangeObserver o : pathChangeObservers) {
-//            o.update(currentPath);
-//        }
-//
-//    }
+    }
 
 
     /**
@@ -179,5 +186,35 @@ public class PathManager implements LocationObserver {
 
     public void updateCurrentDirectionIndex(int directionOrder) {
         this.currentDirectionIndex = directionOrder;
+    }
+
+    // When user is off track...
+    public void replanPath(Location currentLocation) {
+        PathInfo currentPath;
+        currentPath = paths.get(currentDirectionIndex);
+        List<String> vertexList = currentPath.getPath().getVertexList();
+        boolean userReaction = false;
+
+        String closestExhibit = currentVertexLocation(currentLocation);
+        boolean isUserCloserToLaterExhibits = false;
+
+        // check if the user is closer to the later exhibits in the path
+        for(int i = currentDirectionIndex + 1; i < vertexList.size(); i++) {
+            if(Objects.equals(closestExhibit, vertexList.get(i))) {
+                isUserCloserToLaterExhibits = true;
+                break;
+            }
+        }
+
+        // if the user is off-track and is closer to the later exhibits in the path
+        if (userOffTrack(currentLocation) && isUserCloserToLaterExhibits) {
+            // then ask them if they want to replan their path
+            notifyUserOffTrack();
+
+            // if yes, replan their path so that their closest exhibit is now their next exhibit
+            if(userReaction) {
+                recalculateOverall(closestExhibit);
+            }
+        }
     }
 }

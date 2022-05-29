@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class ExhibitsDirectionsActivity extends AppCompatActivity {
+public class ExhibitsDirectionsActivity extends AppCompatActivity implements UserOffTrackObserver {
     final String DIR_FORMAT = "%d. Walk %.0f feet along %s from '%s' to '%s'.\n\n";
     final String DIST_FORMAT = "%.0f ft";
     final String EMPTY_STRING = "";
@@ -136,6 +136,16 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
         }
 
         sharedPreferenceChangeListener(preferences);
+    }
+
+
+    // update when user goes off track
+    public void update() {
+        ReplanNotification replanNotification = new ReplanNotification();
+        replanNotification.show(getSupportFragmentManager(), "");
+
+        if (replanNotification.getUserReaction()) {
+        }
     }
 
     private void sharedPreferenceChangeListener(SharedPreferences sp) {
