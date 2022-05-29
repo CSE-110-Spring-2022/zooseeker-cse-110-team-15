@@ -18,19 +18,21 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class PathFinder {
 
     // calculates path given search list, graph - no calls to database
-    private static List<GraphPath<String, IdentifiedWeightedEdge>> findPath(
+    private static List<Pair<String, GraphPath<String, IdentifiedWeightedEdge>>> findPath(
             Set<String> searchList,
             Graph<String, IdentifiedWeightedEdge> zooGraph,
-            String firstNode) {
+            String firstNode,
+            Map<String, ZooData.VertexInfo> vInfo) {
         String start = firstNode;
 
-        List<GraphPath<String, IdentifiedWeightedEdge>> calculatedPaths = new ArrayList();
+        List<Pair<String, GraphPath<String, IdentifiedWeightedEdge>>> calculatedPaths = new ArrayList();
 
         DijkstraShortestPath dijkstras = new DijkstraShortestPath(zooGraph);
 
@@ -39,28 +41,41 @@ public class PathFinder {
 
             // find exhibit with shortest path
             Pair<String, Double> shortestPair = null;
+            String childNodeId = null;
+            String parentId = null;
+            String currExhibit = null;
+
             for (String exhibit : searchList) {
-                double currWeight = paths.getWeight(exhibit);
+                currExhibit = exhibit;
+
+                parentId = vInfo.get(exhibit).parent_id;
+
+                if (parentId != null) {
+                    currExhibit = parentId;
+                }
+                double currWeight = paths.getWeight(currExhibit);
                 if ((shortestPair == null) || currWeight < shortestPair.second) {
-                    shortestPair = new Pair(exhibit, currWeight);
+                    childNodeId = exhibit;
+                    shortestPair = new Pair(currExhibit, currWeight);
                 }
             }
 
             // add path to return list
-            calculatedPaths.add(paths.getPath(shortestPair.first));
+            calculatedPaths.add(new Pair(childNodeId, paths.getPath(shortestPair.first)));
             start = shortestPair.first;
 
-            searchList.remove(shortestPair.first);
+            searchList.remove(childNodeId);
         }
 
         // calculate path from last exhibit back to entrance/exit gate
         if (calculatedPaths.size() > 0) {
-            String lastExhibitId = calculatedPaths.get(calculatedPaths.size()-1).getEndVertex();
+            String lastExhibitId = calculatedPaths.get(calculatedPaths.size()-1).second.getEndVertex();
             GraphPath<String, IdentifiedWeightedEdge> lastPath =
                     DijkstraShortestPath.findPathBetween(zooGraph, lastExhibitId, firstNode);
 
             // add the last path to path list
-            calculatedPaths.add(lastPath);
+            String childNodeId = calculatedPaths.get(calculatedPaths.size()-1).first;
+            calculatedPaths.add(new Pair(firstNode, lastPath));
         }
 
         return calculatedPaths;
@@ -69,6 +84,10 @@ public class PathFinder {
     // calculates paths with database + context for json
     public static List<PathInfo> findPath(Context context) {
         final String start = "entrance_exit_gate";
+
+        // Initialize vertex info map to be used for finding path
+        String nodeInfo = context.getResources().getString(R.string.curr_node_info);
+        Map<String, ZooData.VertexInfo> vInfo = ZooData.loadVertexInfoJSON(context, nodeInfo);
 
         // initialize some empty List<> calculatedPath
 
@@ -83,20 +102,21 @@ public class PathFinder {
         // construct graph
         Graph<String, IdentifiedWeightedEdge> zooGraph = ZooData.loadZooGraphJSON(context, context.getResources().getString(R.string.curr_graph_info));
 
-        List<GraphPath<String, IdentifiedWeightedEdge>> calculatedPaths = findPath(searchList, zooGraph, start);
+        List<Pair<String, GraphPath<String, IdentifiedWeightedEdge>>> calculatedPaths = findPath(searchList, zooGraph, start, vInfo);
 
         PathItemDao pathItemDao = ExhibitDatabase.getSingleton(context).pathItemDao();
         pathItemDao.deletePathItems();
 
         for (int i = 0; i < calculatedPaths.size(); i++) {
-            pathItemDao.insert(new PathItem(calculatedPaths.get(i).getEndVertex(),
-                    calculatedPaths.get(i).getEdgeList().stream()
+            pathItemDao.insert(new PathItem(calculatedPaths.get(i).second.getEndVertex(),
+//            pathItemDao.insert(new PathItem(calculatedPaths.get(i).first,
+                    calculatedPaths.get(i).second.getEdgeList().stream()
                             .map(e -> e.getId()).collect(Collectors.toList()),
                     i));
         }
 
         List<PathInfo> paths = calculatedPaths.stream().map((path) ->
-                new PathInfo(path)).collect(Collectors.toList());
+                new PathInfo(path.first, path.second)).collect(Collectors.toList());
 
         return paths;
     }
@@ -109,12 +129,25 @@ public class PathFinder {
 
         Graph<String, IdentifiedWeightedEdge> zooGraph = ZooData.loadZooGraphJSON(context, context.getResources().getString(R.string.curr_graph_info));
 
-        return new PathInfo(DijkstraShortestPath.findPathBetween(zooGraph, currLoc, fixedNext));
+        // Initialize vertex info map to be used for finding path
+        String nodeInfo = context.getResources().getString(R.string.curr_node_info);
+        Map<String, ZooData.VertexInfo> vInfo = ZooData.loadVertexInfoJSON(context, nodeInfo);
+
+        String childNodeId = fixedNext;
+        if (vInfo.get(fixedNext).parent_id != null) {
+            fixedNext = vInfo.get(fixedNext).parent_id;
+        }
+
+        return new PathInfo(childNodeId, DijkstraShortestPath.findPathBetween(zooGraph, currLoc, fixedNext));
     }
 
     public static List<GraphPath<String, IdentifiedWeightedEdge>> findPathGivenExcludedNodes
             (Context context, String currLoc, List<String> nodesToOmit) {
         final String start = currLoc;
+
+        // Initialize vertex info map to be used for finding path
+        String nodeInfo = context.getResources().getString(R.string.curr_node_info);
+        Map<String, ZooData.VertexInfo> vInfo = ZooData.loadVertexInfoJSON(context, nodeInfo);
 
         // load user exhibits into searchList
         Set<String> searchList = ExhibitDatabase.getSingleton(context)
@@ -129,19 +162,25 @@ public class PathFinder {
 
         Graph<String, IdentifiedWeightedEdge> zooGraph = ZooData.loadZooGraphJSON(context, context.getResources().getString(R.string.curr_graph_info));
 
-        List<GraphPath<String, IdentifiedWeightedEdge>> calculatedPaths = findPath(searchList, zooGraph, start);
+        List<Pair<String, GraphPath<String, IdentifiedWeightedEdge>>> calculatedPaths = findPath(searchList, zooGraph, start, vInfo);
 
         PathItemDao pathItemDao = ExhibitDatabase.getSingleton(context).pathItemDao();
         pathItemDao.deletePathItems();
 
         for (int i = 0; i < calculatedPaths.size(); i++) {
-            pathItemDao.insert(new PathItem(calculatedPaths.get(i).getEndVertex(),
-                    calculatedPaths.get(i).getEdgeList().stream()
+            pathItemDao.insert(new PathItem(calculatedPaths.get(i).second.getEndVertex(),
+                    calculatedPaths.get(i).second.getEdgeList().stream()
                             .map(e -> e.getId()).collect(Collectors.toList()),
                     i));
         }
 
-        return calculatedPaths;
+        List<GraphPath<String, IdentifiedWeightedEdge>> returnPathList = new ArrayList();
+
+        for (Pair<String, GraphPath<String, IdentifiedWeightedEdge>> pair : calculatedPaths) {
+            returnPathList.add(pair.second);
+        }
+
+        return returnPathList;
     }
 
 }

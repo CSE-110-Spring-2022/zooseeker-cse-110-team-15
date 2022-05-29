@@ -123,7 +123,7 @@ public class PathManager implements LocationObserver {
 
         // concatenate latter part of the path [curr, curr + recalc_len] to the former (indices [0, curr-1]), and return resulting path
         for (int i = currentDirectionIndex; i < currentDirectionIndex + latterPathSegment.size(); i++) {
-            paths.set(i, new PathInfo(latterPathSegment.get(i - currentDirectionIndex)));
+            paths.set(i, new PathInfo("BLEH", latterPathSegment.get(i - currentDirectionIndex)));
         }
         notifyPathChanged();
     }
