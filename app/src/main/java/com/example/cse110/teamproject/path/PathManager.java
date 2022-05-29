@@ -17,11 +17,12 @@ import org.jgrapht.GraphPath;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 // stores path and changes it
 public class PathManager implements LocationObserver {
 
-    List<GraphPath<String, IdentifiedWeightedEdge>> paths;
+    List<PathInfo> paths;
     Location currentLocation;
     private int currentDirectionIndex;
     Context context;
@@ -70,7 +71,7 @@ public class PathManager implements LocationObserver {
 
     // off track is determined in relation to the current directions page the user is on.
     public boolean userOffTrack(Location currentLocation) {
-        GraphPath<String,IdentifiedWeightedEdge> currentPath = paths.get(currentDirectionIndex);
+        GraphPath<String,IdentifiedWeightedEdge> currentPath = paths.get(currentDirectionIndex).getPath();
         List<String> currentPathVertices = currentPath.getVertexList();
         String currVertexLocation = currentVertexLocation(currentLocation);
         Log.d("<user location>", currVertexLocation);
@@ -114,7 +115,7 @@ public class PathManager implements LocationObserver {
         List<String> nodesToOmit = new ArrayList<>();
         for (int i = 0; i < currentDirectionIndex; i++) {
             // objective vertex of the current directions page represented by end vertex of current path
-            nodesToOmit.add(paths.get(i).getEndVertex());
+            nodesToOmit.add(paths.get(i).getPath().getEndVertex());
         }
         // recalculate latter path of the path
         List<GraphPath<String, IdentifiedWeightedEdge>> latterPathSegment =
@@ -122,7 +123,7 @@ public class PathManager implements LocationObserver {
 
         // concatenate latter part of the path [curr, curr + recalc_len] to the former (indices [0, curr-1]), and return resulting path
         for (int i = currentDirectionIndex; i < currentDirectionIndex + latterPathSegment.size(); i++) {
-            paths.set(i, latterPathSegment.get(i - currentDirectionIndex));
+            paths.set(i, new PathInfo(latterPathSegment.get(i - currentDirectionIndex)));
         }
         notifyPathChanged();
     }
@@ -145,7 +146,7 @@ public class PathManager implements LocationObserver {
         pathChangeObservers.add(o);
     }
 
-    public List<GraphPath<String, IdentifiedWeightedEdge>> getPath() {
+    public List<PathInfo> getPath() {
         return this.paths;
     }
 

@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface PathChangeObserver {
 
-    public void update(List<GraphPath<String, IdentifiedWeightedEdge>> path);
+    public void update(List<PathInfo> paths);
 
 }

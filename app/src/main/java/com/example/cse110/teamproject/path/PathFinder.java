@@ -67,7 +67,7 @@ public class PathFinder {
     }
 
     // calculates paths with database + context for json
-    public static List<GraphPath<String, IdentifiedWeightedEdge>> findPath(Context context) {
+    public static List<PathInfo> findPath(Context context) {
         final String start = "entrance_exit_gate";
 
         // initialize some empty List<> calculatedPath
@@ -95,11 +95,13 @@ public class PathFinder {
                     i));
         }
 
+        List<PathInfo> paths = calculatedPaths.stream().map((path) ->
+                new PathInfo(path)).collect(Collectors.toList());
 
-        return calculatedPaths;
+        return paths;
     }
 
-    public static GraphPath<String, IdentifiedWeightedEdge> findPathToFixedNext(Context context, String currLoc, String fixedNext) {
+    public static PathInfo findPathToFixedNext(Context context, String currLoc, String fixedNext) {
         Set<String> searchList = ExhibitDatabase.getSingleton(context)
                 .userExhibitListItemDao().getAllUserExhibits().stream()
                 .map(n -> n.node_id)
@@ -107,7 +109,7 @@ public class PathFinder {
 
         Graph<String, IdentifiedWeightedEdge> zooGraph = ZooData.loadZooGraphJSON(context, context.getResources().getString(R.string.curr_graph_info));
 
-        return DijkstraShortestPath.findPathBetween(zooGraph, currLoc, fixedNext);
+        return new PathInfo(DijkstraShortestPath.findPathBetween(zooGraph, currLoc, fixedNext));
     }
 
     public static List<GraphPath<String, IdentifiedWeightedEdge>> findPathGivenExcludedNodes

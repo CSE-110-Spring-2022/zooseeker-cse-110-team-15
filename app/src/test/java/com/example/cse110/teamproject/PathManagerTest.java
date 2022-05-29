@@ -29,6 +29,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RunWith(AndroidJUnit4.class)
 public class PathManagerTest {
@@ -77,7 +78,7 @@ public class PathManagerTest {
             userExhibitListItemDao.insert(new UserExhibitListItem("koi"));
             userExhibitListItemDao.insert(new UserExhibitListItem("gorilla"));
 
-            List<GraphPath<String,IdentifiedWeightedEdge>> paths = PathFinder.findPath(activity);
+            List<GraphPath<String,IdentifiedWeightedEdge>> paths = PathFinder.findPath(activity).stream().map((pathInfo -> pathInfo.getPath())).collect(Collectors.toList());
             int currentDirectionIndex = 0;
             GraphPath<String,IdentifiedWeightedEdge> currentPath = paths.get(currentDirectionIndex);
             List<String> currentPathVertices = currentPath.getVertexList();
@@ -141,7 +142,7 @@ public class PathManagerTest {
             assertEquals(new ArrayList<>(Arrays.asList(expectedDirections3)), thirdExhibitDirections);
 
             // check new stored path changes
-            paths = pathManager.getPath();
+            paths = pathManager.getPath().stream().map(pathInfo -> pathInfo.getPath()).collect(Collectors.toList());
             currentPath = paths.get(currentDirectionIndex);
             currentPathVertices = currentPath.getVertexList();
             assertEquals(currentPathVertices.get(0), "fern_canyon");
