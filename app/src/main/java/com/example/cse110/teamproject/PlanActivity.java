@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cse110.teamproject.path.PathFinder;
 
+import org.jgrapht.GraphPath;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,7 +42,8 @@ public class PlanActivity extends AppCompatActivity {
         Map<String, ZooData.EdgeInfo> eInfo = ZooData.loadEdgeInfoJSON(this, this.getResources().getString(R.string.curr_edge_info));
 
         totalDistance = 0;
-        planItemList = PathFinder.findPath(this).stream().map(gp-> {
+        planItemList = PathFinder.findPath(this).stream().map(pathInfo-> {
+            GraphPath<String, IdentifiedWeightedEdge> gp = pathInfo.getPath();
             List<IdentifiedWeightedEdge> identifiedWeightedEdges = gp.getEdgeList();
             double pathWeight = gp.getWeight();
             totalDistance += pathWeight;

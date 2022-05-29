@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.example.cse110.teamproject.path.PathChangeObserver;
 import com.example.cse110.teamproject.path.PathFinder;
+import com.example.cse110.teamproject.path.PathInfo;
 import com.example.cse110.teamproject.path.PathManager;
 
 import org.jgrapht.Graph;
@@ -53,9 +54,10 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
     double totalDistance;
 
     GraphPath<String, IdentifiedWeightedEdge> currentPath;
+    PathInfo currentPathInfo;
     Map<String, ZooData.EdgeInfo> eInfo;
     ExhibitListItemDao exhibitListItemDao;
-    List<GraphPath<String, IdentifiedWeightedEdge>> pathList;
+    List<PathInfo> pathList;
     Graph<String, IdentifiedWeightedEdge> zooGraph;
     UserLocation location;
 
@@ -103,7 +105,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
         pathManager = new PathManager(this);
         pathChangeObserver = path -> {
             pathList = path;
-            currentPath = pathList.get(directionOrder);
+            setPaths(directionOrder);
             switchDirectionMode(briefMode);
             displayDestinationInfo();
             updateButtonAndLabel();
@@ -125,7 +127,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
 
         if (pathList.size() > 0) {
             // get first path in the list
-            currentPath = pathList.get(directionOrder);
+            setPaths(directionOrder);
 
             // update the page to display correct path info
             switchDirectionMode(briefMode);
@@ -154,7 +156,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
 
     public void onPreviousIconClicked(View view) {
         // get the path for previous exhibit
-        currentPath = pathList.get(--directionOrder);
+        setPaths(--directionOrder);
         switchDirectionMode(briefMode);
         displayDestinationInfo();
         updateButtonAndLabel();
@@ -163,11 +165,16 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
 
     public void onNextIconClicked(View view) {
         // get the path for next exhibit
-        currentPath = pathList.get(++directionOrder);
+        setPaths(++directionOrder);
         switchDirectionMode(briefMode);
         displayDestinationInfo();
         updateButtonAndLabel();
         notifyDirectionOrderChange();
+    }
+
+    private void setPaths(int index) {
+        currentPathInfo = pathList.get(index);
+        currentPath = currentPathInfo.getPath();
     }
 
     public void notifyDirectionOrderChange() {
@@ -263,7 +270,8 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity {
             nextButtonLabel.setText(EMPTY_STRING);
         }
         else {
-            GraphPath<String, IdentifiedWeightedEdge> nextPath = pathList.get(directionOrder + 1);
+            PathInfo nextPathInfo = pathList.get(directionOrder + 1);
+            GraphPath<String, IdentifiedWeightedEdge> nextPath = nextPathInfo.getPath();
             String nextDestId = nextPath.getEndVertex();
             ExhibitNodeItem nextDestNode = exhibitListItemDao.getExhibitByNodeId(nextDestId);
             label = String.format(LABEL_FORMAT, nextDestNode.name, nextPath.getWeight());
