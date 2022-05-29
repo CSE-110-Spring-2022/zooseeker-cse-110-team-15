@@ -94,7 +94,12 @@ public class PathManager implements LocationObserver {
      * @param nextExhibitID The ID of the fixed next exhibit in the directions
      */
     private void recalculateToExhibit(String currVertexLocation, String nextExhibitID) {
-        paths.set(currentDirectionIndex, PathFinder.findPathToFixedNext(context, currVertexLocation, nextExhibitID));
+        recalculateToExhibit(currVertexLocation, nextExhibitID, currentDirectionIndex);
+    }
+
+    private void recalculateToExhibit(String currVertexLocation, String nextExhibitID, int locationIndex) {
+        PathInfo path = paths.get(locationIndex);
+        path.setPath(PathFinder.findPathToFixedNext(context, currVertexLocation, nextExhibitID));
         notifyPathChanged();
     }
 
@@ -179,5 +184,24 @@ public class PathManager implements LocationObserver {
 
     public void updateCurrentDirectionIndex(int directionOrder) {
         this.currentDirectionIndex = directionOrder;
+    }
+
+    public void reverseRoute(int currPathIndex) {
+        PathInfo pathInfo = paths.get(currPathIndex);
+        PathInfo.Direction newDirection = (pathInfo.getDirection() == PathInfo.Direction.FORWARDS) ? PathInfo.Direction.REVERSE : PathInfo.Direction.FORWARDS;
+        pathInfo.setDirection(newDirection);
+
+        GraphPath<String, IdentifiedWeightedEdge> graphPath = pathInfo.getPath();
+        String startVertexID = graphPath.getStartVertex();
+        String endVertexID = graphPath.getEndVertex();
+        recalculateToExhibit(endVertexID, startVertexID, currPathIndex);
+    }
+
+    // will make route match direction specified by reversing if necessary
+    public void updateRouteDirection(int currPathIndex, PathInfo.Direction direction) {
+        PathInfo pathInfo = paths.get(currPathIndex);
+        if (!(pathInfo.getDirection() == direction)) {
+            reverseRoute(currPathIndex);
+        }
     }
 }

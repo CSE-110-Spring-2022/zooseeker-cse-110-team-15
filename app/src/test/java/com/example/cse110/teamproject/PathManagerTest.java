@@ -16,6 +16,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.example.cse110.teamproject.path.PathFinder;
+import com.example.cse110.teamproject.path.PathInfo;
 import com.example.cse110.teamproject.path.PathManager;
 
 import org.jgrapht.GraphPath;
@@ -25,9 +26,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.lang.reflect.Array;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -155,56 +159,66 @@ public class PathManagerTest {
     }
 
     @Test
-    public void testFindPath() {
-
-        // lions must be visited to get to elephant_odyssey
-        // entrance_exit_gate -> entrance_plaza -> gators (INSTEAD OF gorillas) -> lions -> elephant_odyssey
-        // ... -> entrance_plaza -> arctic_foxes
-
+    public void testReversePathReversesPath() {
         ActivityScenario scenario = rule.getScenario();
         scenario.moveToState(Lifecycle.State.CREATED);
 
         scenario.onActivity(activity -> {
 
+            // path initialization
             userExhibitListItemDao.deleteUserExhibitItems();
 
             userExhibitListItemDao.insert(new UserExhibitListItem("flamingo"));
             userExhibitListItemDao.insert(new UserExhibitListItem("koi"));
             userExhibitListItemDao.insert(new UserExhibitListItem("gorilla"));
 
-            PathFinder.findPath(activity);
+            // init path manager
+            PathManager pathManager = new PathManager(activity);
 
-//            System.out.println("get all exhibits: ");
-//            System.out.println(exhibitListItemDao.getAllExhibits());
-//            System.out.println("get all user exhibits: ");
-//            System.out.println(userExhibitListItemDao.getAllUserExhibits());
-//            System.out.println("get all path items: ");
-//            System.out.println(pathItemDao.getAll());
+            int currentDirectionIndex = 0;
+            List<PathInfo> pathList = pathManager.getPath();
+            PathInfo currentPathInfo = pathList.get(currentDirectionIndex);
+            List<GraphPath<String,IdentifiedWeightedEdge>> paths = pathList.stream().map((pathInfo -> pathInfo.getPath())).collect(Collectors.toList());
+            GraphPath<String,IdentifiedWeightedEdge> currentPath = paths.get(currentDirectionIndex);
 
-            List<PathItem> directions = pathItemDao.getAll();
+            List<String> currentPathVertices = currentPath.getVertexList();
 
-            System.out.println("exhibits: " + directions);
+            List<String> expectedPath = new ArrayList<>(List.of("entrance_exit_gate", "intxn_front_treetops", "intxn_front_lagoon_1", "koi"));
+            // check original path
+            assertEquals(expectedPath, currentPathVertices);
+            assertEquals(PathInfo.Direction.FORWARDS, currentPathInfo.getDirection());
 
-            PathItem firstPathItem = directions.get(0);
-            assertEquals("koi", firstPathItem.node_id);
-            List<String> firstExhibitDirections = firstPathItem.curr_directions;
-            assertEquals("gate_to_front", firstExhibitDirections.get(0));
-            assertEquals("front_to_lagoon1", firstExhibitDirections.get(1));
-            assertEquals("lagoon1_to_koi", firstExhibitDirections.get(2));
+            // check path is same after set direction to forward
+            // do direction forward
+            pathManager.updateRouteDirection(currentDirectionIndex, PathInfo.Direction.FORWARDS);
+            assertEquals(expectedPath, currentPathVertices);
+            currentPath = paths.get(currentDirectionIndex);
+            assertEquals(PathInfo.Direction.FORWARDS, currentPathInfo.getDirection());
 
-            PathItem secondPathItem = directions.get(1);
-            assertEquals("flamingo", secondPathItem.node_id);
-            List<String> secondExhibitDirections = secondPathItem.curr_directions;
-            String[] expectedDirections2 = new String[]{"lagoon1_to_koi", "front_to_lagoon1", "front_to_monkey", "monkey_to_flamingo"};
-            assertEquals(new ArrayList<>(Arrays.asList(expectedDirections2)), secondExhibitDirections);
+            // check reversed path
+            // do direction reverse
+            pathManager.updateRouteDirection(currentDirectionIndex, PathInfo.Direction.REVERSE);
+            paths = pathManager.getPath().stream().map(pathInfo -> pathInfo.getPath()).collect(Collectors.toList());
+            currentPathInfo = pathList.get(currentDirectionIndex);
+            currentPath = paths.get(currentDirectionIndex);
 
-            PathItem thirdPathItem = directions.get(2);
-            assertEquals("gorilla", thirdPathItem.node_id);
-            List<String> thirdExhibitDirections = thirdPathItem.curr_directions;
-            String[] expectedDirections3 = new String[]{"flamingo_to_capuchin", "capuchin_to_hippo_monkey", "hippo_monkey_to_scripps", "scripps_to_gorilla"};
-            assertEquals(new ArrayList<>(Arrays.asList(expectedDirections3)), thirdExhibitDirections);
+            assertEquals(PathInfo.Direction.REVERSE, currentPathInfo.getDirection());
+            currentPathVertices = currentPath.getVertexList();
+            // assert
+            Collections.reverse(expectedPath);
+            assertEquals(expectedPath, currentPathVertices);
+
+            // check reversed path again
+            // do direction reverse
+            pathManager.updateRouteDirection(currentDirectionIndex, PathInfo.Direction.FORWARDS);
+            paths = pathManager.getPath().stream().map(pathInfo -> pathInfo.getPath()).collect(Collectors.toList());
+            currentPath = paths.get(currentDirectionIndex);
+            currentPathVertices = currentPath.getVertexList();
+            currentPath = paths.get(currentDirectionIndex);
+            // assert
+            assertEquals(PathInfo.Direction.FORWARDS, currentPathInfo.getDirection());
+            Collections.reverse(expectedPath);
+            assertEquals(expectedPath, currentPathVertices);
         });
     }
-
-
 }

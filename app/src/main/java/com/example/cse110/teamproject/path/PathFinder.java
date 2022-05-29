@@ -121,24 +121,10 @@ public class PathFinder {
         return paths;
     }
 
-    public static PathInfo findPathToFixedNext(Context context, String currLoc, String fixedNext) {
-        Set<String> searchList = ExhibitDatabase.getSingleton(context)
-                .userExhibitListItemDao().getAllUserExhibits().stream()
-                .map(n -> n.node_id)
-                .collect(Collectors.toSet());
-
+    public static GraphPath<String, IdentifiedWeightedEdge> findPathToFixedNext(Context context, String currLoc, String fixedNext) {
         Graph<String, IdentifiedWeightedEdge> zooGraph = ZooData.loadZooGraphJSON(context, context.getResources().getString(R.string.curr_graph_info));
 
-        // Initialize vertex info map to be used for finding path
-        String nodeInfo = context.getResources().getString(R.string.curr_node_info);
-        Map<String, ZooData.VertexInfo> vInfo = ZooData.loadVertexInfoJSON(context, nodeInfo);
-
-        String childNodeId = fixedNext;
-        if (vInfo.get(fixedNext).parent_id != null) {
-            fixedNext = vInfo.get(fixedNext).parent_id;
-        }
-
-        return new PathInfo(childNodeId, DijkstraShortestPath.findPathBetween(zooGraph, currLoc, fixedNext));
+        return DijkstraShortestPath.findPathBetween(zooGraph, currLoc, fixedNext);
     }
 
     public static List<GraphPath<String, IdentifiedWeightedEdge>> findPathGivenExcludedNodes
