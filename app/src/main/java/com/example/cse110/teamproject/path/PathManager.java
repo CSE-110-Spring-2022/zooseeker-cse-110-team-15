@@ -124,7 +124,7 @@ public class PathManager implements LocationObserver {
         for (int i = currentDirectionIndex; i < currentDirectionIndex + latterPathSegment.size(); i++) {
             paths.set(i, latterPathSegment.get(i - currentDirectionIndex));
         }
-
+        notifyPathChanged();
     }
 
     List<PathChangeObserver> pathChangeObservers;
@@ -172,7 +172,6 @@ public class PathManager implements LocationObserver {
     public void updateLocation(Location currentLocation) {
         this.currentLocation = currentLocation;
         userOffTrack(currentLocation);
-        // notifyPathChanged();
     }
 
 
