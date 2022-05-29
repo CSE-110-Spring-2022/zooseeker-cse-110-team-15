@@ -43,16 +43,20 @@ public class PathFinder {
             Pair<String, Double> shortestPair = null;
             String childNodeId = null;
             String parentId = null;
+            String currExhibit = null;
+
             for (String exhibit : searchList) {
-                childNodeId = exhibit;
+                currExhibit = exhibit;
+
                 parentId = vInfo.get(exhibit).parent_id;
 
                 if (parentId != null) {
-                    exhibit = parentId;
+                    currExhibit = parentId;
                 }
-                double currWeight = paths.getWeight(exhibit);
+                double currWeight = paths.getWeight(currExhibit);
                 if ((shortestPair == null) || currWeight < shortestPair.second) {
-                    shortestPair = new Pair(exhibit, currWeight);
+                    childNodeId = exhibit;
+                    shortestPair = new Pair(currExhibit, currWeight);
                 }
             }
 
@@ -105,6 +109,7 @@ public class PathFinder {
 
         for (int i = 0; i < calculatedPaths.size(); i++) {
             pathItemDao.insert(new PathItem(calculatedPaths.get(i).second.getEndVertex(),
+//            pathItemDao.insert(new PathItem(calculatedPaths.get(i).first,
                     calculatedPaths.get(i).second.getEdgeList().stream()
                             .map(e -> e.getId()).collect(Collectors.toList()),
                     i));
