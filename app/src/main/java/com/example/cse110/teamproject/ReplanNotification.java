@@ -10,7 +10,7 @@ import androidx.fragment.app.DialogFragment;
 
 public class ReplanNotification extends DialogFragment {
 
-    boolean userReaction;
+    protected boolean userReaction;
 
     ReplanNotification() { userReaction = false; }
     @NonNull
@@ -26,4 +26,5 @@ public class ReplanNotification extends DialogFragment {
     }
 
     public boolean getUserReaction() { return userReaction; }
+
 }

@@ -11,7 +11,6 @@ import com.example.cse110.teamproject.ExhibitListItemDao;
 import com.example.cse110.teamproject.ExhibitNodeItem;
 import com.example.cse110.teamproject.IdentifiedWeightedEdge;
 import com.example.cse110.teamproject.LocationObserver;
-import com.example.cse110.teamproject.ReplanNotification;
 import com.example.cse110.teamproject.UserOffTrackObserver;
 import com.example.cse110.teamproject.UserExhibitListItemDao;
 
@@ -216,7 +215,7 @@ public class PathManager implements LocationObserver {
         this.currentDirectionIndex = directionOrder;
     }
 
-    // When user is off track...
+    // Check if user is substantially off-track and re-plan if so.
     public void replanPath(Location currentLocation) {
         boolean userReaction = false;
         boolean isUserCloserToLaterExhibits = false;
