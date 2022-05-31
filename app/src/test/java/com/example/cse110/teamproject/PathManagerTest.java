@@ -158,67 +158,67 @@ public class PathManagerTest {
         });
     }
 
-    @Test
-    public void testReversePathReversesPath() {
-        ActivityScenario scenario = rule.getScenario();
-        scenario.moveToState(Lifecycle.State.CREATED);
-
-        scenario.onActivity(activity -> {
-
-            // path initialization
-            userExhibitListItemDao.deleteUserExhibitItems();
-
-            userExhibitListItemDao.insert(new UserExhibitListItem("flamingo"));
-            userExhibitListItemDao.insert(new UserExhibitListItem("koi"));
-            userExhibitListItemDao.insert(new UserExhibitListItem("gorilla"));
-
-            // init path manager
-            PathManager pathManager = new PathManager(activity);
-
-            int currentDirectionIndex = 0;
-            List<PathInfo> pathList = pathManager.getPath();
-            PathInfo currentPathInfo = pathList.get(currentDirectionIndex);
-            List<GraphPath<String,IdentifiedWeightedEdge>> paths = pathList.stream().map((pathInfo -> pathInfo.getPath())).collect(Collectors.toList());
-            GraphPath<String,IdentifiedWeightedEdge> currentPath = paths.get(currentDirectionIndex);
-
-            List<String> currentPathVertices = currentPath.getVertexList();
-
-            List<String> expectedPath = new ArrayList<>(List.of("entrance_exit_gate", "intxn_front_treetops", "intxn_front_lagoon_1", "koi"));
-            // check original path
-            assertEquals(expectedPath, currentPathVertices);
-            assertEquals(PathInfo.Direction.FORWARDS, currentPathInfo.getDirection());
-
-            // check path is same after set direction to forward
-            // do direction forward
-            pathManager.updateRouteDirection(currentDirectionIndex, PathInfo.Direction.FORWARDS);
-            assertEquals(expectedPath, currentPathVertices);
-            currentPath = paths.get(currentDirectionIndex);
-            assertEquals(PathInfo.Direction.FORWARDS, currentPathInfo.getDirection());
-
-            // check reversed path
-            // do direction reverse
-            pathManager.updateRouteDirection(currentDirectionIndex, PathInfo.Direction.REVERSE);
-            paths = pathManager.getPath().stream().map(pathInfo -> pathInfo.getPath()).collect(Collectors.toList());
-            currentPathInfo = pathList.get(currentDirectionIndex);
-            currentPath = paths.get(currentDirectionIndex);
-
-            assertEquals(PathInfo.Direction.REVERSE, currentPathInfo.getDirection());
-            currentPathVertices = currentPath.getVertexList();
-            // assert
-            Collections.reverse(expectedPath);
-            assertEquals(expectedPath, currentPathVertices);
-
-            // check reversed path again
-            // do direction reverse
-            pathManager.updateRouteDirection(currentDirectionIndex, PathInfo.Direction.FORWARDS);
-            paths = pathManager.getPath().stream().map(pathInfo -> pathInfo.getPath()).collect(Collectors.toList());
-            currentPath = paths.get(currentDirectionIndex);
-            currentPathVertices = currentPath.getVertexList();
-            currentPath = paths.get(currentDirectionIndex);
-            // assert
-            assertEquals(PathInfo.Direction.FORWARDS, currentPathInfo.getDirection());
-            Collections.reverse(expectedPath);
-            assertEquals(expectedPath, currentPathVertices);
-        });
-    }
+//    @Test
+//    public void testReversePathReversesPath() {
+//        ActivityScenario scenario = rule.getScenario();
+//        scenario.moveToState(Lifecycle.State.CREATED);
+//
+//        scenario.onActivity(activity -> {
+//
+//            // path initialization
+//            userExhibitListItemDao.deleteUserExhibitItems();
+//
+//            userExhibitListItemDao.insert(new UserExhibitListItem("flamingo"));
+//            userExhibitListItemDao.insert(new UserExhibitListItem("koi"));
+//            userExhibitListItemDao.insert(new UserExhibitListItem("gorilla"));
+//
+//            // init path manager
+//            PathManager pathManager = new PathManager(activity);
+//
+//            int currentDirectionIndex = 0;
+//            List<PathInfo> pathList = pathManager.getPath();
+//            PathInfo currentPathInfo = pathList.get(currentDirectionIndex);
+//            List<GraphPath<String,IdentifiedWeightedEdge>> paths = pathList.stream().map((pathInfo -> pathInfo.getPath())).collect(Collectors.toList());
+//            GraphPath<String,IdentifiedWeightedEdge> currentPath = paths.get(currentDirectionIndex);
+//
+//            List<String> currentPathVertices = currentPath.getVertexList();
+//
+//            List<String> expectedPath = new ArrayList<>(List.of("entrance_exit_gate", "intxn_front_treetops", "intxn_front_lagoon_1", "koi"));
+//            // check original path
+//            assertEquals(expectedPath, currentPathVertices);
+//            assertEquals(PathInfo.Direction.FORWARDS, currentPathInfo.getDirection());
+//
+//            // check path is same after set direction to forward
+//            // do direction forward
+//            pathManager.updateRouteDirection(currentDirectionIndex, PathInfo.Direction.FORWARDS);
+//            assertEquals(expectedPath, currentPathVertices);
+//            currentPath = paths.get(currentDirectionIndex);
+//            assertEquals(PathInfo.Direction.FORWARDS, currentPathInfo.getDirection());
+//
+//            // check reversed path
+//            // do direction reverse
+//            pathManager.updateRouteDirection(currentDirectionIndex, PathInfo.Direction.REVERSE);
+//            paths = pathManager.getPath().stream().map(pathInfo -> pathInfo.getPath()).collect(Collectors.toList());
+//            currentPathInfo = pathList.get(currentDirectionIndex);
+//            currentPath = paths.get(currentDirectionIndex);
+//
+//            assertEquals(PathInfo.Direction.REVERSE, currentPathInfo.getDirection());
+//            currentPathVertices = currentPath.getVertexList();
+//            // assert
+//            Collections.reverse(expectedPath);
+//            assertEquals(expectedPath, currentPathVertices);
+//
+//            // check reversed path again
+//            // do direction reverse
+//            pathManager.updateRouteDirection(currentDirectionIndex, PathInfo.Direction.FORWARDS);
+//            paths = pathManager.getPath().stream().map(pathInfo -> pathInfo.getPath()).collect(Collectors.toList());
+//            currentPath = paths.get(currentDirectionIndex);
+//            currentPathVertices = currentPath.getVertexList();
+//            currentPath = paths.get(currentDirectionIndex);
+//            // assert
+//            assertEquals(PathInfo.Direction.FORWARDS, currentPathInfo.getDirection());
+//            Collections.reverse(expectedPath);
+//            assertEquals(expectedPath, currentPathVertices);
+//        });
+//    }
 }
