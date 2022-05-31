@@ -15,6 +15,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.example.cse110.teamproject.util.WaitForTextActionKt.waitForText;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertEquals;
 
 import static java.util.concurrent.TimeUnit.*;
 
@@ -45,6 +46,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -344,4 +346,72 @@ public class DirectionsActivityInstrumentedTest {
         onView(withId(R.id.direction_steps)).perform(waitForText("to 'Capuchin", 5000));
     }
 
+    @Test
+    public void testNextAndPrevSetDirectionsFromUserLocation() {
+        Context context = ApplicationProvider.getApplicationContext();
+
+        ActivityScenario<MainActivity> scenario
+                = ActivityScenario.launch(MainActivity.class);
+        scenario.moveToState(Lifecycle.State.CREATED);
+        scenario.moveToState(Lifecycle.State.STARTED);
+        scenario.moveToState(Lifecycle.State.RESUMED);
+
+        List<String> exhibitIDs = new ArrayList<>(Arrays.asList("siamang", "hippo", "gorilla", "capuchin"));
+
+        addExhibitsToListByID(exhibitIDs);
+        openPlanAndDirections();
+
+        setLocation(exhibitIDs.get(0));
+
+        onView(withId(R.id.next_button))
+                .perform(click());
+
+        onView(withId(R.id.direction_steps)).perform(waitForText("from 'Siamangs' to 'Orangutans'", 5000));
+
+        setLocation(exhibitIDs.get(1));
+
+        onView(withId(R.id.prev_button))
+                .perform(click());
+
+        onView(withId(R.id.direction_steps)).perform(waitForText("from 'Hippos' to 'Treetops Way", 5000));
+    }
+
+    public void setLocation(String exhibitID) {
+        setLocation(TestUtil.convertNodeIDToLatLng(exhibitListItemDao, exhibitID));
+    }
+
+    public void setLocation(LatLng latlng) {
+        onView(withId(R.id.longitude_input))
+                .perform(replaceText(String.valueOf(latlng.longitude)));
+
+        onView(withId(R.id.latitude_input))
+                .perform(replaceText(String.valueOf(latlng.latitude)));
+
+        onView(withId(R.id.set_location_btn))
+                .perform(click());
+    }
+
+    public void openPlanAndDirections() {
+        onView(withId(R.id.plan_btn))
+                .perform(click());
+
+        onView(withId(R.id.directions_btn))
+                .perform(click());
+    }
+
+    public void addExhibitToListByName(String exhibitName) {
+        onView(withId(R.id.search_bar))
+                .perform(click(), replaceText(exhibitName));
+
+        onData(equalTo(exhibitName))
+                .inRoot(RootMatchers.isPlatformPopup())
+                .perform(click());
+    }
+
+    public void addExhibitsToListByID(List<String> exhibitIDs) {
+        for (String exhibitID : exhibitIDs) {
+            String name = TestUtil.convertNodeIDToExhibitName(exhibitListItemDao, exhibitID);
+            addExhibitToListByName(name);
+        }
+    }
 }

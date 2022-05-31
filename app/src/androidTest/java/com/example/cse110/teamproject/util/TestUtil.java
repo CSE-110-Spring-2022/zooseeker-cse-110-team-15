@@ -58,6 +58,12 @@ public class TestUtil {
         return latLngs;
     }
 
+    public static String convertNodeIDToExhibitName(ExhibitListItemDao exhibitListItemDao, String exhibitID) {
+        ExhibitNodeItem exhibit = exhibitListItemDao.getExhibitByNodeId(exhibitID);
+        String name = exhibit.name;
+        return name;
+    }
+
     // https://stackoverflow.com/questions/1839668/what-is-the-best-way-to-combine-two-lists-into-a-map-java
     public static <K, V> Map<K, V> zipToMap(List<K> keys, List<V> values) {
         return IntStream.range(0, keys.size()).boxed()
