@@ -168,6 +168,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity{
         displayDestinationInfo();
         updateButtonAndLabel();
         notifyDirectionOrderChange();
+        replanIfOffTrackToCurrExhibit();
     }
 
     public void onNextIconClicked(View view) {
@@ -177,6 +178,11 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity{
         displayDestinationInfo();
         updateButtonAndLabel();
         notifyDirectionOrderChange();
+        replanIfOffTrackToCurrExhibit();
+    }
+
+    private void replanIfOffTrackToCurrExhibit() {
+        pathManager.userOffTrack();
     }
 
     private void setPaths(int index) {
