@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class ExhibitsDirectionsActivity extends AppCompatActivity implements PathChangeObserver{
+public class ExhibitsDirectionsActivity extends AppCompatActivity{
     final String DIR_FORMAT = "%d. Walk %.0f feet along %s from '%s' to '%s'.\n\n";
     final String DIST_FORMAT = "%.0f ft";
     final String EMPTY_STRING = "";
@@ -118,7 +118,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Pat
         };
 
         pathManager.addPathChangeObserver(pathChangeObserver);
-        pathManager.addPathChangeObserver(this);
+        //pathManager.addPathChangeObserver(this);
         location.addLocationChangedObservers(pathManager);
         pathList = pathManager.getPath();
 
@@ -317,15 +317,15 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Pat
         }
     }
 
-    @Override
-    public void update(List<PathInfo> paths) {
-        Log.d("<obs path change>", "update called in exhibitdirectionsactivity");
-        pathList = paths;
-        setPaths(directionOrder);
-        switchDirectionMode(briefMode);
-        displayDestinationInfo();
-        updateButtonAndLabel();
-    }
+//    @Override
+//    public void update(List<PathInfo> paths) {
+//        Log.d("<obs path change>", "update called in exhibitdirectionsactivity");
+//        pathList = paths;
+//        setPaths(directionOrder);
+//        switchDirectionMode(briefMode);
+//        displayDestinationInfo();
+//        updateButtonAndLabel();
+//    }
 
     public void onSetLocationClicked(View view) {
         String longitudeText = ((TextInputEditText)findViewById(R.id.longitude_input)).getText().toString();
