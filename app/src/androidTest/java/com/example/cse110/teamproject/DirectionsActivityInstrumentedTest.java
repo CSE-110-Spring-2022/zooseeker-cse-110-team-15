@@ -15,9 +15,12 @@ import static org.hamcrest.Matchers.containsString;
 import static java.util.concurrent.TimeUnit.*;
 
 import android.content.Context;
+import android.location.Location;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.View;
 
+import androidx.activity.ComponentActivity;
 import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
@@ -55,6 +58,7 @@ public class DirectionsActivityInstrumentedTest {
     ExhibitListItemDao exhibitListItemDao;
     UserExhibitListItemDao userExhibitListItemDao;
     MockLocation mockLocation;
+    MockUserLocation mockUserLocation;
     ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
 
     @Rule
@@ -126,16 +130,196 @@ public class DirectionsActivityInstrumentedTest {
         // check gate path is in list
         mockLocation.setCurrLocation(nodeIDsToLatLngsMap.get("entrance_exit_gate"));
 
-        onView(withId(R.id.direction_steps)).perform(waitForText("Gate Path", 5000));
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+//        onView(withId(R.id.direction_steps)).perform(waitForText("Gate Path", 5000));
 
         // check gate path is still in list when still on path
         mockLocation.setCurrLocation(nodeIDsToLatLngsMap.get("intxn_front_treetops"));
 
-        onView(withId(R.id.direction_steps)).perform(waitForText("Gate Path", 5000));
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+//        onView(withId(R.id.direction_steps)).perform(waitForText("Gate Path", 5000));
 
         // move to koi and check koi is in path
         mockLocation.setCurrLocation(nodeIDsToLatLngsMap.get("koi"));
 
-        onView(withId(R.id.direction_steps)).perform(waitForText("Koi Fish", 5000));
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        for (int i = 0; i < 10; i++) {
+
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            mockLocation.setCurrLocation(nodeIDsToLatLngsMap.get("koi"));
+
+//        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Hippos'", 5000));
+
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            mockLocation.setCurrLocation(nodeIDsToLatLngsMap.get("intxn_front_treetops"));
+
+        }
+
+//        onView(withId(R.id.direction_steps)).perform(waitForText("Koi Fish", 5000));
     }
+
+    @Test
+    public void testReplannedDirections() {
+//    https://stackoverflow.com/questions/8605611/get-context-of-test-project-in-android-junit-test-case
+        Context context = ApplicationProvider.getApplicationContext();
+
+        List<String> exhibitIDs = new ArrayList<>(List.of("entrance_exit_gate", "intxn_hippo_monkey_trails", "scripps_aviary"));
+        List<LatLng> latLngs = TestUtil.convertNodeIDToLatLng(exhibitListItemDao, exhibitIDs);
+        Map<String, LatLng> nodeIDsToLatLngsMap = TestUtil.zipToMap(exhibitIDs, latLngs);
+
+        ActivityScenario<MainActivity> scenario
+                = ActivityScenario.launch(MainActivity.class);
+        scenario.moveToState(Lifecycle.State.CREATED);
+        scenario.moveToState(Lifecycle.State.STARTED);
+        scenario.moveToState(Lifecycle.State.RESUMED);
+
+
+        onView(withId(R.id.search_bar))
+                .perform(click(), replaceText("Siam"));
+
+        onData(equalTo("Siamangs"))
+                .inRoot(RootMatchers.isPlatformPopup())
+                .perform(click());
+
+        onView(withId(R.id.search_bar))
+                .perform(click(), replaceText("Hi"));
+
+        onData(equalTo("Hippos"))
+                .inRoot(RootMatchers.isPlatformPopup())
+                .perform(click());
+
+        onView(withId(R.id.search_bar))
+                .perform(click(), replaceText("Gor"));
+
+        onData(equalTo("Gorillas"))
+                .inRoot(RootMatchers.isPlatformPopup())
+                .perform(click());
+
+        onView(withId(R.id.search_bar))
+                .perform(click(), replaceText("Flam"));
+
+        onData(equalTo("Flamingos"))
+                .inRoot(RootMatchers.isPlatformPopup())
+                .perform(click());
+
+        onView(withId(R.id.plan_btn))
+                .perform(click());
+
+        onView(withId(R.id.directions_btn))
+                .perform(click());
+
+        // check gate path is in list
+        LatLng locationLatLng = nodeIDsToLatLngsMap.get("entrance_exit_gate");
+        Location location = new Location("");
+        location.setLongitude(locationLatLng.longitude);
+        location.setLatitude(locationLatLng.latitude);
+        mockUserLocation = new MockUserLocation(context, location);
+        mockUserLocation.setUserLocation(location);
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        //onView(withId(R.id.direction_steps)).perform(waitForText("to 'Siamangs'", 5000));
+
+        // check gate path is still in list when still on path
+
+        onView(withId(R.id.next_button))
+                .perform(click());
+
+        onView(withId(R.id.next_button))
+                .perform(click());
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        locationLatLng = nodeIDsToLatLngsMap.get("intxn_hippo_monkey_trails");
+        location = new Location("");
+        location.setLongitude(locationLatLng.longitude);
+        location.setLatitude(locationLatLng.latitude);
+        mockUserLocation.setUserLocation(location);
+        Log.d("<location>", "location changed");
+
+//        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Hippos'", 5000));
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // move to koi and check koi is in path
+        locationLatLng = nodeIDsToLatLngsMap.get("scripps_aviary");
+        location = new Location("");
+        location.setLongitude(locationLatLng.longitude);
+        location.setLatitude(locationLatLng.latitude);
+        mockUserLocation.setUserLocation(location);
+        Log.d("<location>", "location changed");
+
+        for (int i = 0; i < 10; i++) {
+
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            locationLatLng = nodeIDsToLatLngsMap.get("intxn_hippo_monkey_trails");
+            location = new Location("");
+            location.setLongitude(locationLatLng.longitude);
+            location.setLatitude(locationLatLng.latitude);
+            mockUserLocation.setUserLocation(location);
+            Log.d("<location>", "location changed");
+
+//        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Hippos'", 5000));
+
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            // move to koi and check koi is in path
+            locationLatLng = nodeIDsToLatLngsMap.get("scripps_aviary");
+            location = new Location("");
+            location.setLongitude(locationLatLng.longitude);
+            location.setLatitude(locationLatLng.latitude);
+            mockUserLocation.setUserLocation(location);
+            Log.d("<location>", "location changed");
+
+        }
+
+//        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Gorillas'", 5000));
+    }
+
 }

@@ -94,9 +94,11 @@ public class PathManager implements LocationObserver {
 
     // off track is determined in relation to the current directions page the user is on.
     public boolean userOffTrack(Location currentLocation) {
+        Log.d("<location>", "userOffTrack called");
         GraphPath<String,IdentifiedWeightedEdge> currentPath = paths.get(currentDirectionIndex).getPath();
         List<String> currentPathVertices = currentPath.getVertexList();
         String currVertexLocation = currentVertexLocation(currentLocation);
+        Log.d("<userLocation>", "user location set to (" + currentLocation.getLongitude() + ", " + currentLocation.getLatitude() + ").");
         Log.d("<user location>", currVertexLocation);
         // if user is not at vertex on current path
         if (currentPathVertices.indexOf(currVertexLocation) == -1) {
@@ -118,11 +120,13 @@ public class PathManager implements LocationObserver {
      */
     private void recalculateToExhibit(String currVertexLocation, String nextExhibitID) {
         recalculateToExhibit(currVertexLocation, nextExhibitID, currentDirectionIndex);
+        Log.d("<recalculation>", "recalculateToExchibit called");
     }
 
     private void recalculateToExhibit(String currVertexLocation, String nextExhibitID, int locationIndex) {
         PathInfo path = paths.get(locationIndex);
         path.setPath(PathFinder.findPathToFixedNext(context, currVertexLocation, nextExhibitID));
+        Log.d("<recalculation>", "recalculateToExchibit called");
         notifyPathChanged();
     }
 
@@ -146,12 +150,12 @@ public class PathManager implements LocationObserver {
             nodesToOmit.add(paths.get(i).getPath().getEndVertex());
         }
         // recalculate latter path of the path
-        List<GraphPath<String, IdentifiedWeightedEdge>> latterPathSegment =
+        List<PathInfo> latterPathSegment =
                 PathFinder.findPathGivenExcludedNodes(context, currVertexLocation, nodesToOmit);
 
         // concatenate latter part of the path [curr, curr + recalc_len] to the former (indices [0, curr-1]), and return resulting path
         for (int i = currentDirectionIndex; i < currentDirectionIndex + latterPathSegment.size(); i++) {
-            paths.set(i, new PathInfo(paths.get(i).nodeId, latterPathSegment.get(i - currentDirectionIndex)));
+            paths.set(i, latterPathSegment.get(i - currentDirectionIndex));
             Log.d("test", i + String.valueOf(latterPathSegment.size()));
         }
         notifyPathChanged();
@@ -159,6 +163,7 @@ public class PathManager implements LocationObserver {
 
     public void notifyPathChanged() {
         Log.d("path_update", "updated" + paths.toString());
+        Log.d("<pathChangeObservers>", pathChangeObservers.toString());
         for (PathChangeObserver o : pathChangeObservers) {
             o.update(paths);
         }
@@ -199,6 +204,7 @@ public class PathManager implements LocationObserver {
      * @param currentLocation Current user location (as Location)
      */
     public void updateLocation(Location currentLocation) {
+        Log.d("<location>", "updateLocation called");
         this.currentLocation = currentLocation;
         //userOffTrack(currentLocation);
         replanPath(currentLocation);
@@ -206,6 +212,7 @@ public class PathManager implements LocationObserver {
 
 
     public void updateCurrentDirectionIndex(int directionOrder) {
+        Log.d("<location>", "updateCurrentDirectionIndex called");
         this.currentDirectionIndex = directionOrder;
     }
 

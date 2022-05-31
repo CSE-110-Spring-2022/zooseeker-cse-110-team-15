@@ -1,5 +1,7 @@
 package com.example.cse110.teamproject;
 
+import static java.lang.Float.parseFloat;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -7,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -14,6 +17,7 @@ import android.widget.TextView;
 import com.example.cse110.teamproject.path.PathChangeObserver;
 import com.example.cse110.teamproject.path.PathInfo;
 import com.example.cse110.teamproject.path.PathManager;
+import com.google.android.material.textfield.TextInputEditText;
 
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
@@ -95,8 +99,11 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
 
         // find path and store it as a list
         location = new UserLocation(this);
+
         pathManager = new PathManager(this);
+        Log.d("<obs path change>", "path manager instantiazed");
         pathChangeObserver = path -> {
+            Log.d("<obs path change>", "path change observed");
             pathList = path;
             setPaths(directionOrder);
             switchDirectionMode(briefMode);
@@ -105,6 +112,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
         };
 
         pathManager.addPathChangeObserver(pathChangeObserver);
+        //pathManager.addPathChangeObserver(this);
         location.addLocationChangedObservers(pathManager);
         pathList = pathManager.getPath();
 
@@ -253,6 +261,8 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
 
     @SuppressLint("DefaultLocale")
     public void displayDestinationInfo() {
+        Log.d("<display>", "displayDestinationInfo called");
+
         List<IdentifiedWeightedEdge> edgeList = currentPath.getEdgeList();
         ExhibitNodeItem destinationNode = exhibitListItemDao.getExhibitByNodeId(currentPathInfo.nodeId);
 
@@ -310,5 +320,29 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
             //currently a detailed direction mode is selected -> so call displayDetailedDirection();
             displayDetailedDirection();
         }
+    }
+
+//    @Override
+//    public void update(List<PathInfo> paths) {
+//        Log.d("<obs path change>", "update called in exhibitdirectionsactivity");
+//        pathList = paths;
+//        setPaths(directionOrder);
+//        switchDirectionMode(briefMode);
+//        displayDestinationInfo();
+//        updateButtonAndLabel();
+//    }
+
+    public void onSetLocationClicked(View view) {
+        String longitudeText = ((TextInputEditText)findViewById(R.id.longitude_input)).getText().toString();
+        String latitudeText = ((TextInputEditText)findViewById(R.id.latitude_input)).getText().toString();
+        location.setMocked(true);
+        location.setCurrentLocation(parseFloat(longitudeText), parseFloat(latitudeText));
+        Log.d("<mock location>", "location set to " + location);
+
+    }
+
+    public void onUseRegularLocationClicked(View view) {
+        location.setMocked(false);
+        Log.d("<mock location>", "location mocking turned off");
     }
 }

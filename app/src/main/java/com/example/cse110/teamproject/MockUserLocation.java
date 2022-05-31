@@ -1,9 +1,11 @@
 package com.example.cse110.teamproject;
 
+import android.content.Context;
 import android.location.Location;
 
 import androidx.activity.ComponentActivity;
 
+import java.net.ContentHandler;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +14,10 @@ public class MockUserLocation{
     Location currentLocation;
 
     MockUserLocation(ComponentActivity context, Location location) {
+        this.currentLocation = location;
+    }
+
+    MockUserLocation(Context context, Location location) {
         this.currentLocation = location;
     }
 
