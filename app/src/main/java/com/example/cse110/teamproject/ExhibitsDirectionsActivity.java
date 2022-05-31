@@ -175,6 +175,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
         displayDestinationInfo();
         updateButtonAndLabel();
         notifyDirectionOrderChange();
+        replanIfOffTrackToCurrExhibit();
     }
 
     public void onNextIconClicked(View view) {
@@ -184,6 +185,11 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
         displayDestinationInfo();
         updateButtonAndLabel();
         notifyDirectionOrderChange();
+        replanIfOffTrackToCurrExhibit();
+    }
+
+    private void replanIfOffTrackToCurrExhibit() {
+        pathManager.userOffTrack();
     }
 
     private void setPaths(int index) {
@@ -278,9 +284,19 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
         String street = Objects.requireNonNull(eInfo.get(edgeList.get(edgeList.size()-1).getId())).street;
         destLocation.setText(street);
 
-        @SuppressLint("DefaultLocale") String label = String.format(LABEL_FORMAT, destinationNode.name, currentPath.getWeight());
-        prevButtonLabel.setText(label);
-
+        // previous button label
+        if (directionOrder == 0) {
+            nextButtonLabel.setText(EMPTY_STRING);
+        }
+        else {
+            PathInfo prevPathInfo = pathList.get(directionOrder - 1);
+            GraphPath<String, IdentifiedWeightedEdge> prevPath = prevPathInfo.getPath();
+            String prevDestId = prevPath.getEndVertex();
+            ExhibitNodeItem prevDestNode = exhibitListItemDao.getExhibitByNodeId(prevDestId);
+            String label = String.format(LABEL_FORMAT, prevDestNode.name, prevPath.getWeight());
+            prevButtonLabel.setText(label);
+        }
+        // next button label
         if (directionOrder == pathList.size()-1) {
             nextButtonLabel.setText(EMPTY_STRING);
         }
@@ -289,7 +305,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
             GraphPath<String, IdentifiedWeightedEdge> nextPath = nextPathInfo.getPath();
             String nextDestId = nextPath.getEndVertex();
             ExhibitNodeItem nextDestNode = exhibitListItemDao.getExhibitByNodeId(nextDestId);
-            label = String.format(LABEL_FORMAT, nextDestNode.name, nextPath.getWeight());
+            String label = String.format(LABEL_FORMAT, nextDestNode.name, nextPath.getWeight());
             nextButtonLabel.setText(label);
         }
         totalDistance = 0.0;

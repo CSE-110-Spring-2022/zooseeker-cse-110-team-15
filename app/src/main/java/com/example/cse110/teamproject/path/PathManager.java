@@ -91,6 +91,11 @@ public class PathManager implements LocationObserver {
         return exhibitLocation.distanceTo(location);
     }
 
+    // call userOffTrack with current location
+    public boolean userOffTrack() {
+        return userOffTrack(currentLocation);
+    }
+
     // off track is determined in relation to the current directions page the user is on.
     public boolean userOffTrack(Location currentLocation) {
         Log.d("<location>", "userOffTrack called");
@@ -101,6 +106,7 @@ public class PathManager implements LocationObserver {
         Log.d("<user location>", currVertexLocation);
         // if user is not at vertex on current path
         if (currentPathVertices.indexOf(currVertexLocation) == -1) {
+            Log.d("recalculate_exhibits", "recalculating exhibits + location:" + currVertexLocation);
             recalculateToExhibit(currVertexLocation, currentPath.getEndVertex());
             return true;
         }
@@ -254,24 +260,4 @@ public class PathManager implements LocationObserver {
             notifyUserOffTrack(currentVertexLocation);
         }
     }
-
-    public void reverseRoute(int currPathIndex) {
-        PathInfo pathInfo = paths.get(currPathIndex);
-        PathInfo.Direction newDirection = (pathInfo.getDirection() == PathInfo.Direction.FORWARDS) ? PathInfo.Direction.REVERSE : PathInfo.Direction.FORWARDS;
-        pathInfo.setDirection(newDirection);
-
-        GraphPath<String, IdentifiedWeightedEdge> graphPath = pathInfo.getPath();
-        String startVertexID = graphPath.getStartVertex();
-        String endVertexID = graphPath.getEndVertex();
-        recalculateToExhibit(endVertexID, startVertexID, currPathIndex);
-    }
-
-    // will make route match direction specified by reversing if necessary
-    public void updateRouteDirection(int currPathIndex, PathInfo.Direction direction) {
-        PathInfo pathInfo = paths.get(currPathIndex);
-        if (!(pathInfo.getDirection() == direction)) {
-            reverseRoute(currPathIndex);
-        }
-    }
-
 }
