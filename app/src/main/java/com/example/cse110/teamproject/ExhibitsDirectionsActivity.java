@@ -287,8 +287,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
         if(edgeList.size() != 0){
             String street = Objects.requireNonNull(eInfo.get(edgeList.get(edgeList.size()-1).getId())).street;
             destLocation.setText(street);
-        }
-        else{
+        } else {
             String street = "";
             destLocation.setText(street);
         }
