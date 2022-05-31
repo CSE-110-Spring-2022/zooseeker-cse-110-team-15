@@ -3,6 +3,7 @@ package com.example.cse110.teamproject;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.pressBack;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
@@ -216,13 +217,11 @@ public class DirectionsActivityInstrumentedTest {
         onView(withId(R.id.set_location_btn))
                 .perform(click());
 
-        // TODO: accept the replan notification
-        /*
+        // accept the replan notification
         onView(withText("Replan"))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()))
                 .perform(click());
-         */
 
         // If accepted, the new target should be Gorillas.
         onView(withId(R.id.direction_steps)).perform(waitForText("to 'Gorillas'", 5000));
@@ -335,13 +334,11 @@ public class DirectionsActivityInstrumentedTest {
         onView(withId(R.id.set_location_btn))
                 .perform(click());
 
-        // TODO: refuse the replan notification
-        /*
+        // refuse the replan notification
         onView(withText("Replan"))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()))
                 .perform(pressBack());
-         */
 
         // If refused, there should be no change to the target exhibit
         onView(withId(R.id.direction_steps)).perform(waitForText("to 'Capuchin", 5000));
