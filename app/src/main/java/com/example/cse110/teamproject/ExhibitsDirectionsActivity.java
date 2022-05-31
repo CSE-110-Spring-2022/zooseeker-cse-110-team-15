@@ -43,6 +43,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
 
     Button prevButton;
     Button nextButton;
+    Button skipButton;
     TextView destName;
     TextView destDistance;
     TextView destLocation;
@@ -80,6 +81,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
 
         prevButton = findViewById(R.id.prev_button);
         nextButton = findViewById(R.id.next_button);
+        skipButton = findViewById(R.id.skip_button);
         destName = findViewById(R.id.dest_name);
         destDistance = findViewById(R.id.dest_dist);
         destLocation = findViewById(R.id.dest_loc);
@@ -124,6 +126,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
         // disable prev button when on first page
         prevButton.setEnabled(directionOrder != 0);
         nextButton.setEnabled(pathList.size() - 1 != directionOrder && pathList.size() > 0);
+        skipButton.setEnabled(pathList.size() - 1 != directionOrder && pathList.size() > 0);
 
         // Load the information about edges
         eInfo = ZooData.loadEdgeInfoJSON(this, JSON_EDGE);
@@ -247,6 +250,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
         int i = 1;
         List<String> vertexList = currentPath.getVertexList();
         for (IdentifiedWeightedEdge e : currentPath.getEdgeList()) {
+            Log.d("test", eInfo.toString());
             ExhibitNodeItem source = exhibitListItemDao.getExhibitByNodeId(vertexList.get(i-1));
             ExhibitNodeItem target = exhibitListItemDao.getExhibitByNodeId(vertexList.get(i));
             directions += String.format(DIR_FORMAT,
@@ -274,9 +278,19 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
         @SuppressLint("DefaultLocale") String distance = String.format(DIST_FORMAT, currentPath.getWeight());
         destDistance.setText(distance);
 
+        if(edgeList.size() != 0){
+            String street = Objects.requireNonNull(eInfo.get(edgeList.get(edgeList.size()-1).getId())).street;
+            destLocation.setText(street);
+        }
+        else{
+            String street = "";
+            destLocation.setText(street);
+        }
 
-        String street = Objects.requireNonNull(eInfo.get(edgeList.get(edgeList.size()-1).getId())).street;
-        destLocation.setText(street);
+        if(currentPath.getWeight() == 0){
+            String here = "You are at the Exhibit";
+            destLocation.setText(here);
+        }
 
         @SuppressLint("DefaultLocale") String label = String.format(LABEL_FORMAT, destinationNode.name, currentPath.getWeight());
         prevButtonLabel.setText(label);
@@ -298,6 +312,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
     public void updateButtonAndLabel() {
         prevButton.setEnabled(directionOrder != 0);
         nextButton.setEnabled(directionOrder != pathList.size() - 1);
+        skipButton.setEnabled(directionOrder != pathList.size() - 1);
 
         if (directionOrder == 0) {
             prevButtonLabel.setText(EMPTY_STRING);
@@ -323,6 +338,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
             displayDetailedDirection();
         }
     }
+
 
 //    @Override
 //    public void update(List<PathInfo> paths) {
@@ -350,5 +366,9 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
 
     public void updateReplan() {
         pathManager.recalculateOverall(currentLocation);
+    }
+
+    public void onSkipIconClicked(View view) {
+        pathManager.skipExhibit(directionOrder);
     }
 }

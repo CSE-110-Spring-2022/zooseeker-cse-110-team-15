@@ -42,6 +42,7 @@ public class PathFinder {
         DijkstraShortestPath dijkstras = new DijkstraShortestPath(zooGraph);
 
         while(!searchList.isEmpty()) {
+            Log.d("problem", start);
             ShortestPathAlgorithm.SingleSourcePaths<String, IdentifiedWeightedEdge> paths = dijkstras.getPaths(start);
 
             // find exhibit with shortest path
@@ -161,6 +162,7 @@ public class PathFinder {
         for (String s : nodesToOmit) {
             searchList.remove(s);
         }
+        Log.d("searchlist", searchList.toString());
 
         Graph<String, IdentifiedWeightedEdge> zooGraph = ZooData.loadZooGraphJSON(context, context.getResources().getString(R.string.curr_graph_info));
 

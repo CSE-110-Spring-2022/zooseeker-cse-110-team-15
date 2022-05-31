@@ -21,8 +21,8 @@
 
     <Button
         android:id="@+id/prev_button"
-        android:layout_width="180dp"
-        android:layout_height="80dp"
+        android:layout_width="136dp"
+        android:layout_height="53dp"
         android:onClick="onPreviousIconClicked"
         android:text="@string/prev"
         android:textSize="12sp"
@@ -35,8 +35,8 @@
 
     <Button
         android:id="@+id/next_button"
-        android:layout_width="180dp"
-        android:layout_height="80dp"
+        android:layout_width="136dp"
+        android:layout_height="53dp"
         android:onClick="onNextIconClicked"
         android:text="@string/next"
         android:textSize="12sp"
@@ -147,6 +147,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.023" />
 
+
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="409dp"
         android:layout_height="wrap_content"
@@ -210,5 +211,19 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.789" />
+=======
+    <Button
+        android:id="@+id/skip_button"
+        android:layout_width="72dp"
+        android:layout_height="54dp"
+        android:onClick="onSkipIconClicked"
+        android:text="skip"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.964" />
+>>>>>>> Stashed changes
 
 </androidx.constraintlayout.widget.ConstraintLayout>

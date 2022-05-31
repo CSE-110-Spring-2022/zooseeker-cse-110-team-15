@@ -274,4 +274,12 @@ public class PathManager implements LocationObserver {
         }
     }
 
+    public void skipExhibit(int directionOrder){
+        userExhibitListItemDao.deleteUserExhibitById(paths.get(directionOrder).nodeId);
+        paths.remove(directionOrder);
+        String nodeId = currentVertexLocation(currentLocation);
+
+        recalculateOverall(nodeId);
+
+    }
 }
