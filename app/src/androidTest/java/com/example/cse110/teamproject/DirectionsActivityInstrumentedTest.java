@@ -336,6 +336,12 @@ public class DirectionsActivityInstrumentedTest {
                 .perform(click());
 
         // TODO: refuse the replan notification
+        /*
+        onView(withText("Replan"))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()))
+                .perform(pressBack());
+         */
 
         // If refused, there should be no change to the target exhibit
         onView(withId(R.id.direction_steps)).perform(waitForText("to 'Capuchin", 5000));
