@@ -50,8 +50,11 @@ public class PlanActivity extends AppCompatActivity {
             double pathWeight = gp.getWeight();
             totalDistance += pathWeight;
             String nodeName = exhibitListItemDao.getExhibitByNodeId(pathInfo.nodeId).name;
-            String edgeID = identifiedWeightedEdges.get(identifiedWeightedEdges.size() - 1).getId();
-            String edgeName = eInfo.get(edgeID).street;
+            String edgeName = "";
+            if (identifiedWeightedEdges.size() > 0) {
+                String edgeID = identifiedWeightedEdges.get(identifiedWeightedEdges.size() - 1).getId();
+                edgeName = eInfo.get(edgeID).street;
+            }
             return new PlanItem(edgeName, nodeName, totalDistance);
         }).collect(Collectors.toList());
 
