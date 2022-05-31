@@ -166,11 +166,11 @@ public class PathManager implements LocationObserver {
         userOffTrackObservers.add(o);
     }
 
-    public void notifyUserOffTrack() {
+    public void notifyUserOffTrack(String currentVertexLocation) {
         // TODO
         // notifyOnTrackObservers() (for US3 Notify and Replan)
         for (UserOffTrackObserver o : userOffTrackObservers) {
-            o.update();
+            o.update(currentVertexLocation);
         }
 
     }
@@ -185,7 +185,8 @@ public class PathManager implements LocationObserver {
      */
     public void updateLocation(Location currentLocation) {
         this.currentLocation = currentLocation;
-        userOffTrack(currentLocation);
+        //userOffTrack(currentLocation);
+        replanPath(currentLocation);
     }
 
 
@@ -195,17 +196,30 @@ public class PathManager implements LocationObserver {
 
     // When user is off track...
     public void replanPath(Location currentLocation) {
-        PathInfo currentPath;
-        currentPath = paths.get(currentDirectionIndex);
-        List<String> vertexList = currentPath.getPath().getVertexList();
         boolean userReaction = false;
-
-        String closestExhibit = currentVertexLocation(currentLocation);
         boolean isUserCloserToLaterExhibits = false;
 
-        // check if the user is closer to the later exhibits in the path
-        for (int i = currentDirectionIndex + 1; i < vertexList.size(); i++) {
-            if (Objects.equals(closestExhibit, vertexList.get(i))) {
+        PathInfo currentPath = paths.get(currentDirectionIndex);
+        String currentVertexLocation = currentVertexLocation(currentLocation);
+
+        List<String> laterExhibits = new ArrayList<>();
+
+        // get all the later paths
+        for (int i = currentDirectionIndex + 1; i < paths.size(); i++) {
+            // laterPaths will be empty if currentDirection is the last exhibit to visit
+            laterExhibits.add(paths.get(i).getPath().getEndVertex());
+        }
+
+        // get distance between current location and current destination exhibit
+        ExhibitNodeItem currentExhibitNode = exhibitListItemDao.getExhibitByNodeId(currentPath.getPath().getEndVertex());
+        float distanceToCurrExhibit = distanceBetween(currentLocation, currentExhibitNode.lat, currentExhibitNode.lng);
+
+        // check if distance between current location and later exhibits is shorter than
+        // the distance between current location and current exhibit
+        for (int i = 0; i < laterExhibits.size(); i++) {
+            ExhibitNodeItem laterNode = exhibitListItemDao.getExhibitByNodeId(laterExhibits.get(i));
+            float distance = distanceBetween(currentLocation, laterNode.lat, laterNode.lng);
+            if (distance < distanceToCurrExhibit) {
                 isUserCloserToLaterExhibits = true;
                 break;
             }
@@ -214,11 +228,11 @@ public class PathManager implements LocationObserver {
         // if the user is off-track and is closer to the later exhibits in the path
         if (userOffTrack(currentLocation) && isUserCloserToLaterExhibits) {
             // then ask them if they want to replan their path
-            notifyUserOffTrack();
+            notifyUserOffTrack(currentVertexLocation);
 
-            // if yes, replan their path so that their closest exhibit is now their next exhibit
+            // if yes, re-plan their path so that their closest exhibit is now their next exhibit
             if (userReaction) {
-                recalculateOverall(closestExhibit);
+                recalculateOverall(currentVertexLocation);
             }
         }
     }

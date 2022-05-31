@@ -7,13 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.cse110.teamproject.path.PathChangeObserver;
-import com.example.cse110.teamproject.path.PathFinder;
 import com.example.cse110.teamproject.path.PathInfo;
 import com.example.cse110.teamproject.path.PathManager;
 
@@ -93,12 +91,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
         preferences = getSharedPreferences(SHARED_PREF_KEY, Context.MODE_PRIVATE);
 
         // check if the direction mode is set to brief or detailed
-        if (preferences.getString(SHARED_PREF_KEY, EMPTY_STRING).equals(BRIEF_DIR_VAL)) {
-            briefMode = true;
-        }
-        else {
-            briefMode = false;
-        }
+        briefMode = preferences.getString(SHARED_PREF_KEY, EMPTY_STRING).equals(BRIEF_DIR_VAL);
 
         // find path and store it as a list
         location = new UserLocation(this);
@@ -140,11 +133,12 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
 
 
     // update when user goes off track
-    public void update() {
+    public void update(String currentVertexLocation) {
         ReplanNotification replanNotification = new ReplanNotification();
         replanNotification.show(getSupportFragmentManager(), "");
 
         if (replanNotification.getUserReaction()) {
+            pathManager.recalculateOverall(currentVertexLocation);
         }
     }
 
