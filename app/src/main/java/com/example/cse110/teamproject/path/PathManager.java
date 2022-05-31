@@ -2,6 +2,7 @@ package com.example.cse110.teamproject.path;
 
 import android.content.Context;
 import android.location.Location;
+import android.os.SystemClock;
 import android.util.Log;
 import android.util.Pair;
 
@@ -10,6 +11,7 @@ import com.example.cse110.teamproject.ExhibitListItemDao;
 import com.example.cse110.teamproject.ExhibitNodeItem;
 import com.example.cse110.teamproject.IdentifiedWeightedEdge;
 import com.example.cse110.teamproject.LocationObserver;
+import com.example.cse110.teamproject.UserExhibitListItemDao;
 
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
@@ -28,13 +30,25 @@ public class PathManager implements LocationObserver {
     Context context;
 
     ExhibitListItemDao exhibitListItemDao;
+    UserExhibitListItemDao userExhibitListItemDao;
 
     public PathManager(Context context) {
         exhibitListItemDao = ExhibitDatabase.getSingleton(context)
                 .exhibitListItemDao();
+        userExhibitListItemDao = ExhibitDatabase.getSingleton(context)
+                .userExhibitListItemDao();
         paths = PathFinder.findPath(context);
         pathChangeObservers = new ArrayList<>();
         this.context = context;
+        Location loc = new Location("");
+        loc.setAltitude(100);
+        loc.setLatitude(0);
+        loc.setLongitude(0);
+        loc.setTime(System.currentTimeMillis());
+        loc.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
+        loc.setAccuracy(6f);
+        currentLocation = loc;
+        Log.d("test", currentLocation.toString());
     }
 
     public String currentVertexLocation(Location location) {
@@ -128,7 +142,8 @@ public class PathManager implements LocationObserver {
 
         // concatenate latter part of the path [curr, curr + recalc_len] to the former (indices [0, curr-1]), and return resulting path
         for (int i = currentDirectionIndex; i < currentDirectionIndex + latterPathSegment.size(); i++) {
-            paths.set(i, new PathInfo("BLEH", latterPathSegment.get(i - currentDirectionIndex)));
+            paths.set(i, new PathInfo(paths.get(i).nodeId, latterPathSegment.get(i - currentDirectionIndex)));
+            Log.d("test", i + String.valueOf(latterPathSegment.size()));
         }
         notifyPathChanged();
     }
@@ -204,4 +219,5 @@ public class PathManager implements LocationObserver {
             reverseRoute(currPathIndex);
         }
     }
+
 }
