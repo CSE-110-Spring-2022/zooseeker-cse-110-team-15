@@ -31,7 +31,8 @@ public class PathFinder {
             Set<String> searchList,
             Graph<String, IdentifiedWeightedEdge> zooGraph,
             String firstNode,
-            Map<String, ZooData.VertexInfo> vInfo) {
+            Context context
+            ) {
         String start = firstNode;
 
         List<Pair<String, GraphPath<String, IdentifiedWeightedEdge>>> calculatedPaths = new ArrayList();
@@ -44,17 +45,10 @@ public class PathFinder {
             // find exhibit with shortest path
             Pair<String, Double> shortestPair = null;
             String childNodeId = null;
-            String parentId = null;
-            String currExhibit = null;
 
             for (String exhibit : searchList) {
-                currExhibit = exhibit;
+                String currExhibit = getVertexNameFromExhibit(exhibit, context);
 
-                parentId = vInfo.get(exhibit).parent_id;
-
-                if (parentId != null) {
-                    currExhibit = parentId;
-                }
                 double currWeight = paths.getWeight(currExhibit);
                 if ((shortestPair == null) || currWeight < shortestPair.second) {
                     childNodeId = exhibit;
@@ -89,7 +83,6 @@ public class PathFinder {
 
         // Initialize vertex info map to be used for finding path
         String nodeInfo = context.getResources().getString(R.string.curr_node_info);
-        Map<String, ZooData.VertexInfo> vInfo = ZooData.loadVertexInfoJSON(context, nodeInfo);
 
         // initialize some empty List<> calculatedPath
 
@@ -104,7 +97,7 @@ public class PathFinder {
         // construct graph
         Graph<String, IdentifiedWeightedEdge> zooGraph = ZooData.loadZooGraphJSON(context, context.getResources().getString(R.string.curr_graph_info));
 
-        List<Pair<String, GraphPath<String, IdentifiedWeightedEdge>>> calculatedPaths = findPath(searchList, zooGraph, start, vInfo);
+        List<Pair<String, GraphPath<String, IdentifiedWeightedEdge>>> calculatedPaths = findPath(searchList, zooGraph, start, context);
 
         PathItemDao pathItemDao = ExhibitDatabase.getSingleton(context).pathItemDao();
         pathItemDao.deletePathItems();
@@ -123,20 +116,38 @@ public class PathFinder {
         return paths;
     }
 
+    // returns parent node if exists, otherwise returns child node
+    // vertex name isnt always same as exhibit (multiple exhibits in one vertex)
+    static String getVertexNameFromExhibit(String exhibit, Context context) {
+        String currExhibit = exhibit;
+        // Initialize vertex info map to be used for finding path
+        String nodeInfo = context.getResources().getString(R.string.curr_node_info);
+        Map<String, ZooData.VertexInfo> vInfo = ZooData.loadVertexInfoJSON(context, nodeInfo);
+        String parentId = vInfo.get(exhibit).parent_id;
+
+        if (parentId != null) {
+            currExhibit = parentId;
+        }
+
+        return currExhibit;
+    }
+
     public static GraphPath<String, IdentifiedWeightedEdge> findPathToFixedNext(Context context, String currLoc, String fixedNext) {
         Graph<String, IdentifiedWeightedEdge> zooGraph = ZooData.loadZooGraphJSON(context, context.getResources().getString(R.string.curr_graph_info));
 
+        String fromVertex = getVertexNameFromExhibit(currLoc, context);
+        String toVertex = getVertexNameFromExhibit(fixedNext, context);
+
         Log.d("<findPathToFixedNext call>", "currLoc: " + currLoc + " w/ fixedNext: " + fixedNext);
-        return DijkstraShortestPath.findPathBetween(zooGraph, currLoc, fixedNext);
+//        if (currLoc.equals(fixedNext)) {
+//            return new GraphWalk<String, IdentifiedWeightedEdge>(zooGraph, currLoc, fixedNext, new ArrayList<>(), 0);
+//        }
+        return DijkstraShortestPath.findPathBetween(zooGraph, fromVertex, toVertex);
     }
 
     public static List<PathInfo> findPathGivenExcludedNodes
             (Context context, String currLoc, List<String> nodesToOmit) {
         final String start = currLoc;
-
-        // Initialize vertex info map to be used for finding path
-        String nodeInfo = context.getResources().getString(R.string.curr_node_info);
-        Map<String, ZooData.VertexInfo> vInfo = ZooData.loadVertexInfoJSON(context, nodeInfo);
 
         // load user exhibits into searchList
         Set<String> searchList = ExhibitDatabase.getSingleton(context)
@@ -151,7 +162,7 @@ public class PathFinder {
 
         Graph<String, IdentifiedWeightedEdge> zooGraph = ZooData.loadZooGraphJSON(context, context.getResources().getString(R.string.curr_graph_info));
 
-        List<Pair<String, GraphPath<String, IdentifiedWeightedEdge>>> calculatedPaths = findPath(searchList, zooGraph, start, vInfo);
+        List<Pair<String, GraphPath<String, IdentifiedWeightedEdge>>> calculatedPaths = findPath(searchList, zooGraph, start, context);
 
         PathItemDao pathItemDao = ExhibitDatabase.getSingleton(context).pathItemDao();
         pathItemDao.deletePathItems();
