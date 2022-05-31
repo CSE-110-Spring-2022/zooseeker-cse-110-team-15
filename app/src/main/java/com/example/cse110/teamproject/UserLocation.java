@@ -17,6 +17,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
+//import com.google.android.gms.location.LocationServices;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,11 +29,19 @@ public class UserLocation {
 
     private final PermissionChecker permissionChecker;
 
+    private boolean mocked;
+
     private Location lastVisitedLocation;
     private Location currentLocation;
     List<LocationObserver> observers;
     @RequiresApi(api = Build.VERSION_CODES.S)
     UserLocation(ComponentActivity context) {
+
+        currentLocation = new Location("");
+        currentLocation.setLatitude(0);
+        currentLocation.setLongitude(0);
+
+        mocked = true;
 
         this.context = context;
         permissionChecker = new PermissionChecker(this.context);
@@ -47,6 +57,7 @@ public class UserLocation {
             var locationListener = new LocationListener() {
                 @Override
                 public void onLocationChanged(@NonNull Location location) {
+                    if(mocked) { return; }
                     Log.d("LAB7", String.format("Location changed: %s", location));
                     lastVisitedLocation = currentLocation;
                     currentLocation = location;
@@ -82,7 +93,9 @@ public class UserLocation {
 
 
     public void notifyLocationChange() {
+        Log.d("<userLocationObservers>", observers.toString());
         for (LocationObserver o: observers) {
+            Log.d("<notifyLocationChange>", o + " notified");
             o.updateLocation(currentLocation);
         }
     }
@@ -90,4 +103,20 @@ public class UserLocation {
     public void addLocationChangedObservers(LocationObserver o) {
         observers.add(o);
     }
+
+    public void setMocked(boolean mocked) {
+        this.mocked = mocked;
+    }
+
+    public boolean isMocked() {
+        return this.mocked;
+    }
+
+    public void setCurrentLocation(float longitude, float latitude) {
+        currentLocation.setLongitude(longitude);
+        currentLocation.setLatitude(latitude);
+        Log.d("<userLocation>", "user location set to (" + longitude + ", " + latitude + ").");
+        notifyLocationChange();
+    }
+
 }

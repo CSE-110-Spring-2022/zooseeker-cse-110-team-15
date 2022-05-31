@@ -197,7 +197,7 @@
       "weight": 30.0
     },
     {
-      "id": "fern_to_fern",
+      "id": "fern_to_ffern",
       "source": "fern_canyon",
       "target": "intxn_treetops_fern_trail",
       "weight": 60.0

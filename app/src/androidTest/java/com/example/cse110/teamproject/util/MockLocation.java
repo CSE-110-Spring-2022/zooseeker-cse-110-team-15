@@ -24,6 +24,10 @@ public class MockLocation {
         mFusedLocationClient.setMockMode(true);
     }
 
+    public void setMockMode(boolean mocked) {
+        mFusedLocationClient.setMockMode(mocked);
+    }
+
     public static Location makeLocation (LatLng latLng) {
         Location loc = new Location("");
         loc.setAltitude(100);
@@ -41,6 +45,7 @@ public class MockLocation {
         mFusedLocationClient.flushLocations();
         Log.d("mocked_location", "mocked location" + loc.toString());
     }
+
     public void setCurrLocation(LatLng latLng) {
         setCurrLocation(this.makeLocation(latLng));
     }

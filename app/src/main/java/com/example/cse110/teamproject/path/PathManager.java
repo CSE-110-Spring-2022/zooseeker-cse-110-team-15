@@ -85,9 +85,11 @@ public class PathManager implements LocationObserver {
 
     // off track is determined in relation to the current directions page the user is on.
     public boolean userOffTrack(Location currentLocation) {
+        Log.d("<location>", "userOffTrack called");
         GraphPath<String,IdentifiedWeightedEdge> currentPath = paths.get(currentDirectionIndex).getPath();
         List<String> currentPathVertices = currentPath.getVertexList();
         String currVertexLocation = currentVertexLocation(currentLocation);
+        Log.d("<userLocation>", "user location set to (" + currentLocation.getLongitude() + ", " + currentLocation.getLatitude() + ").");
         Log.d("<user location>", currVertexLocation);
         // if user is not at vertex on current path
         if (currentPathVertices.indexOf(currVertexLocation) == -1) {
@@ -109,11 +111,13 @@ public class PathManager implements LocationObserver {
      */
     private void recalculateToExhibit(String currVertexLocation, String nextExhibitID) {
         recalculateToExhibit(currVertexLocation, nextExhibitID, currentDirectionIndex);
+        Log.d("<recalculation>", "recalculateToExchibit called");
     }
 
     private void recalculateToExhibit(String currVertexLocation, String nextExhibitID, int locationIndex) {
         PathInfo path = paths.get(locationIndex);
         path.setPath(PathFinder.findPathToFixedNext(context, currVertexLocation, nextExhibitID));
+        Log.d("<recalculation>", "recalculateToExchibit called");
         notifyPathChanged();
     }
 
@@ -152,6 +156,7 @@ public class PathManager implements LocationObserver {
 
     public void notifyPathChanged() {
         Log.d("path_update", "updated" + paths.toString());
+        Log.d("<pathChangeObservers>", pathChangeObservers.toString());
         for (PathChangeObserver o : pathChangeObservers) {
             o.update(paths);
         }
@@ -192,12 +197,14 @@ public class PathManager implements LocationObserver {
      * @param currentLocation Current user location (as Location)
      */
     public void updateLocation(Location currentLocation) {
+        Log.d("<location>", "updateLocation called");
         this.currentLocation = currentLocation;
         userOffTrack(currentLocation);
     }
 
 
     public void updateCurrentDirectionIndex(int directionOrder) {
+        Log.d("<location>", "updateCurrentDirectionIndex called");
         this.currentDirectionIndex = directionOrder;
     }
 
