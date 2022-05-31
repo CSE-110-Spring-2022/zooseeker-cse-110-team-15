@@ -126,6 +126,7 @@ public class PathManager implements LocationObserver {
         PathInfo path = paths.get(locationIndex);
         path.setPath(PathFinder.findPathToFixedNext(context, currVertexLocation, nextExhibitID));
         Log.d("<recalculation>", "recalculateToExchibit called");
+        Log.d("RECALCULATE TO EXHIBIT", "RECALCULATE TO EXHIBIT - PATH CHANGE NOTIFIED");
         notifyPathChanged();
     }
 
@@ -146,7 +147,7 @@ public class PathManager implements LocationObserver {
         List<String> nodesToOmit = new ArrayList<>();
         for (int i = 0; i < currentDirectionIndex; i++) {
             // objective vertex of the current directions page represented by end vertex of current path
-            nodesToOmit.add(paths.get(i).getPath().getEndVertex());
+            nodesToOmit.add(paths.get(i).nodeId);
         }
         // recalculate latter path of the path
         List<PathInfo> latterPathSegment =
@@ -157,6 +158,7 @@ public class PathManager implements LocationObserver {
             paths.set(i, latterPathSegment.get(i - currentDirectionIndex));
             Log.d("test", i + String.valueOf(latterPathSegment.size()));
         }
+        Log.d("RECALCULATE OVERALL", "RECALCULATE OVERALL - PATH CHANGE NOTIFIED");
         notifyPathChanged();
     }
 
@@ -250,11 +252,6 @@ public class PathManager implements LocationObserver {
         if (userOffTrack(currentLocation) && isUserCloserToLaterExhibits) {
             // then ask them if they want to replan their path
             notifyUserOffTrack(currentVertexLocation);
-
-            // if yes, re-plan their path so that their closest exhibit is now their next exhibit
-            if (userReaction) {
-                recalculateOverall(currentVertexLocation);
-            }
         }
     }
 

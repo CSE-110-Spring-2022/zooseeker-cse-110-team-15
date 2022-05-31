@@ -62,6 +62,8 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
     List<PathInfo> pathList;
     Graph<String, IdentifiedWeightedEdge> zooGraph;
     UserLocation location;
+    ReplanNotification replanNotification;
+
 
     PathManager pathManager;
     PathChangeObserver pathChangeObserver;
@@ -99,6 +101,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
 
         // find path and store it as a list
         location = new UserLocation(this);
+        replanNotification = new ReplanNotification();
 
         pathManager = new PathManager(this);
         Log.d("<obs path change>", "path manager instantiazed");
@@ -112,7 +115,9 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
         };
 
         pathManager.addPathChangeObserver(pathChangeObserver);
-        //pathManager.addPathChangeObserver(this);
+        pathManager.addUserOffTrackObserver(this);
+        replanNotification.addObserver(this);
+
         location.addLocationChangedObservers(pathManager);
         pathList = pathManager.getPath();
 
@@ -139,15 +144,12 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
         sharedPreferenceChangeListener(preferences);
     }
 
+    String currentLocation;
 
     // update when user goes off track
     public void update(String currentVertexLocation) {
-        ReplanNotification replanNotification = new ReplanNotification();
         replanNotification.show(getSupportFragmentManager(), "");
-
-        if (replanNotification.getUserReaction()) {
-            pathManager.recalculateOverall(currentVertexLocation);
-        }
+        currentLocation = currentVertexLocation;
     }
 
     private void sharedPreferenceChangeListener(SharedPreferences sp) {
@@ -344,5 +346,9 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
     public void onUseRegularLocationClicked(View view) {
         location.setMocked(false);
         Log.d("<mock location>", "location mocking turned off");
+    }
+
+    public void updateReplan() {
+        pathManager.recalculateOverall(currentLocation);
     }
 }
