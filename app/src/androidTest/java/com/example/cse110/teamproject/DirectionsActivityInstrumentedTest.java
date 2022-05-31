@@ -5,7 +5,10 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.example.cse110.teamproject.util.WaitForTextActionKt.waitForText;
@@ -92,6 +95,7 @@ public class DirectionsActivityInstrumentedTest {
         recyclerView.layout(0, 0, 1080, 2280);
     }
 
+    /*
     @Test
     public void testOffTrackDirections() {
 //    https://stackoverflow.com/questions/8605611/get-context-of-test-project-in-android-junit-test-case
@@ -101,96 +105,14 @@ public class DirectionsActivityInstrumentedTest {
         List<LatLng> latLngs = TestUtil.convertNodeIDToLatLng(exhibitListItemDao, exhibitIDs);
         Map<String, LatLng> nodeIDsToLatLngsMap = TestUtil.zipToMap(exhibitIDs, latLngs);
 
-        ActivityScenario<MainActivity> scenario
-                = ActivityScenario.launch(MainActivity.class);
-        scenario.moveToState(Lifecycle.State.CREATED);
-        scenario.moveToState(Lifecycle.State.STARTED);
-        scenario.moveToState(Lifecycle.State.RESUMED);
-
-        onView(withId(R.id.search_bar))
-                .perform(click(), replaceText("Flami"));
-
-        onData(equalTo("Flamingos"))
-                .inRoot(RootMatchers.isPlatformPopup())
-                .perform(click());
-
-        onView(withId(R.id.search_bar))
-                .perform(click(), replaceText("Capuch"));
-
-        onData(equalTo("Capuchin Monkeys"))
-                .inRoot(RootMatchers.isPlatformPopup())
-                .perform(click());
-
-        onView(withId(R.id.plan_btn))
-                .perform(click());
-
-        onView(withId(R.id.directions_btn))
-                .perform(click());
-
-        // check gate path is in list
-        mockLocation.setCurrLocation(nodeIDsToLatLngsMap.get("entrance_exit_gate"));
-
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-//        onView(withId(R.id.direction_steps)).perform(waitForText("Gate Path", 5000));
-
-        // check gate path is still in list when still on path
-        mockLocation.setCurrLocation(nodeIDsToLatLngsMap.get("intxn_front_treetops"));
-
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-//        onView(withId(R.id.direction_steps)).perform(waitForText("Gate Path", 5000));
-
-        // move to koi and check koi is in path
-        mockLocation.setCurrLocation(nodeIDsToLatLngsMap.get("koi"));
-
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        for (int i = 0; i < 10; i++) {
-
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            mockLocation.setCurrLocation(nodeIDsToLatLngsMap.get("koi"));
-
-//        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Hippos'", 5000));
-
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            mockLocation.setCurrLocation(nodeIDsToLatLngsMap.get("intxn_front_treetops"));
-
-        }
-
-//        onView(withId(R.id.direction_steps)).perform(waitForText("Koi Fish", 5000));
     }
+     */
 
     @Test
-    public void testReplannedDirections() {
+    public void testDirectionsWithReplanAccepted() {
 //    https://stackoverflow.com/questions/8605611/get-context-of-test-project-in-android-junit-test-case
-        Context context = ApplicationProvider.getApplicationContext();
 
-        List<String> exhibitIDs = new ArrayList<>(List.of("entrance_exit_gate", "intxn_hippo_monkey_trails", "scripps_aviary"));
-        List<LatLng> latLngs = TestUtil.convertNodeIDToLatLng(exhibitListItemDao, exhibitIDs);
-        Map<String, LatLng> nodeIDsToLatLngsMap = TestUtil.zipToMap(exhibitIDs, latLngs);
+        Context context = ApplicationProvider.getApplicationContext();
 
         ActivityScenario<MainActivity> scenario
                 = ActivityScenario.launch(MainActivity.class);
@@ -221,9 +143,9 @@ public class DirectionsActivityInstrumentedTest {
                 .perform(click());
 
         onView(withId(R.id.search_bar))
-                .perform(click(), replaceText("Flam"));
+                .perform(click(), replaceText("Capuch"));
 
-        onData(equalTo("Flamingos"))
+        onData(equalTo("Capuchin Monkeys"))
                 .inRoot(RootMatchers.isPlatformPopup())
                 .perform(click());
 
@@ -233,44 +155,50 @@ public class DirectionsActivityInstrumentedTest {
         onView(withId(R.id.directions_btn))
                 .perform(click());
 
-        // check gate path is in list
-        LatLng locationLatLng = nodeIDsToLatLngsMap.get("entrance_exit_gate");
-        Location location = new Location("");
-        location.setLongitude(locationLatLng.longitude);
-        location.setLatitude(locationLatLng.latitude);
-        mockUserLocation = new MockUserLocation(context, location);
-        mockUserLocation.setUserLocation(location);
+        // Entrance and Exit Gate
+        onView(withId(R.id.longitude_input))
+                .perform(replaceText("-117.14936"));
+
+        onView(withId(R.id.latitude_input))
+                .perform(replaceText("32.73561"));
+
+        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Siamangs'", 5000));
+
+        onView(withId(R.id.set_location_btn))
+                .perform(click());
+
+        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Siamangs'", 5000));
 
         try {
-            Thread.sleep(2000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        //onView(withId(R.id.direction_steps)).perform(waitForText("to 'Siamangs'", 5000));
-
-        // check gate path is still in list when still on path
-
+        // Directions to Hippos
         onView(withId(R.id.next_button))
                 .perform(click());
 
+        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Hippos'", 5000));
+
+        // Monkey Trail / Hippo Trail
+        onView(withId(R.id.longitude_input))
+                .perform(replaceText("-117.16951754140803"));
+
+        onView(withId(R.id.latitude_input))
+                .perform(replaceText("32.748983757472594"));
+
+        onView(withId(R.id.set_location_btn))
+                .perform(click());
+
+        // Target location is still the same: Hippos.
+        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Hippos'", 5000));
+
+        // Directions to Capuchin
         onView(withId(R.id.next_button))
                 .perform(click());
 
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        locationLatLng = nodeIDsToLatLngsMap.get("intxn_hippo_monkey_trails");
-        location = new Location("");
-        location.setLongitude(locationLatLng.longitude);
-        location.setLatitude(locationLatLng.latitude);
-        mockUserLocation.setUserLocation(location);
-        Log.d("<location>", "location changed");
-
-//        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Hippos'", 5000));
+        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Capuchin", 5000));
 
         try {
             Thread.sleep(2000);
@@ -278,48 +206,139 @@ public class DirectionsActivityInstrumentedTest {
             e.printStackTrace();
         }
 
-        // move to koi and check koi is in path
-        locationLatLng = nodeIDsToLatLngsMap.get("scripps_aviary");
-        location = new Location("");
-        location.setLongitude(locationLatLng.longitude);
-        location.setLatitude(locationLatLng.latitude);
-        mockUserLocation.setUserLocation(location);
-        Log.d("<location>", "location changed");
+        // Scripps Aviary
+        onView(withId(R.id.longitude_input))
+                .perform(replaceText("-117.17255093386991"));
 
-        for (int i = 0; i < 10; i++) {
+        onView(withId(R.id.latitude_input))
+                .perform(replaceText("32.748538318135594"));
 
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        onView(withId(R.id.set_location_btn))
+                .perform(click());
 
-            locationLatLng = nodeIDsToLatLngsMap.get("intxn_hippo_monkey_trails");
-            location = new Location("");
-            location.setLongitude(locationLatLng.longitude);
-            location.setLatitude(locationLatLng.latitude);
-            mockUserLocation.setUserLocation(location);
-            Log.d("<location>", "location changed");
+        // TODO: accept the replan notification
+        /*
+        onView(withText("Replan"))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()))
+                .perform(click());
+         */
 
-//        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Hippos'", 5000));
+        // If accepted, the new target should be Gorillas.
+        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Gorillas'", 5000));
+    }
 
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+    @Test
+    public void testDirectionsWithoutReplanRejected() {
+//    https://stackoverflow.com/questions/8605611/get-context-of-test-project-in-android-junit-test-case
+        Context context = ApplicationProvider.getApplicationContext();
 
-            // move to koi and check koi is in path
-            locationLatLng = nodeIDsToLatLngsMap.get("scripps_aviary");
-            location = new Location("");
-            location.setLongitude(locationLatLng.longitude);
-            location.setLatitude(locationLatLng.latitude);
-            mockUserLocation.setUserLocation(location);
-            Log.d("<location>", "location changed");
+        ActivityScenario<MainActivity> scenario
+                = ActivityScenario.launch(MainActivity.class);
+        scenario.moveToState(Lifecycle.State.CREATED);
+        scenario.moveToState(Lifecycle.State.STARTED);
+        scenario.moveToState(Lifecycle.State.RESUMED);
 
+
+        onView(withId(R.id.search_bar))
+                .perform(click(), replaceText("Siam"));
+
+        onData(equalTo("Siamangs"))
+                .inRoot(RootMatchers.isPlatformPopup())
+                .perform(click());
+
+        onView(withId(R.id.search_bar))
+                .perform(click(), replaceText("Hi"));
+
+        onData(equalTo("Hippos"))
+                .inRoot(RootMatchers.isPlatformPopup())
+                .perform(click());
+
+        onView(withId(R.id.search_bar))
+                .perform(click(), replaceText("Gor"));
+
+        onData(equalTo("Gorillas"))
+                .inRoot(RootMatchers.isPlatformPopup())
+                .perform(click());
+
+        onView(withId(R.id.search_bar))
+                .perform(click(), replaceText("Capuch"));
+
+        onData(equalTo("Capuchin Monkeys"))
+                .inRoot(RootMatchers.isPlatformPopup())
+                .perform(click());
+
+        onView(withId(R.id.plan_btn))
+                .perform(click());
+
+        onView(withId(R.id.directions_btn))
+                .perform(click());
+
+        // Entrance and Exit Gate
+        onView(withId(R.id.longitude_input))
+                .perform(replaceText("-117.14936"));
+
+        onView(withId(R.id.latitude_input))
+                .perform(replaceText("32.73561"));
+
+        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Siamangs'", 5000));
+
+        onView(withId(R.id.set_location_btn))
+                .perform(click());
+
+        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Siamangs'", 5000));
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
-//        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Gorillas'", 5000));
+        // Directions to Hippos
+        onView(withId(R.id.next_button))
+                .perform(click());
+
+        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Hippos'", 5000));
+
+        // Monkey Trail / Hippo Trail
+        onView(withId(R.id.longitude_input))
+                .perform(replaceText("-117.16951754140803"));
+
+        onView(withId(R.id.latitude_input))
+                .perform(replaceText("32.748983757472594"));
+
+        onView(withId(R.id.set_location_btn))
+                .perform(click());
+
+        // Target location is still the same: Hippos.
+        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Hippos'", 5000));
+
+        // Directions to Capuchin
+        onView(withId(R.id.next_button))
+                .perform(click());
+
+        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Capuchin", 5000));
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Scripps Aviary
+        onView(withId(R.id.longitude_input))
+                .perform(replaceText("-117.17255093386991"));
+
+        onView(withId(R.id.latitude_input))
+                .perform(replaceText("32.748538318135594"));
+
+        onView(withId(R.id.set_location_btn))
+                .perform(click());
+
+        // TODO: refuse the replan notification
+
+        // If refused, there should be no change to the target exhibit
+        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Capuchin", 5000));
     }
 
 }
