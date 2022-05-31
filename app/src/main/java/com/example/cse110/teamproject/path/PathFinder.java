@@ -35,7 +35,7 @@ public class PathFinder {
             String firstNode,
             Context context
             ) {
-        String start = firstNode;
+        String start = getVertexNameFromExhibit(firstNode, context);
 
         List<Pair<String, GraphPath<String, IdentifiedWeightedEdge>>> calculatedPaths = new ArrayList();
 
