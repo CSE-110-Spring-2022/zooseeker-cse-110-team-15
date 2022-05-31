@@ -12,6 +12,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.example.cse110.teamproject.path.PathFinder;
 
+import org.jgrapht.GraphPath;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,13 +29,14 @@ public class PathFinderTest {
     ExhibitListItemDao exhibitListItemDao;
     UserExhibitListItemDao userExhibitListItemDao;
     PathItemDao pathItemDao;
+    Context context;
 
     @Rule
     public ActivityScenarioRule<MainActivity> rule = new ActivityScenarioRule<>(MainActivity.class);
 
     @Before
     public void setUp()  {
-        Context context = ApplicationProvider.getApplicationContext();
+        context = ApplicationProvider.getApplicationContext();
         testDb = Room.inMemoryDatabaseBuilder(context, ExhibitDatabase.class)
                 .allowMainThreadQueries().build();
 
@@ -107,5 +109,11 @@ public class PathFinderTest {
         });
     }
 
-
+    @Test
+    public void testFindPathToFixedNextWorksForExhibitsInSameVertex() {
+        // paths from two exhibits in same vertex should just have itself as the vertex
+        GraphPath<String, IdentifiedWeightedEdge> path = PathFinder.findPathToFixedNext(context, "dove", "mynah");
+        String[] expectedDirections = new String[]{"owens_aviary"};
+        assertEquals(new ArrayList<>(Arrays.asList(expectedDirections)), path.getVertexList());
+    }
 }
