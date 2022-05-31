@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 
 public class PathFinder {
 
+    private static String ENTRANCE = "entrance_exit_gate";
+
     // calculates path given search list, graph - no calls to database
     // returns list of pair of vertex or child if exists and path
     private static List<Pair<String, GraphPath<String, IdentifiedWeightedEdge>>> findPath(
@@ -67,11 +69,10 @@ public class PathFinder {
         if (calculatedPaths.size() > 0) {
             String lastExhibitId = calculatedPaths.get(calculatedPaths.size()-1).second.getEndVertex();
             GraphPath<String, IdentifiedWeightedEdge> lastPath =
-                    DijkstraShortestPath.findPathBetween(zooGraph, lastExhibitId, firstNode);
+                    DijkstraShortestPath.findPathBetween(zooGraph, lastExhibitId, ENTRANCE);
 
             // add the last path to path list
-            String childNodeId = calculatedPaths.get(calculatedPaths.size()-1).first;
-            calculatedPaths.add(new Pair(firstNode, lastPath));
+            calculatedPaths.add(new Pair(ENTRANCE, lastPath));
         }
 
         return calculatedPaths;
@@ -79,7 +80,6 @@ public class PathFinder {
 
     // calculates paths with database + context for json
     public static List<PathInfo> findPath(Context context) {
-        final String start = "entrance_exit_gate";
 
         // Initialize vertex info map to be used for finding path
         String nodeInfo = context.getResources().getString(R.string.curr_node_info);
@@ -97,7 +97,8 @@ public class PathFinder {
         // construct graph
         Graph<String, IdentifiedWeightedEdge> zooGraph = ZooData.loadZooGraphJSON(context, context.getResources().getString(R.string.curr_graph_info));
 
-        List<Pair<String, GraphPath<String, IdentifiedWeightedEdge>>> calculatedPaths = findPath(searchList, zooGraph, start, context);
+        List<Pair<String, GraphPath<String, IdentifiedWeightedEdge>>> calculatedPaths = findPath(searchList, zooGraph, ENTRANCE, context);
+
 
         PathItemDao pathItemDao = ExhibitDatabase.getSingleton(context).pathItemDao();
         pathItemDao.deletePathItems();
@@ -147,6 +148,7 @@ public class PathFinder {
 
     public static List<PathInfo> findPathGivenExcludedNodes
             (Context context, String currLoc, List<String> nodesToOmit) {
+        Log.d("fpcen nodesToOmit", nodesToOmit.toString());
         final String start = currLoc;
 
         // load user exhibits into searchList
@@ -164,6 +166,7 @@ public class PathFinder {
 
         List<Pair<String, GraphPath<String, IdentifiedWeightedEdge>>> calculatedPaths = findPath(searchList, zooGraph, start, context);
 
+
         PathItemDao pathItemDao = ExhibitDatabase.getSingleton(context).pathItemDao();
         pathItemDao.deletePathItems();
 
@@ -175,6 +178,7 @@ public class PathFinder {
         }
 
         List<PathInfo> returnPathList = new ArrayList();
+        Log.d("fpcen returnPathList", returnPathList.toString());
 
         for (Pair<String, GraphPath<String, IdentifiedWeightedEdge>> pair : calculatedPaths) {
             PathInfo pathInfo = new PathInfo(pair.first, pair.second);

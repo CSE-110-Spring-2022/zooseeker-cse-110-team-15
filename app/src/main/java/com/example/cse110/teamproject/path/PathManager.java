@@ -11,6 +11,7 @@ import com.example.cse110.teamproject.ExhibitListItemDao;
 import com.example.cse110.teamproject.ExhibitNodeItem;
 import com.example.cse110.teamproject.IdentifiedWeightedEdge;
 import com.example.cse110.teamproject.LocationObserver;
+import com.example.cse110.teamproject.UserOffTrackObserver;
 import com.example.cse110.teamproject.UserExhibitListItemDao;
 
 import org.jgrapht.Graph;
@@ -19,6 +20,7 @@ import org.jgrapht.GraphPath;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 // stores path and changes it
@@ -32,6 +34,11 @@ public class PathManager implements LocationObserver {
     ExhibitListItemDao exhibitListItemDao;
     UserExhibitListItemDao userExhibitListItemDao;
 
+    List<PathChangeObserver> pathChangeObservers;
+    List<UserOffTrackObserver> userOffTrackObservers;
+
+    //ReplanNotification replanNotification;
+
     public PathManager(Context context) {
         exhibitListItemDao = ExhibitDatabase.getSingleton(context)
                 .exhibitListItemDao();
@@ -39,6 +46,7 @@ public class PathManager implements LocationObserver {
                 .userExhibitListItemDao();
         paths = PathFinder.findPath(context);
         pathChangeObservers = new ArrayList<>();
+        userOffTrackObservers = new ArrayList<>();
         this.context = context;
         Location loc = new Location("");
         loc.setAltitude(100);
@@ -118,6 +126,7 @@ public class PathManager implements LocationObserver {
         PathInfo path = paths.get(locationIndex);
         path.setPath(PathFinder.findPathToFixedNext(context, currVertexLocation, nextExhibitID));
         Log.d("<recalculation>", "recalculateToExchibit called");
+        Log.d("RECALCULATE TO EXHIBIT", "RECALCULATE TO EXHIBIT - PATH CHANGE NOTIFIED");
         notifyPathChanged();
     }
 
@@ -138,7 +147,7 @@ public class PathManager implements LocationObserver {
         List<String> nodesToOmit = new ArrayList<>();
         for (int i = 0; i < currentDirectionIndex; i++) {
             // objective vertex of the current directions page represented by end vertex of current path
-            nodesToOmit.add(paths.get(i).getPath().getEndVertex());
+            nodesToOmit.add(paths.get(i).nodeId);
         }
         // recalculate latter path of the path
         List<PathInfo> latterPathSegment =
@@ -149,10 +158,9 @@ public class PathManager implements LocationObserver {
             paths.set(i, latterPathSegment.get(i - currentDirectionIndex));
             Log.d("test", i + String.valueOf(latterPathSegment.size()));
         }
+        Log.d("RECALCULATE OVERALL", "RECALCULATE OVERALL - PATH CHANGE NOTIFIED");
         notifyPathChanged();
     }
-
-    List<PathChangeObserver> pathChangeObservers;
 
     public void notifyPathChanged() {
         Log.d("path_update", "updated" + paths.toString());
@@ -175,18 +183,18 @@ public class PathManager implements LocationObserver {
         return this.paths;
     }
 
+    public void addUserOffTrackObserver(UserOffTrackObserver o) {
+        userOffTrackObservers.add(o);
+    }
 
+    public void notifyUserOffTrack(String currentVertexLocation) {
+        // TODO
+        // notifyOnTrackObservers() (for US3 Notify and Replan)
+        for (UserOffTrackObserver o : userOffTrackObservers) {
+            o.update(currentVertexLocation);
+        }
 
-
-    //
-//    public void notifyUserOffTrack(GraphPath<String, IdentifiedWeightedEdge> currentPath) {
-//        // TODO
-//        // notifyOnTrackObservers() (for US3 Notify and Replan)
-//        for (PathChangeObserver o : pathChangeObservers) {
-//            o.update(currentPath);
-//        }
-//
-//    }
+    }
 
 
     /**
@@ -199,13 +207,52 @@ public class PathManager implements LocationObserver {
     public void updateLocation(Location currentLocation) {
         Log.d("<location>", "updateLocation called");
         this.currentLocation = currentLocation;
-        userOffTrack(currentLocation);
+        //userOffTrack(currentLocation);
+        replanPath(currentLocation);
     }
 
 
     public void updateCurrentDirectionIndex(int directionOrder) {
         Log.d("<location>", "updateCurrentDirectionIndex called");
         this.currentDirectionIndex = directionOrder;
+    }
+
+    // Check if user is substantially off-track and re-plan if so.
+    public void replanPath(Location currentLocation) {
+        boolean userReaction = false;
+        boolean isUserCloserToLaterExhibits = false;
+
+        PathInfo currentPath = paths.get(currentDirectionIndex);
+        String currentVertexLocation = currentVertexLocation(currentLocation);
+
+        List<String> laterExhibits = new ArrayList<>();
+
+        // get all the later paths
+        for (int i = currentDirectionIndex + 1; i < paths.size(); i++) {
+            // laterPaths will be empty if currentDirection is the last exhibit to visit
+            laterExhibits.add(paths.get(i).getPath().getEndVertex());
+        }
+
+        // get distance between current location and current destination exhibit
+        ExhibitNodeItem currentExhibitNode = exhibitListItemDao.getExhibitByNodeId(currentPath.getPath().getEndVertex());
+        float distanceToCurrExhibit = distanceBetween(currentLocation, currentExhibitNode.lat, currentExhibitNode.lng);
+
+        // check if distance between current location and later exhibits is shorter than
+        // the distance between current location and current exhibit
+        for (int i = 0; i < laterExhibits.size(); i++) {
+            ExhibitNodeItem laterNode = exhibitListItemDao.getExhibitByNodeId(laterExhibits.get(i));
+            float distance = distanceBetween(currentLocation, laterNode.lat, laterNode.lng);
+            if (distance < distanceToCurrExhibit) {
+                isUserCloserToLaterExhibits = true;
+                break;
+            }
+        }
+
+        // if the user is off-track and is closer to the later exhibits in the path
+        if (userOffTrack(currentLocation) && isUserCloserToLaterExhibits) {
+            // then ask them if they want to replan their path
+            notifyUserOffTrack(currentVertexLocation);
+        }
     }
 
     public void reverseRoute(int currPathIndex) {
