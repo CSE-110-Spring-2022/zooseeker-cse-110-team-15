@@ -126,6 +126,7 @@ public class PathFinder {
     public static GraphPath<String, IdentifiedWeightedEdge> findPathToFixedNext(Context context, String currLoc, String fixedNext) {
         Graph<String, IdentifiedWeightedEdge> zooGraph = ZooData.loadZooGraphJSON(context, context.getResources().getString(R.string.curr_graph_info));
 
+        Log.d("<findPathToFixedNext call>", "currLoc: " + currLoc + " w/ fixedNext: " + fixedNext);
         return DijkstraShortestPath.findPathBetween(zooGraph, currLoc, fixedNext);
     }
 
