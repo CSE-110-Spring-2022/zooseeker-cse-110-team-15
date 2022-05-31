@@ -137,12 +137,12 @@ public class PathManager implements LocationObserver {
             nodesToOmit.add(paths.get(i).getPath().getEndVertex());
         }
         // recalculate latter path of the path
-        List<GraphPath<String, IdentifiedWeightedEdge>> latterPathSegment =
+        List<PathInfo> latterPathSegment =
                 PathFinder.findPathGivenExcludedNodes(context, currVertexLocation, nodesToOmit);
 
         // concatenate latter part of the path [curr, curr + recalc_len] to the former (indices [0, curr-1]), and return resulting path
         for (int i = currentDirectionIndex; i < currentDirectionIndex + latterPathSegment.size(); i++) {
-            paths.set(i, new PathInfo(paths.get(i).nodeId, latterPathSegment.get(i - currentDirectionIndex)));
+            paths.set(i, latterPathSegment.get(i - currentDirectionIndex));
             Log.d("test", i + String.valueOf(latterPathSegment.size()));
         }
         notifyPathChanged();
