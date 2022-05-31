@@ -42,6 +42,7 @@ public class UserExhibitListDatabaseTest {
 
     @After
     public void tearDown() {
+        ExhibitDatabase.resetSingleton();
         testDb.close();
     }
 

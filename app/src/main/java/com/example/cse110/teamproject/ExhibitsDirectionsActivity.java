@@ -15,7 +15,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.cse110.teamproject.path.PathChangeObserver;
-import com.example.cse110.teamproject.path.PathFinder;
 import com.example.cse110.teamproject.path.PathInfo;
 import com.example.cse110.teamproject.path.PathManager;
 import com.google.android.material.textfield.TextInputEditText;
@@ -27,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class ExhibitsDirectionsActivity extends AppCompatActivity{
+public class ExhibitsDirectionsActivity extends AppCompatActivity implements UserOffTrackObserver {
     final String DIR_FORMAT = "%d. Walk %.0f feet along %s from '%s' to '%s'.\n\n";
     final String DIST_FORMAT = "%.0f ft";
     final String EMPTY_STRING = "";
@@ -63,6 +62,8 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity{
     List<PathInfo> pathList;
     Graph<String, IdentifiedWeightedEdge> zooGraph;
     UserLocation location;
+    ReplanNotification replanNotification;
+
 
     PathManager pathManager;
     PathChangeObserver pathChangeObserver;
@@ -96,15 +97,11 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity{
         preferences = getSharedPreferences(SHARED_PREF_KEY, Context.MODE_PRIVATE);
 
         // check if the direction mode is set to brief or detailed
-        if (preferences.getString(SHARED_PREF_KEY, EMPTY_STRING).equals(BRIEF_DIR_VAL)) {
-            briefMode = true;
-        }
-        else {
-            briefMode = false;
-        }
+        briefMode = preferences.getString(SHARED_PREF_KEY, EMPTY_STRING).equals(BRIEF_DIR_VAL);
 
         // find path and store it as a list
         location = new UserLocation(this);
+        replanNotification = new ReplanNotification();
 
         pathManager = new PathManager(this);
         Log.d("<obs path change>", "path manager instantiazed");
@@ -118,7 +115,9 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity{
         };
 
         pathManager.addPathChangeObserver(pathChangeObserver);
-        //pathManager.addPathChangeObserver(this);
+        pathManager.addUserOffTrackObserver(this);
+        replanNotification.addObserver(this);
+
         location.addLocationChangedObservers(pathManager);
         pathList = pathManager.getPath();
 
@@ -143,6 +142,14 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity{
         }
 
         sharedPreferenceChangeListener(preferences);
+    }
+
+    String currentLocation;
+
+    // update when user goes off track
+    public void update(String currentVertexLocation) {
+        replanNotification.show(getSupportFragmentManager(), "");
+        currentLocation = currentVertexLocation;
     }
 
     private void sharedPreferenceChangeListener(SharedPreferences sp) {
@@ -355,5 +362,9 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity{
     public void onUseRegularLocationClicked(View view) {
         location.setMocked(false);
         Log.d("<mock location>", "location mocking turned off");
+    }
+
+    public void updateReplan() {
+        pathManager.recalculateOverall(currentLocation);
     }
 }
