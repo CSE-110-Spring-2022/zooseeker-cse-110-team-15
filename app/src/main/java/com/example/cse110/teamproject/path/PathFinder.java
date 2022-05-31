@@ -16,6 +16,7 @@ import org.jgrapht.GraphPath;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 public class PathFinder {
 
     // calculates path given search list, graph - no calls to database
+    // returns list of pair of vertex or child if exists and path
     private static List<Pair<String, GraphPath<String, IdentifiedWeightedEdge>>> findPath(
             Set<String> searchList,
             Graph<String, IdentifiedWeightedEdge> zooGraph,
@@ -127,7 +129,7 @@ public class PathFinder {
         return DijkstraShortestPath.findPathBetween(zooGraph, currLoc, fixedNext);
     }
 
-    public static List<GraphPath<String, IdentifiedWeightedEdge>> findPathGivenExcludedNodes
+    public static List<PathInfo> findPathGivenExcludedNodes
             (Context context, String currLoc, List<String> nodesToOmit) {
         final String start = currLoc;
 
@@ -160,10 +162,11 @@ public class PathFinder {
                     i));
         }
 
-        List<GraphPath<String, IdentifiedWeightedEdge>> returnPathList = new ArrayList();
+        List<PathInfo> returnPathList = new ArrayList();
 
         for (Pair<String, GraphPath<String, IdentifiedWeightedEdge>> pair : calculatedPaths) {
-            returnPathList.add(pair.second);
+            PathInfo pathInfo = new PathInfo(pair.first, pair.second);
+            returnPathList.add(pathInfo);
         }
 
         return returnPathList;
