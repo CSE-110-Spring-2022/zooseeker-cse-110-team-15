@@ -1,10 +1,6 @@
 package com.example.cse110.teamproject;
 
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.testing.FragmentScenario;
-import androidx.lifecycle.Lifecycle;
-import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
@@ -13,12 +9,6 @@ import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
-import android.os.Bundle;
 
 import org.junit.Test;
 
