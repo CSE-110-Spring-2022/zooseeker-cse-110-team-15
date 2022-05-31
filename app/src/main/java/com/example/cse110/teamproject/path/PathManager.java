@@ -91,6 +91,11 @@ public class PathManager implements LocationObserver {
         return exhibitLocation.distanceTo(location);
     }
 
+    // call userOffTrack with current location
+    public boolean userOffTrack() {
+        return userOffTrack(currentLocation);
+    }
+
     // off track is determined in relation to the current directions page the user is on.
     public boolean userOffTrack(Location currentLocation) {
         Log.d("<location>", "userOffTrack called");
@@ -101,6 +106,7 @@ public class PathManager implements LocationObserver {
         Log.d("<user location>", currVertexLocation);
         // if user is not at vertex on current path
         if (currentPathVertices.indexOf(currVertexLocation) == -1) {
+            Log.d("recalculate_exhibits", "recalculating exhibits + location:" + currVertexLocation);
             recalculateToExhibit(currVertexLocation, currentPath.getEndVertex());
             return true;
         }
@@ -255,6 +261,7 @@ public class PathManager implements LocationObserver {
         }
     }
 
+
     public void reverseRoute(int currPathIndex) {
         PathInfo pathInfo = paths.get(currPathIndex);
         PathInfo.Direction newDirection = (pathInfo.getDirection() == PathInfo.Direction.FORWARDS) ? PathInfo.Direction.REVERSE : PathInfo.Direction.FORWARDS;
@@ -282,4 +289,6 @@ public class PathManager implements LocationObserver {
         recalculateOverall(nodeId);
 
     }
+
+
 }
