@@ -2,7 +2,6 @@ package com.example.cse110.teamproject;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +14,7 @@ import org.jgrapht.GraphPath;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public class PlanActivity extends AppCompatActivity {
@@ -44,15 +44,18 @@ public class PlanActivity extends AppCompatActivity {
 
         totalDistance = 0;
 
+        AtomicReference<String> streetName = new AtomicReference<>("previous street name placeholder");
         planItemList = PathFinder.findPath(this).stream().map(pathInfo-> {
             GraphPath<String, IdentifiedWeightedEdge> gp = pathInfo.getPath();
             List<IdentifiedWeightedEdge> identifiedWeightedEdges = gp.getEdgeList();
             double pathWeight = gp.getWeight();
             totalDistance += pathWeight;
+            if (identifiedWeightedEdges.size() > 0) {
+                String edgeID = identifiedWeightedEdges.get(identifiedWeightedEdges.size() - 1).getId();
+                streetName.set(eInfo.get(edgeID).street);
+            }
             String nodeName = exhibitListItemDao.getExhibitByNodeId(pathInfo.nodeId).name;
-            String edgeID = identifiedWeightedEdges.get(identifiedWeightedEdges.size() - 1).getId();
-            String edgeName = eInfo.get(edgeID).street;
-            return new PlanItem(edgeName, nodeName, totalDistance);
+            return new PlanItem(streetName.get(), nodeName, totalDistance);
         }).collect(Collectors.toList());
 
         adapter.setPlanItems(planItemList);

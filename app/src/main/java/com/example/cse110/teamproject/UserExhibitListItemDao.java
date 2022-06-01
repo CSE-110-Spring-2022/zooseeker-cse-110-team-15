@@ -26,4 +26,7 @@ public interface UserExhibitListItemDao {
 
     @Query("DELETE FROM `user_exhibit_node_items`")
     void deleteUserExhibitItems();
+
+    @Query("DELETE FROM `user_exhibit_node_items` WHERE `location_id` = :nodeId")
+    void deleteUserExhibitById(String nodeId);
 }

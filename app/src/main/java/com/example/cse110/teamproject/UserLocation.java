@@ -15,6 +15,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 
 //import com.google.android.gms.location.LocationServices;
@@ -52,6 +53,7 @@ public class UserLocation {
 
         /* Listen for Location Updates */
         {
+
             var provider = LocationManager.FUSED_PROVIDER;
             var locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
             var locationListener = new LocationListener() {
@@ -69,6 +71,7 @@ public class UserLocation {
                     != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission
                     (context, Manifest.permission.ACCESS_COARSE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED) {
+
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions
                 // here to request the missing permissions, and then overriding

@@ -15,7 +15,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.cse110.teamproject.path.PathChangeObserver;
-import com.example.cse110.teamproject.path.PathFinder;
 import com.example.cse110.teamproject.path.PathInfo;
 import com.example.cse110.teamproject.path.PathManager;
 import com.google.android.material.textfield.TextInputEditText;
@@ -27,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class ExhibitsDirectionsActivity extends AppCompatActivity{
+public class ExhibitsDirectionsActivity extends AppCompatActivity implements UserOffTrackObserver {
     final String DIR_FORMAT = "%d. Walk %.0f feet along %s from '%s' to '%s'.\n\n";
     final String DIST_FORMAT = "%.0f ft";
     final String EMPTY_STRING = "";
@@ -44,6 +43,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity{
 
     Button prevButton;
     Button nextButton;
+    Button skipButton;
     TextView destName;
     TextView destDistance;
     TextView destLocation;
@@ -63,6 +63,8 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity{
     List<PathInfo> pathList;
     Graph<String, IdentifiedWeightedEdge> zooGraph;
     UserLocation location;
+    ReplanNotification replanNotification;
+
 
     PathManager pathManager;
     PathChangeObserver pathChangeObserver;
@@ -79,6 +81,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity{
 
         prevButton = findViewById(R.id.prev_button);
         nextButton = findViewById(R.id.next_button);
+        skipButton = findViewById(R.id.skip_button);
         destName = findViewById(R.id.dest_name);
         destDistance = findViewById(R.id.dest_dist);
         destLocation = findViewById(R.id.dest_loc);
@@ -96,15 +99,11 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity{
         preferences = getSharedPreferences(SHARED_PREF_KEY, Context.MODE_PRIVATE);
 
         // check if the direction mode is set to brief or detailed
-        if (preferences.getString(SHARED_PREF_KEY, EMPTY_STRING).equals(BRIEF_DIR_VAL)) {
-            briefMode = true;
-        }
-        else {
-            briefMode = false;
-        }
+        briefMode = preferences.getString(SHARED_PREF_KEY, EMPTY_STRING).equals(BRIEF_DIR_VAL);
 
         // find path and store it as a list
         location = new UserLocation(this);
+        replanNotification = new ReplanNotification();
 
         pathManager = new PathManager(this);
         Log.d("<obs path change>", "path manager instantiazed");
@@ -118,13 +117,16 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity{
         };
 
         pathManager.addPathChangeObserver(pathChangeObserver);
-        //pathManager.addPathChangeObserver(this);
+        pathManager.addUserOffTrackObserver(this);
+        replanNotification.addObserver(this);
+
         location.addLocationChangedObservers(pathManager);
         pathList = pathManager.getPath();
 
         // disable prev button when on first page
         prevButton.setEnabled(directionOrder != 0);
         nextButton.setEnabled(pathList.size() - 1 != directionOrder && pathList.size() > 0);
+        skipButton.setEnabled(pathList.size() - 1 != directionOrder && pathList.size() > 0);
 
         // Load the information about edges
         eInfo = ZooData.loadEdgeInfoJSON(this, JSON_EDGE);
@@ -143,6 +145,14 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity{
         }
 
         sharedPreferenceChangeListener(preferences);
+    }
+
+    String currentLocation;
+
+    // update when user goes off track
+    public void update(String currentVertexLocation) {
+        replanNotification.show(getSupportFragmentManager(), "");
+        currentLocation = currentVertexLocation;
     }
 
     private void sharedPreferenceChangeListener(SharedPreferences sp) {
@@ -168,6 +178,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity{
         displayDestinationInfo();
         updateButtonAndLabel();
         notifyDirectionOrderChange();
+        replanIfOffTrackToCurrExhibit();
     }
 
     public void onNextIconClicked(View view) {
@@ -177,6 +188,11 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity{
         displayDestinationInfo();
         updateButtonAndLabel();
         notifyDirectionOrderChange();
+        replanIfOffTrackToCurrExhibit();
+    }
+
+    private void replanIfOffTrackToCurrExhibit() {
+        pathManager.userOffTrack();
     }
 
     private void setPaths(int index) {
@@ -240,6 +256,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity{
         int i = 1;
         List<String> vertexList = currentPath.getVertexList();
         for (IdentifiedWeightedEdge e : currentPath.getEdgeList()) {
+            Log.d("test", eInfo.toString());
             ExhibitNodeItem source = exhibitListItemDao.getExhibitByNodeId(vertexList.get(i-1));
             ExhibitNodeItem target = exhibitListItemDao.getExhibitByNodeId(vertexList.get(i));
             directions += String.format(DIR_FORMAT,
@@ -267,13 +284,32 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity{
         @SuppressLint("DefaultLocale") String distance = String.format(DIST_FORMAT, currentPath.getWeight());
         destDistance.setText(distance);
 
+        if(edgeList.size() != 0){
+            String street = Objects.requireNonNull(eInfo.get(edgeList.get(edgeList.size()-1).getId())).street;
+            destLocation.setText(street);
+        } else {
+            String street = "";
+            destLocation.setText(street);
+        }
 
-        String street = Objects.requireNonNull(eInfo.get(edgeList.get(edgeList.size()-1).getId())).street;
-        destLocation.setText(street);
+        if(currentPath.getWeight() == 0){
+            String here = "You are at the Exhibit";
+            destLocation.setText(here);
+        }
 
-        @SuppressLint("DefaultLocale") String label = String.format(LABEL_FORMAT, destinationNode.name, currentPath.getWeight());
-        prevButtonLabel.setText(label);
-
+        // previous button label
+        if (directionOrder == 0) {
+            nextButtonLabel.setText(EMPTY_STRING);
+        }
+        else {
+            PathInfo prevPathInfo = pathList.get(directionOrder - 1);
+            GraphPath<String, IdentifiedWeightedEdge> prevPath = prevPathInfo.getPath();
+            String prevDestId = prevPath.getEndVertex();
+            ExhibitNodeItem prevDestNode = exhibitListItemDao.getExhibitByNodeId(prevDestId);
+            String label = String.format(LABEL_FORMAT, prevDestNode.name, prevPath.getWeight());
+            prevButtonLabel.setText(label);
+        }
+        // next button label
         if (directionOrder == pathList.size()-1) {
             nextButtonLabel.setText(EMPTY_STRING);
         }
@@ -282,7 +318,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity{
             GraphPath<String, IdentifiedWeightedEdge> nextPath = nextPathInfo.getPath();
             String nextDestId = nextPath.getEndVertex();
             ExhibitNodeItem nextDestNode = exhibitListItemDao.getExhibitByNodeId(nextDestId);
-            label = String.format(LABEL_FORMAT, nextDestNode.name, nextPath.getWeight());
+            String label = String.format(LABEL_FORMAT, nextDestNode.name, nextPath.getWeight());
             nextButtonLabel.setText(label);
         }
         totalDistance = 0.0;
@@ -291,6 +327,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity{
     public void updateButtonAndLabel() {
         prevButton.setEnabled(directionOrder != 0);
         nextButton.setEnabled(directionOrder != pathList.size() - 1);
+        skipButton.setEnabled(directionOrder != pathList.size() - 1);
 
         if (directionOrder == 0) {
             prevButtonLabel.setText(EMPTY_STRING);
@@ -317,6 +354,7 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity{
         }
     }
 
+
 //    @Override
 //    public void update(List<PathInfo> paths) {
 //        Log.d("<obs path change>", "update called in exhibitdirectionsactivity");
@@ -339,5 +377,13 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity{
     public void onUseRegularLocationClicked(View view) {
         location.setMocked(false);
         Log.d("<mock location>", "location mocking turned off");
+    }
+
+    public void updateReplan() {
+        pathManager.recalculateOverall(currentLocation);
+    }
+
+    public void onSkipIconClicked(View view) {
+        pathManager.skipExhibit(directionOrder);
     }
 }
