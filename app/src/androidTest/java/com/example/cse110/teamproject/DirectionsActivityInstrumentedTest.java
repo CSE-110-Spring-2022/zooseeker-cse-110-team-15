@@ -24,6 +24,8 @@ import android.location.Location;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 
 import androidx.activity.ComponentActivity;
 import androidx.lifecycle.Lifecycle;
@@ -34,11 +36,15 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.matcher.RootMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.example.cse110.teamproject.util.MockLocation;
 import com.example.cse110.teamproject.util.TestUtil;
 import com.google.android.gms.maps.model.LatLng;
 
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -112,7 +118,7 @@ public class DirectionsActivityInstrumentedTest {
      */
 
     @Test
-    public void testDirectionsWithReplanAccepted() {
+    public void testDirectionsReplanAccepted() {
 //    https://stackoverflow.com/questions/8605611/get-context-of-test-project-in-android-junit-test-case
 
         Context context = ApplicationProvider.getApplicationContext();
@@ -158,79 +164,33 @@ public class DirectionsActivityInstrumentedTest {
         onView(withId(R.id.directions_btn))
                 .perform(click());
 
-        // Entrance and Exit Gate
+        // Originally expects Siamangs
+        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Siamangs", 5000));
+
+        // Monkey Trail /
         onView(withId(R.id.longitude_input))
-                .perform(replaceText("-117.14936"));
+                .perform(replaceText("-117.16066409380507"));
 
         onView(withId(R.id.latitude_input))
-                .perform(replaceText("32.73561"));
-
-        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Siamangs'", 5000));
+                .perform(replaceText("32.74213959255212"));
 
         onView(withId(R.id.set_location_btn))
                 .perform(click());
 
-        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Siamangs'", 5000));
+        // Accept replan
+        onView(withId(android.R.id.button1)).perform(click());
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        // Now expects Hippos
+        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Hippos", 5000));
 
-        // Directions to Hippos
-        onView(withId(R.id.next_button))
-                .perform(click());
-
-        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Hippos'", 5000));
-
-        // Monkey Trail / Hippo Trail
-        onView(withId(R.id.longitude_input))
-                .perform(replaceText("-117.16951754140803"));
-
-        onView(withId(R.id.latitude_input))
-                .perform(replaceText("32.748983757472594"));
-
-        onView(withId(R.id.set_location_btn))
-                .perform(click());
-
-        // Target location is still the same: Hippos.
-        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Hippos'", 5000));
-
-        // Directions to Capuchin
-        onView(withId(R.id.next_button))
-                .perform(click());
-
-        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Capuchin", 5000));
-
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        // Scripps Aviary
-        onView(withId(R.id.longitude_input))
-                .perform(replaceText("-117.17255093386991"));
-
-        onView(withId(R.id.latitude_input))
-                .perform(replaceText("32.748538318135594"));
-
-        onView(withId(R.id.set_location_btn))
-                .perform(click());
-
-        // accept the replan notification
-        onView(withText("Replan"))
-                .inRoot(isDialog())
-                .check(matches(isDisplayed()))
-                .perform(click());
-
-        // If accepted, the new target should be Gorillas.
-        onView(withId(R.id.direction_steps)).perform(waitForText("to 'Gorillas'", 5000));
     }
 
+
+
+
+
     @Test
-    public void testDirectionsWithoutReplanRejected() {
+    public void testDirectionsReplanRejected() {
 //    https://stackoverflow.com/questions/8605611/get-context-of-test-project-in-android-junit-test-case
         Context context = ApplicationProvider.getApplicationContext();
 
@@ -299,6 +259,9 @@ public class DirectionsActivityInstrumentedTest {
         onView(withId(R.id.next_button))
                 .perform(click());
 
+        Log.d("<alertdialog>", "326");
+        Log.d("<alertdialog>", String.valueOf(android.R.id.message));
+
         onView(withId(R.id.direction_steps)).perform(waitForText("to 'Hippos'", 5000));
 
         // Monkey Trail / Hippo Trail
@@ -310,6 +273,10 @@ public class DirectionsActivityInstrumentedTest {
 
         onView(withId(R.id.set_location_btn))
                 .perform(click());
+
+//        onView(withId(android.R.id.button1)).perform(click());    // CORRESPONDS TO YES
+        onView(withId(android.R.id.button2)).perform(click());      // CORRESPONDS TO NO
+//        onView(withId(android.R.id.button3)).perform(click());
 
         // Target location is still the same: Hippos.
         onView(withId(R.id.direction_steps)).perform(waitForText("to 'Hippos'", 5000));
@@ -336,14 +303,30 @@ public class DirectionsActivityInstrumentedTest {
         onView(withId(R.id.set_location_btn))
                 .perform(click());
 
-        // refuse the replan notification
-        onView(withText("Replan"))
-                .inRoot(isDialog())
-                .check(matches(isDisplayed()))
-                .perform(pressBack());
+        onView(withId(android.R.id.button2)).perform(click());      // CORRESPONDS TO NO
 
         // If refused, there should be no change to the target exhibit
         onView(withId(R.id.direction_steps)).perform(waitForText("to 'Capuchin", 5000));
+        Log.d("<alertdialog>", String.valueOf(android.R.id.message));
+    }
+
+    private static Matcher<View> childAtPosition(
+            final Matcher<View> parentMatcher, final int position) {
+
+        return new TypeSafeMatcher<View>() {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Child at position " + position + " in parent ");
+                parentMatcher.describeTo(description);
+            }
+
+            @Override
+            public boolean matchesSafely(View view) {
+                ViewParent parent = view.getParent();
+                return parent instanceof ViewGroup && parentMatcher.matches(parent)
+                        && view.equals(((ViewGroup) parent).getChildAt(position));
+            }
+        };
     }
 
     @Test
