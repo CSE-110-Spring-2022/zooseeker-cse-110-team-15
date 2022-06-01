@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.example.cse110.teamproject.persistence.PersistData;
+import com.thoughtworks.xstream.XStream;
+
 // stores path and changes it
 public class PathManager implements LocationObserver {
 
@@ -57,6 +60,14 @@ public class PathManager implements LocationObserver {
         loc.setAccuracy(6f);
         currentLocation = loc;
         Log.d("test", currentLocation.toString());
+    }
+
+    public PathManager(Context context, List<PathInfo> paths) {
+        exhibitListItemDao = ExhibitDatabase.getSingleton(context)
+                .exhibitListItemDao();
+        this.paths = paths;
+        pathChangeObservers = new ArrayList<>();
+        this.context = context;
     }
 
     public String currentVertexLocation(Location location) {

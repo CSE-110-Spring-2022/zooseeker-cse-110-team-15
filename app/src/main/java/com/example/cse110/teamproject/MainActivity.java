@@ -1,5 +1,6 @@
 package com.example.cse110.teamproject;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +16,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.cse110.teamproject.persistence.PersistData;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,6 +37,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // persistence
+        PersistData persistData = new PersistData();
+        persistData.resume(PersistData.Activity.MAIN, this);
 
 
 
@@ -186,4 +193,17 @@ public class MainActivity extends AppCompatActivity {
 
         //editor.apply();
     //}
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        PersistData persistData = new PersistData();
+        persistData.writeActivity(PersistData.Activity.MAIN, this);
+    }
+
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//    }
 }

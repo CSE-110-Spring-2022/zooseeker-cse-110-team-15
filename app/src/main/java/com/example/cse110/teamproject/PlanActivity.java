@@ -1,5 +1,7 @@
 package com.example.cse110.teamproject;
 
+import static com.example.cse110.teamproject.persistence.PersistData.Activity.DIRECTIONS;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -9,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cse110.teamproject.path.PathFinder;
+import com.example.cse110.teamproject.persistence.PersistData;
 
 import org.jgrapht.GraphPath;
 
@@ -71,4 +74,18 @@ public class PlanActivity extends AppCompatActivity {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        PersistData persistData = new PersistData();
+        persistData.writeActivity(PersistData.Activity.PLAN, this);
+    }
+
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        PersistData persistData = new PersistData();
+//        persistData.resume(PersistData.Activity.PLAN, this);
+//    }
 }

@@ -18,6 +18,8 @@ import com.example.cse110.teamproject.path.PathChangeObserver;
 import com.example.cse110.teamproject.path.PathInfo;
 import com.example.cse110.teamproject.path.PathManager;
 import com.google.android.material.textfield.TextInputEditText;
+import com.example.cse110.teamproject.persistence.PersistData;
+import com.thoughtworks.xstream.XStream;
 
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
@@ -69,6 +71,8 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
     PathManager pathManager;
     PathChangeObserver pathChangeObserver;
 
+    XStream xstream;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         JSON_EDGE = this.getResources().getString(R.string.curr_edge_info);
@@ -100,6 +104,30 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
 
         // check if the direction mode is set to brief or detailed
         briefMode = preferences.getString(SHARED_PREF_KEY, EMPTY_STRING).equals(BRIEF_DIR_VAL);
+
+        xstream = new XStream();
+        // fix ForbiddenClassException
+        xstream.allowTypesByWildcard(new String[] {
+//                "com.example.cse110.teamproject.**",
+//                "org.jgrapht.**"
+                "**"
+        });
+
+        Bundle extras = getIntent().getExtras();
+        // if starting with string
+        if (extras != null){
+            // get path
+            String pathsString = extras.getString(PersistData.persistenceKeys.PATH.name());
+            List<PathInfo> pathInfos = (List<PathInfo>) xstream.fromXML(pathsString);
+            pathManager = new PathManager(this, pathInfos);
+
+            // update direction order
+            int index = extras.getInt(PersistData.persistenceKeys.INDEX.name());
+            directionOrder = index;
+            notifyDirectionOrderChange();
+        } else {
+            pathManager = new PathManager(this);
+        }
 
         // find path and store it as a list
         location = new UserLocation(this);
@@ -386,4 +414,23 @@ public class ExhibitsDirectionsActivity extends AppCompatActivity implements Use
     public void onSkipIconClicked(View view) {
         pathManager.skipExhibit(directionOrder);
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        PersistData persistData = new PersistData();
+        persistData.writeActivity(PersistData.Activity.DIRECTIONS, this);
+
+        persistData.writeCurrIndex(directionOrder, this);
+        String paths = xstream.toXML(pathManager.getPath());
+//        String path = null;
+        persistData.writePath(paths, this);
+    }
+
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        PersistData persistData = new PersistData();
+//        persistData.resume(PersistData.Activity.DIRECTIONS, this);
+//    }
 }
